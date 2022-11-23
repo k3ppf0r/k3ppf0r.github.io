@@ -16,23 +16,25 @@
   <meta name="author" content="k3ppf0r">
   <meta name="keywords" content="">
   
-    <meta name="description" content="前言用于记录在学习中的重复性操作，不断更新~ 正文python2 安装 pwntools三条命令解决： 123curl https:&#x2F;&#x2F;bootstrap.pypa.io&#x2F;pip&#x2F;2.7&#x2F;get-pip.py -o get-pip.pysudo python2 get-pip.pypip2 install pwntools  hexo博客迁移 从原电脑下载源码，删除node_modules文件夹，">
+    <meta name="description" content="见笑了wwwww">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常用安装">
-<meta property="og:url" content="http://example.com/2022/11/22/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:title" content="Glibc Heap Exploit">
+<meta property="og:url" content="http://example.com/2022/11/23/Heap/Glibc%20Heap%20Hack/index.html">
 <meta property="og:site_name" content="k3ppf0r&#39;s blog">
-<meta property="og:description" content="前言用于记录在学习中的重复性操作，不断更新~ 正文python2 安装 pwntools三条命令解决： 123curl https:&#x2F;&#x2F;bootstrap.pypa.io&#x2F;pip&#x2F;2.7&#x2F;get-pip.py -o get-pip.pysudo python2 get-pip.pypip2 install pwntools  hexo博客迁移 从原电脑下载源码，删除node_modules文件夹，">
+<meta property="og:description" content="见笑了wwwww">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-11-22T09:00:00.000Z">
-<meta property="article:modified_time" content="2022-11-22T10:20:54.908Z">
+<meta property="article:published_time" content="2022-11-23T12:07:06.088Z">
+<meta property="article:modified_time" content="2022-11-23T12:21:22.581Z">
 <meta property="article:author" content="k3ppf0r">
+<meta property="article:tag" content="堆">
+<meta property="article:tag" content="CTF">
 <meta name="twitter:card" content="summary_large_image">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>常用安装 - k3ppf0r&#39;s blog</title>
+  <title>Glibc Heap Exploit - k3ppf0r&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -224,7 +226,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="常用安装"></span>
+            <span id="subtitle" data-typed-text="Glibc Heap Exploit"></span>
           
         </div>
 
@@ -235,8 +237,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-22 17:00" pubdate>
-          2022年11月22日 下午
+        <time datetime="2022-11-23 20:07" pubdate>
+          2022年11月23日 晚上
         </time>
       </span>
     
@@ -247,7 +249,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          494 字
+          1k 字
         
       </span>
     
@@ -258,7 +260,7 @@
         
         
         
-          5 分钟
+          9 分钟
         
       </span>
     
@@ -304,34 +306,33 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">常用安装</h1>
+            <h1 style="display: none">Glibc Heap Exploit</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年11月22日 晚上
+                    本文最后更新于：2022年11月23日 晚上
                   
                 
               </p>
             
             
-              <div class="markdown-body">
-                
-                <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>用于记录在学习中的重复性操作，不断更新~</p>
-<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h2 id="python2-安装-pwntools"><a href="#python2-安装-pwntools" class="headerlink" title="python2 安装 pwntools"></a>python2 安装 pwntools</h2><p>三条命令解决：</p>
-<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">curl</span> <span class="hljs-string">https</span>://<span class="hljs-string">bootstrap</span>.<span class="hljs-string">pypa</span>.<span class="hljs-string">io</span>/<span class="hljs-string">pip</span>/<span class="hljs-string">2</span>.<span class="hljs-string">7</span>/<span class="hljs-built_in">get-pip.py</span> -<span class="hljs-string">o</span> <span class="hljs-built_in">get-pip.py</span><br><span class="hljs-string">sudo</span> <span class="hljs-string">python2</span> <span class="hljs-built_in">get-pip.py</span><br><span class="hljs-string">pip2</span> <span class="hljs-string">install</span> <span class="hljs-string">pwntools</span><br></code></pre></td></tr></table></figure>
+              
+              <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="3f7fca329628e3f9d98731adb1a734ff9f53b0171c36349786b699982f2f7521">910c2e3bcbaeb493b9bb2b2c8b61eb1013ba7c52bc4390ead6638841e365b109a524697a0570ee7f5a5c7f5750b9f292ec7afbe3b1b8a7a4cf5a93cb872e83ac9b4be8190d648703d94ba7a89c0325c9c5659bf29e6a41a7ad3e8f5180a13627f408ca58dc237100af14a3704807eebab2cde8d3f8e42edb72b65497a44ade46934a19a46bfabbb7bac757a9f5dd15c8f5736a15fbaaa2807a5bcd1e71988fc0276b013d456bf84cfd3f8594b663ab9ff8498a3fc1df87394718a317b1cc3b52e311b078a7dbfa5a9fdda7f25e35a86553af778f2a2df3c0b56dc76e1723dc079767d4635e379f83dd3efc39ec69df1b3b99ff768972d4e4f124244c511953d13ea29349dacdda9b77a9caea445f5c763d95c7b74a363df4ec6365393296153fe5d9b6633938289267846cf9ab555d623a958bb08cc5a30e28836889cbc1e07809b38ce62a302c2e96ec0637fbca4e5945c6059b22e895636d2812db13bcc66a4da72747f2bd6afb80c434d80d8c3552900a9b03c18428e8bc8e73e3952f8fe08a02cfd8c7ffe9bf9e9795da49e8e300e8150c36dc6c74188f4d7e2fce1ccd5e085e83ab0a4543dc0cad98b59d08bc6c3187dbc3bdb015eaa33b985980bde76a601c5f89042542d3be203e53e36f8c831c1a04c0c2ecd9f095c1e04bf2fcac69e13f4c24bb836682ed2bce01c701f525</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 这里需要密码.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+              
 
-<h2 id="hexo博客迁移"><a href="#hexo博客迁移" class="headerlink" title="hexo博客迁移"></a>hexo博客迁移</h2><ol>
-<li>从原电脑下载源码，删除node_modules文件夹，然后重新下载</li>
-<li>准备好git 和 node.js,然后进入相应文件夹，用git打开，输入如下命令：<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cmake">npm <span class="hljs-keyword">install</span> hexo-cli -g<br>npm <span class="hljs-keyword">install</span><br>npm <span class="hljs-keyword">install</span> hexo-deployer-git --save<br></code></pre></td></tr></table></figure></li>
-<li>此时如果使用主题，需要把删除node_modules中的主题重新粘贴替换进来，主题文件就正常了。</li>
-<li>测试，用hexo s来看到你的博客是否迁移成功</li>
-<li>设置git<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">git config <span class="hljs-attr">--global</span> user<span class="hljs-selector-class">.name</span> <span class="hljs-string">&quot;xxx&quot;</span><br>git config <span class="hljs-attr">--global</span> user<span class="hljs-selector-class">.email</span> <span class="hljs-string">&quot;xxx@xx.com&quot;</span><br>git init<br></code></pre></td></tr></table></figure></li>
-<li>编辑文章后，hexo d 上传成功即说明迁移成功</li>
-</ol>
-
-                
-              </div>
+              
             
             <hr/>
             <div>
@@ -347,7 +348,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/Info/" class="category-chain-item">Info</a>
+  <a href="/categories/PWN/" class="category-chain-item">PWN</a>
   
   
 
@@ -359,6 +360,15 @@
     </div>
   
   
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%A0%86/">#堆</a>
+      
+        <a href="/tags/CTF/">#CTF</a>
+      
+    </div>
+  
 </div>
 
 
@@ -367,8 +377,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>常用安装</div>
-      <div>http://example.com/2022/11/22/常用安装/</div>
+      <div>Glibc Heap Exploit</div>
+      <div>http://example.com/2022/11/23/Heap/Glibc Heap Hack/</div>
     </div>
     <div class="license-meta">
       
@@ -380,7 +390,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年11月22日</div>
+          <div>2022年11月23日</div>
         </div>
       
       
@@ -416,8 +426,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/11/16/first-blog/" title="first-blog">
-                        <span class="hidden-mobile">first-blog</span>
+                      <a href="/2022/11/22/Info/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/" title="常用安装">
+                        <span class="hidden-mobile">常用安装</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -595,6 +605,23 @@
   
 
 
+
+
+  
+  <script defer>
+    if (document.getElementById('hbePass')) {
+      Fluid.utils.waitElementLoaded('hbe-prefix', function() {
+        var hbePrefix = document.querySelector('hbe-prefix');
+        hbePrefix.parentElement.classList.add('markdown-body');
+        Fluid.utils.retry(function() {
+          if (Fluid.boot && Fluid.boot.refresh) {
+            Fluid.boot.refresh();
+            return true;
+          }
+        }, 100, 10);
+      })
+    }
+  </script>
 
 
   

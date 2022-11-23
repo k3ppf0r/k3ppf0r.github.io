@@ -4,11 +4,38 @@
   
   
   <entry>
-    <title>常用安装</title>
-    <link href="/2022/11/22/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/"/>
-    <url>/2022/11/22/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/</url>
+    <title>Glibc Heap Exploit</title>
+    <link href="/2022/11/23/Heap/Glibc%20Heap%20Hack/"/>
+    <url>/2022/11/23/Heap/Glibc%20Heap%20Hack/</url>
     
-    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>用于记录在学习中的重复性操作，不断更新~</p><h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h2 id="python2-安装-pwntools"><a href="#python2-安装-pwntools" class="headerlink" title="python2 安装 pwntools"></a>python2 安装 pwntools</h2><p>三条命令解决：</p><figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">curl</span> <span class="hljs-string">https</span>://<span class="hljs-string">bootstrap</span>.<span class="hljs-string">pypa</span>.<span class="hljs-string">io</span>/<span class="hljs-string">pip</span>/<span class="hljs-string">2</span>.<span class="hljs-string">7</span>/<span class="hljs-built_in">get-pip.py</span> -<span class="hljs-string">o</span> <span class="hljs-built_in">get-pip.py</span><br><span class="hljs-string">sudo</span> <span class="hljs-string">python2</span> <span class="hljs-built_in">get-pip.py</span><br><span class="hljs-string">pip2</span> <span class="hljs-string">install</span> <span class="hljs-string">pwntools</span><br></code></pre></td></tr></table></figure><h2 id="hexo博客迁移"><a href="#hexo博客迁移" class="headerlink" title="hexo博客迁移"></a>hexo博客迁移</h2><ol><li>从原电脑下载源码，删除node_modules文件夹，然后重新下载</li><li>准备好git 和 node.js,然后进入相应文件夹，用git打开，输入如下命令：<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cmake">npm <span class="hljs-keyword">install</span> hexo-cli -g<br>npm <span class="hljs-keyword">install</span><br>npm <span class="hljs-keyword">install</span> hexo-deployer-git --save<br></code></pre></td></tr></table></figure></li><li>此时如果使用主题，需要把删除node_modules中的主题重新粘贴替换进来，主题文件就正常了。</li><li>测试，用hexo s来看到你的博客是否迁移成功</li><li>设置git<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">git config <span class="hljs-attr">--global</span> user<span class="hljs-selector-class">.name</span> <span class="hljs-string">&quot;xxx&quot;</span><br>git config <span class="hljs-attr">--global</span> user<span class="hljs-selector-class">.email</span> <span class="hljs-string">&quot;xxx@xx.com&quot;</span><br>git init<br></code></pre></td></tr></table></figure></li><li>编辑文章后，hexo d 上传成功即说明迁移成功</li></ol>]]></content>
+    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">  <script id="hbeData" type="hbeData" data-hmacdigest="3f7fca329628e3f9d98731adb1a734ff9f53b0171c36349786b699982f2f7521">910c2e3bcbaeb493b9bb2b2c8b61eb1013ba7c52bc4390ead6638841e365b109a524697a0570ee7f5a5c7f5750b9f292ec7afbe3b1b8a7a4cf5a93cb872e83ac9b4be8190d648703d94ba7a89c0325c9c5659bf29e6a41a7ad3e8f5180a13627f408ca58dc237100af14a3704807eebab2cde8d3f8e42edb72b65497a44ade46934a19a46bfabbb7bac757a9f5dd15c8f5736a15fbaaa2807a5bcd1e71988fc0276b013d456bf84cfd3f8594b663ab9ff8498a3fc1df87394718a317b1cc3b52e311b078a7dbfa5a9fdda7f25e35a86553af778f2a2df3c0b56dc76e1723dc079767d4635e379f83dd3efc39ec69df1b3b99ff768972d4e4f124244c511953d13ea29349dacdda9b77a9caea445f5c763d95c7b74a363df4ec6365393296153fe5d9b6633938289267846cf9ab555d623a958bb08cc5a30e28836889cbc1e07809b38ce62a302c2e96ec0637fbca4e5945c6059b22e895636d2812db13bcc66a4da72747f2bd6afb80c434d80d8c3552900a9b03c18428e8bc8e73e3952f8fe08a02cfd8c7ffe9bf9e9795da49e8e300e8150c36dc6c74188f4d7e2fce1ccd5e085e83ab0a4543dc0cad98b59d08bc6c3187dbc3bdb015eaa33b985980bde76a601c5f89042542d3be203e53e36f8c831c1a04c0c2ecd9f095c1e04bf2fcac69e13f4c24bb836682ed2bce01c701f525</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 这里需要密码.</span>      </label>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+    
+    
+    <categories>
+      
+      <category>PWN</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>堆</tag>
+      
+      <tag>CTF</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>常用安装</title>
+    <link href="/2022/11/22/Info/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/"/>
+    <url>/2022/11/22/Info/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/</url>
+    
+    <content type="html"><![CDATA[<img src="/2022/11/22/Info/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/th1.jpg" class="" title="寄你太美"><p>学无止境</p><h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>由于笔者的记性不好，故专门弄一个专区记录下在学习中的重复性操作，不断更新（也是逼迫自己不断学习）~<br>也会记录一点小trick XD</p><h2 id="python2-安装-pwntools"><a href="#python2-安装-pwntools" class="headerlink" title="python2 安装 pwntools"></a>python2 安装 pwntools</h2><p>三条命令解决：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py<br>sudo python2 get-pip.py<br>pip2 install pwntools<br></code></pre></td></tr></table></figure><h2 id="hexo博客迁移"><a href="#hexo博客迁移" class="headerlink" title="hexo博客迁移"></a>hexo博客迁移</h2><ol><li>从原电脑下载源码，删除node_modules文件夹，然后重新下载</li><li>准备好git 和 node.js,然后进入相应文件夹，用git打开，输入如下命令：</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install hexo-cli -g<br>npm install<br>npm install hexo-deployer-git --save<br></code></pre></td></tr></table></figure><ol start="3"><li>此时如果使用主题，需要把删除node_modules中的主题重新粘贴替换进来，主题文件就正常了。</li><li>测试，用hexo s来看到你的博客是否迁移成功</li><li>设置git</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">git config --global user.name &quot;xxx&quot;<br>git config --global user.email &quot;xxx@xx.com&quot;<br>git init<br></code></pre></td></tr></table></figure><ol start="6"><li>编辑文章后，hexo d 上传成功即说明迁移成功</li></ol><h2 id="libc版本的指定"><a href="#libc版本的指定" class="headerlink" title="libc版本的指定"></a>libc版本的指定</h2><p>需要用到 <strong>patchelf</strong> 和 <strong>glibc-all-in-one</strong><br>patchelf的安装：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone https://github.com/NixOS/patchelf/<br>cd patchelf<br>ls<br>./bootstrap.sh<br></code></pre></td></tr></table></figure><p>如果报错则<code>sudo apt-get install autoconf automake libtool</code><br>继续执行：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">./bootstrap.sh<br>./configure<br>make<br>make check<br>sudo make install<br></code></pre></td></tr></table></figure><p>glibc-all-in-one的安装：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone https://github.com/matrix1001/glibc-all-in-one.git<br>cd glibc-all-in-one<br></code></pre></td></tr></table></figure><p>有可能需要配置软连接到python：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd /usr/bin<br>ln -s /usr/bin/python3.8 python<br></code></pre></td></tr></table></figure><p>再运行<code>./update_list</code>更新到列表 ; <code>cat list</code> 即可看到libc列表<br>下载所需：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">download list<br>download_old old_list<br></code></pre></td></tr></table></figure><p>使用场景：</p><ol><li>根据题目所给的 libc ，找对应版本的连接器（e.g. 2.27-3ubuntu1.6_amd64）</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">./download 2.27-3ubuntu1.6_amd64<br></code></pre></td></tr></table></figure><ol start="2"><li>然后把ld文件和libc复制到pwn题目录下</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd ./libs/2.27-3ubuntu1.6_amd64/<br>cp ./ld-2.27.so /tmp<br>cp ./libc-2.27.so /tmp<br></code></pre></td></tr></table></figure><ol start="3"><li>修改解释器和libc：</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">ldd pwn<br>patchelf --set-interpreter ./ld-2.27.so ./pwn<br>patchelf --replace-needed libc.so.6 ./libc-2.27.so ./pwn<br></code></pre></td></tr></table></figure><h2 id="未完待续…"><a href="#未完待续…" class="headerlink" title="未完待续…"></a>未完待续…</h2>]]></content>
     
     
     <categories>
@@ -16,19 +43,6 @@
       <category>Info</category>
       
     </categories>
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>first-blog</title>
-    <link href="/2022/11/16/first-blog/"/>
-    <url>/2022/11/16/first-blog/</url>
-    
-    <content type="html"><![CDATA[<p>这就是博客吗！</p>]]></content>
-    
     
     
   </entry>
