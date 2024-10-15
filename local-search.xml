@@ -606,6 +606,27 @@
   
   
   <entry>
+    <title>ubuntu配置</title>
+    <link href="/2020/01/01/%E6%9D%82/ubuntu%E9%85%8D%E7%BD%AE/"/>
+    <url>/2020/01/01/%E6%9D%82/ubuntu%E9%85%8D%E7%BD%AE/</url>
+    
+    <content type="html"><![CDATA[<h1 id="clash"><a href="#clash" class="headerlink" title="clash"></a>clash</h1><p>91机场</p><h1 id="换源"><a href="#换源" class="headerlink" title="换源"></a>换源</h1><h1 id="终端配置"><a href="#终端配置" class="headerlink" title="终端配置"></a>终端配置</h1><p>zsh<br>ohmyzsh</p><h1 id="全局配置"><a href="#全局配置" class="headerlink" title="全局配置"></a>全局配置</h1><p><img src="/img/%E6%9D%82/ubuntu%E9%85%8D%E7%BD%AE/1.png"></p><h1 id="字体"><a href="#字体" class="headerlink" title="字体"></a>字体</h1><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># 配置字体</span><br>sudo apt <span class="hljs-keyword">install</span> gnome-tweaks<br><span class="hljs-comment"># alt+f2 或者命令行</span><br>gnome-tweaks<br></code></pre></td></tr></table></figure><p><img src="/img/%E6%9D%82/ubuntu%E9%85%8D%E7%BD%AE/2.png"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Vulnerability</category>
+      
+      <category>CVE</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>编程习惯与思想</title>
     <link href="/2020/01/01/%E7%BC%96%E7%A8%8B/%E7%BC%96%E7%A8%8B%E4%B9%A0%E6%83%AF%E4%B8%8E%E6%80%9D%E6%83%B3/"/>
     <url>/2020/01/01/%E7%BC%96%E7%A8%8B/%E7%BC%96%E7%A8%8B%E4%B9%A0%E6%83%AF%E4%B8%8E%E6%80%9D%E6%83%B3/</url>
