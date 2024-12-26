@@ -70,7 +70,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading-Ball@1x-1.0s-200px-200px.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -345,6 +345,95 @@
                 
               </div>
             
+            <!-- 自定义注入点 -->
+            <!-- 添加打赏模块 -->
+            <div class="reward-container">
+              
+                <div id="rewardImgContainer" class="reward-img-container">
+                  <div class="singleImgContainer">
+                     <img id="wechatImg" class="reward-img" src="/img/paywechat.png" srcset="/img/loading-Ball@1x-1.0s-200px-200px.gif" lazyload alt="微信二维码">
+                       <p class="wechatPay">微信支付</p>
+                   </div>
+                   <div class="singleImgContainer">
+                        <img id="alipayImg" class="reward-img" src="/img/payali.png" srcset="/img/loading-Ball@1x-1.0s-200px-200px.gif" lazyload alt="支付宝二维码">
+                       <p class="aliPay">支付宝支付</p>
+                    </div>
+                </div>
+                <button id="rewardBtn" class="reward-btn">
+                   
+                    ❤ 打赏
+                  	
+                </button>
+                <p class="tea">“如果你觉得这个博客对你有帮助，欢迎打赏！”</p>
+              
+            </div>
+            <style>
+                    .tea {
+                        font-size: 0.8125em;
+                        color: #999999;
+                        margin-top: 10px;
+                    }
+
+                    .reward-container {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        margin-top: 50px;
+                    }
+
+                    .reward-btn {
+                        padding: 8px 24px;
+                        font-size: 18px;
+                        background-color: #007bffe2;
+                        color: #fff;
+                        border: none;
+                        cursor: pointer;
+                        border-radius: 10px;
+                    }
+
+                    .reward-img-container {
+                        display: none;
+                        margin-top: 20px;
+                        /* 图片容器的透明度 */
+                        opacity: 0;
+                        /* 过渡效果,使动画更平滑 */
+                        transition: opacity 2s ease;
+                    }
+
+                    .reward-img {
+                        width: 200px;
+                        margin: 10px;
+                        border: 1px dashed #ccc;
+                        border-radius: 4px;
+                        padding: 10px;
+                    }
+
+                    /* 单个图片的容器 */
+                    .singleImgContainer {
+                        width: 50%;
+                        height: 240px;
+                    }
+
+                    /* 微信支付和支付宝支付的文字样式 */
+                    .wechatPay,.aliPay {
+                      text-align: center;
+                        font-size: 0.8125em;
+                        color: #999999;
+                    }
+            </style>
+            <script>
+              const rewardBtn = document.getElementById('rewardBtn');
+              const rewardImgContainer = document.getElementById('rewardImgContainer');
+
+              if(rewardBtn){
+                rewardBtn.onclick = () => {
+                  rewardImgContainer.style.display = (rewardImgContainer.style.display === 'none' || rewardImgContainer.style.display === '') ? 'inline-flex' : 'none'
+                  setTimeout(() => {
+                    rewardImgContainer.style.opacity = (rewardImgContainer.style.opacity === '0' || rewardImgContainer.style.opacity === '') ? '1' : '0'
+                  }, 10);
+                }
+              }
+            </script>
             <hr/>
             <div>
               <div class="post-metas my-3">
