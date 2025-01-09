@@ -14,29 +14,30 @@
   
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="k3ppf0r">
-  <meta name="keywords" content="用户态程序的5保护">
+  <meta name="keywords" content="安全研究,AFL,源码">
   
-    <meta name="description" content="用户态程序的5保护">
+    <meta name="description" content="AFL 源码解释与研究">
 <meta property="og:type" content="article">
-<meta property="og:title" content="用户态程序的5保护">
-<meta property="og:url" content="https://k3ppf0r.github.io/2022/02/04/%E5%9F%BA%E7%A1%80/%E7%94%A8%E6%88%B7%E6%80%81%E7%A8%8B%E5%BA%8F%E7%9A%845%E4%BF%9D%E6%8A%A4/index.html">
+<meta property="og:title" content="吃透重点：AFL源码研究">
+<meta property="og:url" content="https://k3ppf0r.github.io/2025/01/01/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/Fuzz/%E5%90%83%E9%80%8F%E9%87%8D%E7%82%B9%EF%BC%9AAFL%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6/index.html">
 <meta property="og:site_name" content="k3ppf0r&#39;s blog">
-<meta property="og:description" content="用户态程序的5保护">
+<meta property="og:description" content="AFL 源码解释与研究">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://k3ppf0r.github.io/img/base/binary.jpg">
-<meta property="article:published_time" content="2022-02-04T04:00:00.000Z">
-<meta property="article:modified_time" content="2022-02-25T04:00:00.000Z">
+<meta property="og:image" content="https://k3ppf0r.github.io/img/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/afl.png">
+<meta property="article:published_time" content="2024-12-31T16:38:49.974Z">
+<meta property="article:modified_time" content="2025-01-09T12:37:38.959Z">
 <meta property="article:author" content="k3ppf0r">
-<meta property="article:tag" content="用户态">
-<meta property="article:tag" content="保护">
+<meta property="article:tag" content="安全研究">
+<meta property="article:tag" content="AFL">
+<meta property="article:tag" content="源码">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://k3ppf0r.github.io/img/base/binary.jpg">
+<meta name="twitter:image" content="https://k3ppf0r.github.io/img/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/afl.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>用户态程序的5保护 - k3ppf0r&#39;s blog</title>
+  <title>吃透重点：AFL源码研究 - k3ppf0r&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -227,7 +228,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="用户态程序的5保护"></span>
+            <span id="subtitle" data-typed-text="吃透重点：AFL源码研究"></span>
           
         </div>
 
@@ -238,8 +239,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-02-04 12:00" pubdate>
-          2022年2月4日 中午
+        <time datetime="2025-01-01 00:38" pubdate>
+          2025年1月1日 凌晨
         </time>
       </span>
     
@@ -250,7 +251,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          660 字
+          119 字
         
       </span>
     
@@ -261,7 +262,7 @@
         
         
         
-          6 分钟
+          1 分钟
         
       </span>
     
@@ -306,12 +307,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">用户态程序的5保护</h1>
+            <h1 id="seo-header">吃透重点：AFL源码研究</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2022年2月25日 中午
+                    本文最后更新于 2025年1月9日 晚上
                   
                 
               </p>
@@ -319,67 +320,19 @@
             
               <div class="markdown-body">
                 
-                <h2 id="ASLR-与-PIE-的同与异"><a href="#ASLR-与-PIE-的同与异" class="headerlink" title="ASLR 与 PIE 的同与异"></a>ASLR 与 PIE 的同与异</h2><table>
-<thead>
-<tr>
-<th></th>
-<th>作用位置</th>
-<th><strong>归属</strong></th>
-<th><strong>作用时间</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>ASLR</strong></td>
-<td><strong>1</strong>：栈基地址（stack）、共享库（.so\libraries）、mmap 基地址<br/><strong>2</strong>：在<strong>1</strong>基础上，增加随机化堆基地址（chunk）</td>
-<td>系统功能</td>
-<td>作用于程序（ELF）装入内存运行时</td>
-</tr>
-<tr>
-<td>PIE</td>
-<td>代码段（ .text ）、初始化数据段（ .data ）、未初始化数据段（ .bss ）</td>
-<td>编译器功能</td>
-<td>作用于程序（ELF）编译过程中</td>
-</tr>
-</tbody></table>
-<p>因为 ASLR 技术的出现，攻击者在 ROP 或者向进程中写数据时<strong>不得不先进行 leak</strong>，或者干脆放弃堆栈，转向 bss 或者其他地址固定的内存块。<strong>这个基本上所有机器都开启。</strong></p>
-<p>而 PIE(position-independent executable, 地址无关可执行文件)技术就是一个针对代码段.text, 数据段.*data，.bss 等固定地址的一个防护技术。同 ASLR 一样，<strong>应用了 PIE 的程序会在每次加载时都变换加载基址，从而使位于程序本身的 gadget 也失效</strong>。</p>
-<p><strong>没有 PIE 保护的程序，每次加载的基址都是固定的，64 位上一般是 0x400000。<br>  与 eip 有关的固定下来了，也就是代码段和数据段，但堆栈、libc 还是随机的</strong></p>
-<hr>
-<p>bypass PIE：<br>1、partial write(部分写入)就是一种利用了 PIE 技术缺陷的 bypass 技术。由于内存的页载入机制，PIE 的随机化只能影响到单个内存页。通常来说，一个内存页大小为 0x1000，这就意味着不管地址怎么变，某条指令的后 12 位，3 个十六进制数的地址是始终不变的。因此通过覆盖 EIP 的后 8 或 16 位 (按字节写入，每字节 8 位)就可以快速爆破或者直接劫持 EIP。<br>2、泄露地址 bypass PIE<br>3、使用 vdso&#x2F;vsyscall bypass PIE</p>
-<hr>
-<h2 id="Canary"><a href="#Canary" class="headerlink" title="Canary"></a>Canary</h2><p>绕过 canary：<br>1、泄露 canary<br>2、劫持__stack_chk_fail</p>
-<hr>
-<h2 id="The-NX-bits（the-No-eXecute-bits）"><a href="#The-NX-bits（the-No-eXecute-bits）" class="headerlink" title="The NX bits（the No-eXecute bits）"></a>The NX bits（the No-eXecute bits）</h2><p>通过在内存页的标识中增加执行位，表示是否可以执行，开启后使栈区的数据不可执行</p>
-<p>开启 nx 保护下，常用的手段为向 bss 段写入 shellcode 或堆区写入并使用 mprotect 赋予可执行权限</p>
-<hr>
-<h2 id="RELRO-RELocate-Read-Only"><a href="#RELRO-RELocate-Read-Only" class="headerlink" title="RELRO (RELocate Read-Only)"></a>RELRO (RELocate Read-Only)</h2><p>只读化,未开启<strong>可实现 got 覆盖攻击，fini_array 挟持到 main</strong></p>
-<p>Partial RELRO:部分 RELRO: 在程序装入后, 将其中一些段(如.dynamic)标记为只读, 防止程序的一些重定位信息被修改,<strong>仍然可实现 got 覆盖攻击</strong></p>
-<p>Full RELRO:完全 RELRO: 在部分 RELRO 的基础上, 在程序装入时, 直接解析完所有符号并填入对应的值, 此时所有的 GOT 表项都已初始化, 且不装入 link_map 与_dl_runtime_resolve 的地址</p>
-<p>RWX 存在可读可写可执行段，即栈为可读可写可执行</p>
+                <p>通过AFL源码的综合阅读和理解，我们已经知道了相关重点，AFL 在注释中已经对通过afl-gcc来插桩这种做法不建议了，故我们重点要学习通过llvm pass 来插桩。</p>
+<p>这篇文章重点之意也是在此。</p>
+<p>llvm_mode 文件夹架构：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">llvm_mode<br><span class="hljs-bullet">- </span>afl-fast-clang<br><span class="hljs-bullet">- </span>afl-llvm-pass.so.cc<br><span class="hljs-bullet">- </span>afl-llvm-rt.o.c<br><span class="hljs-bullet">- </span>Makefile<br><span class="hljs-bullet">- </span>README.llvm<br></code></pre></td></tr></table></figure>
 
+<p>我们依次查看分析看看</p>
+<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><h1 id="afl-fast-clang"><a href="#afl-fast-clang" class="headerlink" title="afl-fast-clang"></a>afl-fast-clang</h1><h1 id="afl-llvm-pass-so-cc"><a href="#afl-llvm-pass-so-cc" class="headerlink" title="afl-llvm-pass.so.cc"></a>afl-llvm-pass.so.cc</h1><h1 id="afl-llvm-rt-o-c"><a href="#afl-llvm-rt-o-c" class="headerlink" title="afl-llvm-rt.o.c"></a>afl-llvm-rt.o.c</h1>
                 
               </div>
             
             <!-- 自定义注入点 -->
             <!-- 添加打赏模块 -->
             <div class="reward-container">
-              
-                <div id="rewardImgContainer" class="reward-img-container">
-                  <div class="singleImgContainer">
-                     <img id="wechatImg" class="reward-img" src="/img/reward/paywechat.png" srcset="/img/loading.gif" lazyload alt="微信二维码">
-                       <p class="wechatPay">微信支付</p>
-                   </div>
-                   <div class="singleImgContainer">
-                        <img id="alipayImg" class="reward-img" src="/img/reward/payali.png" srcset="/img/loading.gif" lazyload alt="支付宝二维码">
-                       <p class="aliPay">支付宝支付</p>
-                    </div>
-                </div>
-                <button id="rewardBtn" class="reward-btn">
-                   
-                    ❤ 打赏
-                  	
-                </button>
-                <p class="tea">“如果你觉得这个博客对你有帮助，欢迎打赏！”</p>
               
             </div>
             <style>
@@ -463,8 +416,15 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E5%9F%BA%E7%A1%80/" class="category-chain-item">基础</a>
+  <a href="/categories/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" class="category-chain-item">安全研究</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/Fuzz/" class="category-chain-item">Fuzz</a>
+  
+  
+
   
 
       </span>
@@ -478,9 +438,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%94%A8%E6%88%B7%E6%80%81/" class="print-no-link">#用户态</a>
+        <a href="/tags/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" class="print-no-link">#安全研究</a>
       
-        <a href="/tags/%E4%BF%9D%E6%8A%A4/" class="print-no-link">#保护</a>
+        <a href="/tags/AFL/" class="print-no-link">#AFL</a>
+      
+        <a href="/tags/%E6%BA%90%E7%A0%81/" class="print-no-link">#源码</a>
       
     </div>
   
@@ -492,8 +454,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>用户态程序的5保护</div>
-      <div>https://k3ppf0r.github.io/2022/02/04/基础/用户态程序的5保护/</div>
+      <div>吃透重点：AFL源码研究</div>
+      <div>https://k3ppf0r.github.io/2025/01/01/安全研究/Fuzz/吃透重点：AFL源码研究/</div>
     </div>
     <div class="license-meta">
       
@@ -505,7 +467,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年2月4日</div>
+          <div>2025年1月1日</div>
         </div>
       
       
@@ -533,32 +495,35 @@
 
 
               
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2022/05/03/%E5%9F%BA%E7%A1%80/GDB%E6%8C%87%E5%8C%97/" title="GDB指北">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">GDB指北</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2022/02/04/%E5%9F%BA%E7%A1%80/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E5%AD%A6/" title="二进制数学">
-                        <span class="hidden-mobile">二进制数学</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
             </div>
 
             
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"Ov23liMVKVOtuwYuvkw8","clientSecret":"9cb05e91f4572848c2255807ec06c72dcf447340","repo":"blog-gitalk-comments","owner":"k3ppf0r","admin":["k3ppf0r"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: 'e43e7e26b8916af3d36a0cf08f2bfc16'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
 
           </article>
         </div>
