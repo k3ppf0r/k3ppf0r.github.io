@@ -7,8 +7,11 @@
 
 <head>
   <meta charset="UTF-8">
+
   <link rel="apple-touch-icon" sizes="76x76" href="/img/tab-about/red_bear.jpg">
   <link rel="icon" href="/img/tab-about/red_bear.jpg">
+  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -53,7 +56,7 @@
 <!-- 主题依赖的图标库，不要自行修改 -->
 <!-- Do not modify the link that theme dependent icons -->
 
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
 
 
 
@@ -74,7 +77,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"gtag":null},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":null,"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -83,8 +86,6 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-  
-
   
 
   
@@ -274,6 +275,7 @@
           <span id="busuanzi_value_page_pv"></span> 次
         </span>
         
+
       
     
   </div>
@@ -675,78 +677,6 @@
                 
               </div>
             
-            <!-- 自定义注入点 -->
-            <!-- 添加打赏模块 -->
-            <div class="reward-container">
-              
-            </div>
-            <style>
-                    .tea {
-                        font-size: 0.8125em;
-                        color: #999999;
-                        margin-top: 10px;
-                    }
-
-                    .reward-container {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        margin-top: 50px;
-                    }
-
-                    .reward-btn {
-                        padding: 8px 24px;
-                        font-size: 18px;
-                        background-color: #007bffe2;
-                        color: #fff;
-                        border: none;
-                        cursor: pointer;
-                        border-radius: 10px;
-                    }
-
-                    .reward-img-container {
-                        display: none;
-                        margin-top: 20px;
-                        /* 图片容器的透明度 */
-                        opacity: 0;
-                        /* 过渡效果,使动画更平滑 */
-                        transition: opacity 2s ease;
-                    }
-
-                    .reward-img {
-                        width: 200px;
-                        margin: 10px;
-                        border: 1px dashed #ccc;
-                        border-radius: 4px;
-                        padding: 10px;
-                    }
-
-                    /* 单个图片的容器 */
-                    .singleImgContainer {
-                        width: 50%;
-                        height: 240px;
-                    }
-
-                    /* 微信支付和支付宝支付的文字样式 */
-                    .wechatPay,.aliPay {
-                      text-align: center;
-                        font-size: 0.8125em;
-                        color: #999999;
-                    }
-            </style>
-            <script>
-              const rewardBtn = document.getElementById('rewardBtn');
-              const rewardImgContainer = document.getElementById('rewardImgContainer');
-
-              if(rewardBtn){
-                rewardBtn.onclick = () => {
-                  rewardImgContainer.style.display = (rewardImgContainer.style.display === 'none' || rewardImgContainer.style.display === '') ? 'inline-flex' : 'none'
-                  setTimeout(() => {
-                    rewardImgContainer.style.opacity = (rewardImgContainer.style.opacity === '0' || rewardImgContainer.style.opacity === '') ? '1' : '0'
-                  }, 10);
-                }
-              }
-            </script>
             <hr/>
             <div>
               <div class="post-metas my-3">
@@ -816,7 +746,7 @@
               
                 <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
                   <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-by"></i>
+                    <i class="iconfont icon-cc-by"></i>
                   </span>
                 </a>
               
@@ -974,10 +904,11 @@
       </span>
     
     
-  
-</div>
 
   
+
+</div>
+
   
   
 </div>
