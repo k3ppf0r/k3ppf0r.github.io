@@ -1,0 +1,836 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tab-about/red_bear.jpg">
+  <link rel="icon" href="/img/tab-about/red_bear.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="k3ppf0r">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="pwndbg调试技巧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwndbg调试技巧">
+<meta property="og:url" content="https://k3ppf0r.github.io/2022/05/04/PWN/%E5%9F%BA%E7%A1%80/pwndbg%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/index.html">
+<meta property="og:site_name" content="k3ppf0r&#39;s blog">
+<meta property="og:description" content="pwndbg调试技巧">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://k3ppf0r.github.io/img/base/pwndbg.png">
+<meta property="article:published_time" content="2022-05-04T04:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-24T04:00:00.000Z">
+<meta property="article:author" content="k3ppf0r">
+<meta property="article:tag" content="pwndbg">
+<meta property="article:tag" content="调试">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://k3ppf0r.github.io/img/base/pwndbg.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>pwndbg调试技巧 - k3ppf0r&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":null,"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>k3ppf0r&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/page-default/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="pwndbg调试技巧"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-04 12:00" pubdate>
+          2022年5月4日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">pwndbg调试技巧</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2022年5月24日 中午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>官方文档在<a target="_blank" rel="noopener" href="https://browserpwndbg.readthedocs.io/en/docs/">这里</a> ，主要总结常用的和容易遗忘的调试命令</p>
+<p>网上的帮助文档： <a target="_blank" rel="noopener" href="http://c.biancheng.net/view/8189.html">GDB break（b）：设置断点 (biancheng.net)</a></p>
+</blockquote>
+<h1 id="常用技巧"><a href="#常用技巧" class="headerlink" title="常用技巧"></a>常用技巧</h1><ol>
+<li><p>在 GDB 里面用 magic 可查看后下断点在 hook 函数，之后继续运行即可断在 hook 函数之前，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; magic<br>pwndbg&gt; b *__malloc_hook<br>pwndbg&gt; c<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>断点断在 IDA 中的地址再加随机偏移</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; b *$rebase(0x400123)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>通过泄露双向列表 bins 中的 main_arena+0x88 的 fd 指针来得到 libc 基址，并查看：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; heap<br>pwndbg&gt; p &amp;main_arena<br>pwndbg&gt; libc<br>pwndbg&gt; p 0x1 - 0x2<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>通过 realloc_hook 调整栈帧使 one_gadget 生效</p>
+<p>点打在 hook 函数，一步步走到 exec_comm ,然后查看堆栈，查看 realloc 调整偏移</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; b *__malloc_hook<br>pwndbg&gt; c<br>...<br>pwndbg&gt; x/20gx $rsp + 0x30<br><br>pwndbg&gt; x/20i __libc_realloc<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="常用指令："><a href="#常用指令：" class="headerlink" title="常用指令："></a>常用指令：</h1><p>查看帮助信息： <code>help</code></p>
+<p>查看一些信息</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">i</span> 	<span class="hljs-comment">//info，只输入info可以看可以接什么参数，下面几个比较常用</span><br><span class="hljs-selector-tag">i</span> <span class="hljs-selector-tag">b</span> <span class="hljs-comment">//常用，info break 查看所有断点信息（编号、断点位置）</span><br><span class="hljs-selector-tag">i</span> <span class="hljs-selector-tag">r</span> <span class="hljs-comment">//常用，info registers 查看各个寄存器当前的值</span><br><span class="hljs-selector-tag">i</span> <span class="hljs-selector-tag">f</span> <span class="hljs-comment">//info function 查看所有函数名，需保留符号</span><br></code></pre></td></tr></table></figure>
+
+<p>查看调用栈 <code>backtrace </code></p>
+<p>GDB’s <code>follow-fork-mode</code> parameter can be used to set whether to trace parent or child after fork() calls</p>
+<h2 id="执行指令"><a href="#执行指令" class="headerlink" title="执行指令"></a>执行指令</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs awk">s <span class="hljs-regexp">//</span>单步步入，遇到调用跟进函数中，相当于step into，源码层面的一步<br>si <span class="hljs-regexp">//</span>常用，同s，汇编层面的一步<br>n <span class="hljs-regexp">//</span>单步补过，遇到调用永不跟进，相当于step over，源码层面的一步<br>ni <span class="hljs-regexp">//</span>常用，同n，汇编层面的一步<br>c <span class="hljs-regexp">//</span><span class="hljs-keyword">continue</span>，常用，继续执行到断点，没断点就一直执行下去<br>r <span class="hljs-regexp">//</span>run，常用，重新开始执行<br></code></pre></td></tr></table></figure>
+
+<h2 id="断点指令"><a href="#断点指令" class="headerlink" title="断点指令"></a>断点指令</h2><blockquote>
+<p>涉及 IO， 断点打在 send 之前！这样在 IO 停止暂停后，GDB 就可以一步一步走程序 pause()就是 python 程序的断点</p>
+</blockquote>
+<p>常用，给 0x123456 地址处的指令下断点 <code>b *0x123456</code></p>
+<p>给函数 fun_name 下断点，目标文件要保留符号才行 <code>b fun_name </code>, 如<code>b main</code></p>
+<p>$rebase 在调试开PIE的程序的时候可以直接加上程序的随机地址  <code>b *$rebase(0x123456) </code></p>
+<p>给 file_name 的 15 行下断点，要有源码才行 <code>b file_name:15</code></p>
+<p>在程序当前停住的位置下 0x10 的位置下断点 <code>b +0x10</code> pwndbg 不工作</p>
+<p>条件断点，rdi 值为 5 的时候才断 <code>break fun if $rdi==5</code></p>
+<h5 id="删除、禁用断点："><a href="#删除、禁用断点：" class="headerlink" title="删除、禁用断点："></a>删除、禁用断点：</h5><p>来查看断点编号 <code>info break(简写: i b)</code><br>删除 5 号断点，直接 delete 不接数字删除所有 <code>delete 5</code><br>禁用 5 号断点 <code>disable 5</code><br>启用 5 号断点 <code>enable 5 </code><br>清除下面的所有断点<code>clear</code></p>
+<p>内存断点指令 watch：<br>0x123456 地址的数据改变的时候会断 <code>watch 0x123456</code><br>变量 a 改变的时候会断 <code>watch a</code><br>查看 watch 断点信息 <code>info watchpoints</code></p>
+<p>捕获断点 catch：<br>syscall 系统调用的时候断住 <code>catch syscall</code><br>syscall 系统调用的时候断住，只断一次 <code>tcatch syscall </code></p>
+<p><code>info break</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs text">除syscall外还可以使用的有：<br>1）throw: 抛出异常<br>2）catch: 捕获异常<br>3）exec: exec被调用<br>4）fork: fork被调用<br>5）vfork: vfork被调用<br>6）load: 加载动态库<br>7）load libname: 加载名为libname的动态库<br>8）unload: 卸载动态库<br>9）unload libname: 卸载名为libname的动态库<br>10）syscall [args]: 调用系统调用，args可以指定系统调用号，或者系统名称<br></code></pre></td></tr></table></figure>
+
+<h2 id="打印查看"><a href="#打印查看" class="headerlink" title="打印查看"></a>打印查看</h2><p>巨牛逼的命令：查看泄露地址相关信息： <code>xi 0x123</code></p>
+<p>查看 libc 基地址：<code>libc</code></p>
+<p>栈的 offset:<code>distance rbp rsp</code></p>
+<p>垃圾数据生成：<code>pi 0x110 &gt; cyclic xxx+8</code></p>
+<p>查看可读可写段：先<code>start</code>一下 后<code>vmmap</code></p>
+<p>存储在堆中名为 arena 的空间的，直接用<code>dq &amp;main_arena 20</code>查看</p>
+<p>查看<code>bss</code>等数据段时，用<code>dd 0x08048000</code> <code>dq 0x08048000</code> 查看</p>
+<p>查看代码：<code>u __malloc_hook 12</code></p>
+<p>查看想要修改的位置附近是否有可能存在可以伪造的 chunk 内存地址:<br><code>find_fake_fast &amp;__malloc_hook</code><br><code>find_fake_fast &amp;__free_hook</code></p>
+<h5 id="查看内存指令-x："><a href="#查看内存指令-x：" class="headerlink" title="查看内存指令 x："></a>查看内存指令 x：</h5><p>相当于自带了<code>* or []</code>，自带地址解析</p>
+<p>查看格式化的内存：<code>x/20gx 0x7fabc</code></p>
+<p>查看反汇编 1：<code>x/20i $rip</code></p>
+<p>查看反汇编 2：<code>disassemble 符号</code></p>
+<p>查看 hook：<code>x &amp;__malloc_hook</code></p>
+<p>查看地址解释：<code>x/20a 0x7fabc</code></p>
+<h5 id="打印指令-p-print-："><a href="#打印指令-p-print-：" class="headerlink" title="打印指令 p(print)："></a>打印指令 p(print)：</h5><p>打印 fun_name 的地址，需要保留符号 <code>p fun_name</code></p>
+<p>计算 0x10-0x08 的结果 p <code>0x10-0x08</code></p>
+<p>地址相减: <code>distance 0x1 0x2</code></p>
+<p>查看变量 a 的地址 <code>p &amp;a</code></p>
+<p>查看 0x123456 地址的值，注意和 x 指令的区别，x 指令查看地址的值不用星号 <code>p *(0x123456)</code></p>
+<p>打印 rdi 寄存器的值 p, 注意和 x 的区别，这只是显示 rdi 的值，而不是 rdi 指向的值 <code>p $rdi</code></p>
+<p>打印 rdi 指向的值，注意和 x 的区别，p 会打印出数字 <code>p *($rdi)</code></p>
+<h2 id="修改和查找指令"><a href="#修改和查找指令" class="headerlink" title="修改和查找指令"></a>修改和查找指令</h2><h5 id="修改数据指令-set"><a href="#修改数据指令-set" class="headerlink" title="修改数据指令 set"></a>修改数据指令 set</h5><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">set</span> <span class="hljs-variable">$rdi</span>=0x10 //把rdi寄存器的值变为0x10<br><br><span class="hljs-built_in">set</span> *(0x123456)=0x10 //0x123456地址的值变为0x10，注意带星号<br><span class="hljs-built_in">set</span> *0x7fffffffdbe8 = 0x5555555552d2 //更改返回地址<br><br><span class="hljs-built_in">set</span> args <span class="hljs-string">&quot;abc&quot;</span> <span class="hljs-string">&quot;def&quot;</span> <span class="hljs-string">&quot;gh&quot;</span>//给参数1,参数2,参数3赋值<br><span class="hljs-built_in">set</span> args <span class="hljs-string">&quot;python -c &#x27;print(b&quot;</span>1234\x7f\xde<span class="hljs-string">&quot;)&#x27; &quot;</span> //使用python给参数赋值不可见字符<br></code></pre></td></tr></table></figure>
+
+<h5 id="查找数据："><a href="#查找数据：" class="headerlink" title="查找数据："></a>查找数据：</h5><p>从当前位置向后查包含 rdi 的指令，返回若干 <code>search rdi </code></p>
+<p>寻找输入的字符串：<code>search k3ppf0r3</code></p>
+<p>帮助： <code>search -h</code></p>
+<h2 id="堆操作指令（pwndbg-插件独有）"><a href="#堆操作指令（pwndbg-插件独有）" class="headerlink" title="堆操作指令（pwndbg 插件独有）"></a>堆操作指令（pwndbg 插件独有）</h2><p>特别注意:</p>
+<ul>
+<li><code>heap</code> 命令显示的<code>Addr</code>为 chunk 的首地址，含有 chunk 头部；<code>Size</code>为内存中实际的内存值，往往最后面为 1，表示 prev_in_use</li>
+<li></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs shell">arena //显示arena的详细信息,过于详细<br>arenas //显示所有arena的基本信息<br>arenainfo //好看的显示所有arena的信息<br>bins //常用，查看所有种类的堆块的链表情况<br>fastbins //单独查看fastbins的链表情况<br>largebins //同上，单独查看largebins的链表情况<br>smallbins //同上，单独查看smallbins的链表情况<br>unsortedbin //同上，单独查看unsortedbin链表情况<br>tcachebins //同上，单独查看tcachebins的链表情况<br>tcache //查看tcache详细信息<br>heap //数据结构的形式显示所有堆块，会显示一大堆<br>heap -v // 查看完整数据结构<br>parseheap //显示堆结构，很好用，与heap大同小异<br>mp  //查看堆相关结构体信息<br>heapbase //查看堆起始地址<br>heapinfo、heapinfoall //显示堆的信息，和bins的挺像的，没bins好用<br>tracemalloc //好用，会跟提示所有操作堆的地方<br><br>其他pwndbg插件独有指令<br>cyclc 50 //生成50个用来溢出的字符，如：aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaama<br><span class="hljs-meta prompt_">$</span><span class="language-bash">reabse //开启PIE的情况的地址偏移</span><br>b *$reabse(0x123456) //断住PIE状态下的二进制文件中0x123456的地方<br>codebase //打印PIE偏移，与rebase不同，这是打印，rebase是使用<br>stack //查看栈<br>retaddr //打印包含返回地址的栈地址<br>canary //直接看canary的值<br>plt //查看plt表<br>got //查看got表<br>hexdump //想IDA那样显示数据，带字符串<br><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs text"># x /nuf 0x123 指令格式:<br># number<br># unit b(1 Byte),h(2 Bytes),w(4 Bytes),g(8 Bytes)<br># format 见下表<br><br>x 按十六进制格式显示变量。<br>d 按十进制格式显示变量。<br>u 按十六进制格式显示无符号整型。<br>o 按八进制格式显示变量。<br>t 按二进制格式显示变量。<br>a 按十六进制格式显示变量。<br>c 按字符格式显示变量。<br>f 按浮点数格式显示变量。<br>s 按字符串显示。<br>b 按字符显示。<br>i 显示汇编指令。<br></code></pre></td></tr></table></figure>
+
+<h2 id="调试备忘："><a href="#调试备忘：" class="headerlink" title="调试备忘："></a>调试备忘：</h2><pre><code class="hljs">gdb查看技巧：最左边的地址编号代表的是所在那一格子（由dd dq决定）中最右边，故小端序整体从右往左读（明确数据按照地址从小往大填入），对于两位16进制需一体从左往右顺序读 在gdb排版的最右边它将顺序调整好后输出ASCII码
+</code></pre>
+<h4 id="gdb-attach"><a href="#gdb-attach" class="headerlink" title="gdb.attach()"></a>gdb.attach()</h4><p>1 gdb 如果断不住，就这样断：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 开头</span><br>gdb.attach(p)<br>...<br><span class="hljs-comment"># 输入之前暂停</span><br>pause()<br>p.sendline()<br></code></pre></td></tr></table></figure>
+
+<p>2 左边是交互，右边是程序在内存中的运行情况，可以查看堆栈、寄存器情况等<br>3 继续运行， 在右边按<code>c</code>或【<code>ni </code> + <code>finish</code> 】 ，在左边进行 IO 交互；<br>中断查看堆栈情况， 在右边按<code>CTRL + c</code></p>
+<h4 id="查看-rop-链等运行时的信息"><a href="#查看-rop-链等运行时的信息" class="headerlink" title="查看 rop 链等运行时的信息"></a>查看 rop 链等运行时的信息</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 断点打在read之后</span><br>gdb.attach(p, <span class="hljs-string">&#x27;b $rebase(0x400123)&#x27;</span>)<br><br></code></pre></td></tr></table></figure>
+
+<h1 id="脚本预设"><a href="#脚本预设" class="headerlink" title="脚本预设"></a>脚本预设</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><span class="hljs-comment"># context.terminal = [&#x27;tmux&#x27;, &#x27;splitw&#x27;, &#x27;-h&#x27;, &#x27;-F&#x27;, &#x27;#&#123;pane_pid&#125;&#x27;, &#x27;-P&#x27;]</span><br><br>gdb.attach(p,<span class="hljs-string">&#x27;break main&#x27;</span>)<br>raw_input()<br><br></code></pre></td></tr></table></figure>
+
+<p>这样调试有一个缺点，那就是 gdb 在 attach 到程序之后，你要调试的断点可能已经早就过去了，来不及下断点，这就会导致 gdbscript 执行失败。 若第一种失败，那么可以这样做：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-comment"># 断点打在read之后</span><br><span class="hljs-comment"># p=gdb.debug(&quot;./pwn&quot;,&quot;b *0x400123&quot;)</span><br>p=gdb.debug(<span class="hljs-string">&quot;./pwn&quot;</span>,<span class="hljs-string">&quot;b main&quot;</span>)<br>raw_input()<br><br></code></pre></td></tr></table></figure>
+
+<h1 id="在-GDB-过程中的理解"><a href="#在-GDB-过程中的理解" class="headerlink" title="在 GDB 过程中的理解"></a>在 GDB 过程中的理解</h1><h3 id="堆栈形状"><a href="#堆栈形状" class="headerlink" title="堆栈形状"></a>堆栈形状</h3><p><strong>栈(高地址向低地址生长)：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs asm">low<br><br>| new_space | &lt;- rsp<br>| new_space |<br>| new_space |<br>| prev_rbp  | &lt;- rbp<br>| 0x400456  |  return_addr<br><br>high<br></code></pre></td></tr></table></figure>
+
+<p><strong>堆：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs asm">Allocated chunk | PREV_INUSE<br>Addr: 0x55555555f000<br>Size: 0x291<br><br>Free chunk (tcache) | PREV_INUSE<br>Addr: 0x55555555f290<br>Size: 0x51<br>fd: 0x00<br><br>Top chunk | PREV_INUSE<br>Addr: 0x55555555f2e0<br>Size: 0x20d21<br></code></pre></td></tr></table></figure>
+
+<h3 id="数据流"><a href="#数据流" class="headerlink" title="数据流"></a>数据流</h3><p>二进制程序以 <strong>read</strong> 函数接收，当 socket 用 <strong>send</strong> 发过去的字节流（明确以字节为单位，debug 显示的是人类的阅读顺序），以发送时的字节排列顺序填入虚拟内存中（从小到大填）；<br>二进制程序以 <strong>write</strong> 函数打印，将内存中数据 (以从小到大的顺序) 忠实的打印出来</p>
+<h3 id="x-命令的打印阅读顺序："><a href="#x-命令的打印阅读顺序：" class="headerlink" title="x 命令的打印阅读顺序："></a>x 命令的打印阅读顺序：</h3><pre><code class="hljs">&lt;-  __\ 0    &lt;- __\ 4/8
+</code></pre>
+<p>用<code>db addr</code>指令可验证<br>寄存中显示字符串存在 bug，它将字符串当成指针反过来解析了</p>
+<h3 id="去掉符号表的混淆调试"><a href="#去掉符号表的混淆调试" class="headerlink" title="去掉符号表的混淆调试"></a>去掉符号表的混淆调试</h3><ul>
+<li>对应着 ida 的汇编代码看，ida 中地址与 gdb 中的地址后三位一样</li>
+</ul>
+<h1 id="terminal-优化："><a href="#terminal-优化：" class="headerlink" title="terminal 优化："></a>terminal 优化：</h1><p>安装 <a target="_blank" rel="noopener" href="https://github.com/apogiatzis/gdb-peda-pwndbg-gef">gdb-peda-pwndbg-gef</a></p>
+<p>~&#x2F;.gdbinit 内容如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs sh">define init-peda<br><span class="hljs-built_in">source</span> ~/peda/peda.py<br>end<br>document init-peda<br>Initializes the PEDA (Python Exploit Development Assistant <span class="hljs-keyword">for</span> GDB) framework<br>end<br><br>define init-peda-arm<br><span class="hljs-built_in">source</span> ~/peda-arm/peda-arm.py<br>end<br>document init-peda-arm<br>Initializes the PEDA (Python Exploit Development Assistant <span class="hljs-keyword">for</span> GDB) framework <span class="hljs-keyword">for</span> ARM.<br>end<br><br>define init-peda-intel<br><span class="hljs-built_in">source</span> ~/peda-arm/peda-intel.py<br>end<br>document init-peda-intel<br>Initializes the PEDA (Python Exploit Development Assistant <span class="hljs-keyword">for</span> GDB) framework <span class="hljs-keyword">for</span> INTEL.<br>end<br><br>define init-pwndbg<br><span class="hljs-built_in">source</span> ~/pwndbg/gdbinit.py<br><br><span class="hljs-built_in">source</span> ~/Pwngdb/pwngdb.py<br><span class="hljs-built_in">source</span> ~/Pwngdb/angelheap/gdbinit.py<br>define hook-run<br>python<br>import angelheap<br>angelheap.init_angelheap()<br>end<br>end<br><br>end<br>document init-pwndbg<br>Initializes PwnDBG<br>end<br><br>define init-gef<br><span class="hljs-built_in">source</span> ~/gef/gef.py<br>end<br>document init-gef<br>Initializes GEF (GDB Enhanced Features)<br>end<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PWN/" class="category-chain-item">PWN</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PWN/%E5%9F%BA%E7%A1%80/" class="category-chain-item">基础</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/pwndbg/" class="print-no-link">#pwndbg</a>
+      
+        <a href="/tags/%E8%B0%83%E8%AF%95/" class="print-no-link">#调试</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>pwndbg调试技巧</div>
+      <div>https://k3ppf0r.github.io/2022/05/04/PWN/基础/pwndbg调试技巧/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>k3ppf0r</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/11/05/PWN/Heap/%E5%A0%86%E4%BB%8B%E7%BB%8D%E7%AE%80%E5%8D%95%E7%BB%BC%E8%BF%B0/" title="堆介绍简单综述">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">堆介绍简单综述</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/03/PWN/%E5%9F%BA%E7%A1%80/GDB%E6%8C%87%E5%8C%97/" title="GDB指北">
+                        <span class="hidden-mobile">GDB指北</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

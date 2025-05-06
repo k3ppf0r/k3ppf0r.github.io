@@ -1,0 +1,834 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tab-about/red_bear.jpg">
+  <link rel="icon" href="/img/tab-about/red_bear.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="k3ppf0r">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="GDB指北">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDB指北">
+<meta property="og:url" content="https://k3ppf0r.github.io/2022/05/03/PWN/%E5%9F%BA%E7%A1%80/GDB%E6%8C%87%E5%8C%97/index.html">
+<meta property="og:site_name" content="k3ppf0r&#39;s blog">
+<meta property="og:description" content="GDB指北">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://k3ppf0r.github.io/img/base/gdb.png">
+<meta property="article:published_time" content="2022-05-03T04:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-03T04:00:00.000Z">
+<meta property="article:author" content="k3ppf0r">
+<meta property="article:tag" content="gdb">
+<meta property="article:tag" content="指北">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://k3ppf0r.github.io/img/base/gdb.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>GDB指北 - k3ppf0r&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":null,"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>k3ppf0r&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/page-default/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="GDB指北"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-03 12:00" pubdate>
+          2022年5月3日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          939 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">GDB指北</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="GDB-调试利器"><a href="#GDB-调试利器" class="headerlink" title="GDB - 调试利器"></a>GDB - 调试利器</h1><p>官方文档：<a target="_blank" rel="noopener" href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/">(Debugging with GDB) (sourceware.org)</a></p>
+<p>多看文档 动手实践 积累记录！</p>
+<p>必备插件：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/pwndbg/pwndbg">pwndbg </a>（功能丰富，接口友好，依赖较多）</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/scwuaptx/Pwngdb">Pwngdb</a> (基于 pwndbg 开发， 常用)</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hugsy/gef">gef</a> （一个文件 依赖少）</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/longld/peda">peda</a> （经典插件 依赖少）</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/cyrus-and/gdb-dashboard">gdb-dashboard</a> (适合单独调试，IOT 设备)</li>
+</ul>
+<p>调试组合推荐：</p>
+<ul>
+<li>pwndbg + Pwngdb : 适用于 userland pwn</li>
+<li>gef + Pwngdb : 适用于 qemu&#x2F;kernel pwn</li>
+</ul>
+<h2 id="GDB-基本认识："><a href="#GDB-基本认识：" class="headerlink" title="GDB- 基本认识："></a>GDB- 基本认识：</h2><h3 id="GDB-命令"><a href="#GDB-命令" class="headerlink" title="GDB 命令"></a>GDB 命令</h3><ul>
+<li>运行</li>
+<li>步入、步过、步出、步止</li>
+<li>断点(设置、删除、显示)</li>
+<li>查看内存、寄存器、各种参数</li>
+<li>设置内存、寄存器、各种参数、加载文件</li>
+<li>远程调试</li>
+<li>其他辅助</li>
+</ul>
+<p>如果没有插件时好用的命令：</p>
+<p>查看寄存器：<code>i r</code></p>
+<h3 id="常用功能："><a href="#常用功能：" class="headerlink" title="常用功能："></a>常用功能：</h3><ol>
+<li>断点、临时断点、条件断点、断点忽略</li>
+<li>观察点（watchpoint）、捕捉系统调用（catchpoint）</li>
+<li>信号处理</li>
+<li>多进程调试</li>
+<li>多线程调试</li>
+<li>日志记录</li>
+</ol>
+<h3 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h3><p>在 gdb 中查看: <code>i r</code></p>
+<h3 id="步入-步过-步出-步止"><a href="#步入-步过-步出-步止" class="headerlink" title="步入&#x2F;步过&#x2F;步出&#x2F;步止"></a>步入&#x2F;步过&#x2F;步出&#x2F;步止</h3><ol>
+<li><strong>步过</strong>：一行一行的往下走，不会进入到其他方法的内部 <code>next</code> <code>nexti</code>(配合<code>finish</code>使用)</li>
+<li><strong>步入</strong>：如果当前行有方法执行，可以进入方法的内部（不会进入官方定义的方法，仅能进入自定义的方法 <code>step</code> <code>stepi</code></li>
+<li><strong>步出</strong>：从步入的方法内执行完该方法，然后退出到方法调用处。<code>finish</code></li>
+</ol>
+<h3 id="断点"><a href="#断点" class="headerlink" title="断点"></a>断点</h3><p><code>b main</code></p>
+<h3 id="查看-设置-内存"><a href="#查看-设置-内存" class="headerlink" title="查看&#x2F;设置 内存"></a>查看&#x2F;设置 内存</h3><p>x | p | set</p>
+<pre><code class="hljs">字节大小
+BYTE 1  8  缩写b
+WORD 2  16  缩写h
+DWORD 4  32  缩写w
+QWORD 8  64  缩写g
+
+x 按十六进制格式显示变量。
+d 按十进制格式显示变量。
+u 按十六进制格式显示无符号整型。
+o 按八进制格式显示变量。
+t 按二进制格式显示变量。
+a 按十六进制格式显示变量。
+c 按字符格式显示变量。
+f 按浮点数格式显示变量。
+</code></pre>
+<p>查看汇编：<code>x/20i $rip</code><br>查看内存：<code>x/20gx 0x7fxx10</code> <code>x/20wx 0x7fxx10</code><br>查看字符：<code>x/20s 0x7fxx20</code><br>查看变量：<code>p __malloc_hook</code>、<code>p &amp;__malloc_hook</code><br>赋值： <code>set *0x7fxx1 = 1</code>、 <code>set $rax = 1</code>、<code>set *((unsigned int)$ebp) = 0x61 </code></p>
+<hr>
+<p>dq | dd | dw | db</p>
+<p><code>dq 0x8048123</code></p>
+<h1 id="TMUX-分屏复用"><a href="#TMUX-分屏复用" class="headerlink" title="TMUX - 分屏复用"></a>TMUX - 分屏复用</h1><p>官方文档: <a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man1/tmux.1.html">https://man7.org/linux/man-pages/man1/tmux.1.html</a></p>
+<p>tmux 使用手册: <a target="_blank" rel="noopener" href="http://louiszhai.github.io/2017/09/30/tmux/#%E5%AF%BC%E8%AF%BB">http://louiszhai.github.io/2017/09/30/tmux/#导读</a></p>
+<p>~&#x2F;.tmux.conf 文件配置如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sh">set-option -g mouse on<br><br>unbind C-b<br><span class="hljs-built_in">bind</span> C-a send-prefix<br>set-option -g prefix2 `<br>unbind <span class="hljs-string">&#x27;&quot;&#x27;</span><br><span class="hljs-built_in">bind</span> - splitw -v -c <span class="hljs-string">&#x27;#&#123;pane_current_path&#125;&#x27;</span> <span class="hljs-comment"># 垂直方向新增面板，默认进入当前目录</span><br>unbind %<br><span class="hljs-built_in">bind</span> = splitw -h -c <span class="hljs-string">&#x27;#&#123;pane_current_path&#125;&#x27;</span> <span class="hljs-comment"># 水平方向新增面板，默认进入当前目录</span><br><br><span class="hljs-comment"># 绑定hjkl键为面板切换的上下左右键</span><br><span class="hljs-built_in">bind</span> -r i select-pane -U <span class="hljs-comment"># 绑定k为↑</span><br><span class="hljs-built_in">bind</span> -r k select-pane -D <span class="hljs-comment"># 绑定j为↓</span><br><span class="hljs-built_in">bind</span> -r j select-pane -L <span class="hljs-comment"># 绑定h为←</span><br><span class="hljs-built_in">bind</span> -r l select-pane -R <span class="hljs-comment"># 绑定l为→</span><br><br></code></pre></td></tr></table></figure>
+
+<p>windows terminal +tmux 鼠标选中后 按下 C-v 即可复制</p>
+<p>tmux 分屏复用功能：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">tmux send-keys -t 1:0.1 <span class="hljs-string">&quot;date&quot;</span> Enter<br></code></pre></td></tr></table></figure>
+
+<h1 id="反编译工具-IDA-Ghidra-jeb"><a href="#反编译工具-IDA-Ghidra-jeb" class="headerlink" title="反编译工具 IDA&#x2F;Ghidra&#x2F;jeb"></a>反编译工具 IDA&#x2F;Ghidra&#x2F;jeb</h1><p>IDA 帮助文档：</p>
+<p><a target="_blank" rel="noopener" href="https://hex-rays.com/ida-pro/">https://hex-rays.com/ida-pro/</a></p>
+<p>Ghidra 帮助文档:<a target="_blank" rel="noopener" href="https://ghidra-sre.org/">https://ghidra-sre.org/</a></p>
+<p>Jeb: <a target="_blank" rel="noopener" href="https://www.pnfsoftware.com/">https://www.pnfsoftware.com/</a></p>
+<h3 id="IDA"><a href="#IDA" class="headerlink" title="IDA"></a>IDA</h3><p><a target="_blank" rel="noopener" href="https://www.pediy.com/kssd/pediy12/ida.html">https://www.pediy.com/kssd/pediy12/ida.html</a> 古老经典教程</p>
+<p>IDA 常用快捷键</p>
+<p>下断点的方式</p>
+<p>远程调试 （idaserver）</p>
+<h1 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h1><p>dokcer 的应用与实践：<a target="_blank" rel="noopener" href="http://yeasy.gitbook.io/docker_practice/">http://yeasy.gitbook.io/docker_practice/</a></p>
+<ul>
+<li>pwndocker</li>
+<li>debug_pwn_env</li>
+</ul>
+<h1 id="必备工具"><a href="#必备工具" class="headerlink" title="必备工具"></a>必备工具</h1><p>checksec ： 检查安全编译选项</p>
+<p>libc-database : 详情查看它的 readme, 在百度网盘中已备份</p>
+<p>ROPgadget&#x2F;ropper: 寻找 gadget</p>
+<p>[在线编译 Assembler]：<a target="_blank" rel="noopener" href="https://defuse.ca/online-x86-assembler.htm">https://defuse.ca/online-x86-assembler.htm</a></p>
+<p>（找 syscall;ret gadget &#x3D;&gt; 在 vscode 里搜索 0F05）</p>
+<p>one_gadget: 特殊的 gadget, 一键 shell 的返回地址 （多加<code>-l 2</code>）</p>
+<p>seccomp-tools: 查看程序的沙箱&#x2F;输出沙箱 C</p>
+<p>glibc-all-in-one: 多版本 libc</p>
+<p>patchelf: 改变程序链接库、装载库的路径（路径越短越好）</p>
+<p>readelf: 分析 ELF 程序的工具</p>
+<p>objdump: 分析二进制文件的工具</p>
+<p>heaptrace&#x2F;gef-tracemalloc : 用于定位堆的申请与释放</p>
+<ul>
+<li>程序混淆严重</li>
+<li>非 C&#x2F;C++程序</li>
+<li>容器</li>
+<li>….</li>
+</ul>
+<p>Decomp2dbg- 与 IDA 联动：</p>
+<ul>
+<li>p &#x2F;x $v8</li>
+<li>tele 0x555555ed20</li>
+<li>…</li>
+</ul>
+<p>pwnpatch:</p>
+<p>dl_dbgsym : 可弃用 glibc-all-in-one</p>
+<p>pwninit :</p>
+<p>alpha3: 用字母写 shellcode</p>
+<p>GTFObins: 提权</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/PWN/" class="category-chain-item">PWN</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/PWN/%E5%9F%BA%E7%A1%80/" class="category-chain-item">基础</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/gdb/" class="print-no-link">#gdb</a>
+      
+        <a href="/tags/%E6%8C%87%E5%8C%97/" class="print-no-link">#指北</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>GDB指北</div>
+      <div>https://k3ppf0r.github.io/2022/05/03/PWN/基础/GDB指北/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>k3ppf0r</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/04/PWN/%E5%9F%BA%E7%A1%80/pwndbg%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/" title="pwndbg调试技巧">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">pwndbg调试技巧</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02/04/PWN/%E5%9F%BA%E7%A1%80/%E7%94%A8%E6%88%B7%E6%80%81%E7%A8%8B%E5%BA%8F%E7%9A%845%E4%BF%9D%E6%8A%A4/" title="用户态程序的5保护">
+                        <span class="hidden-mobile">用户态程序的5保护</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,752 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tab-about/red_bear.jpg">
+  <link rel="icon" href="/img/tab-about/red_bear.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="泉哥">
+  <meta name="keywords" content="心得">
+  
+    <meta name="description" content="转载自知乎">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安全研究者的自我修养">
+<meta property="og:url" content="https://k3ppf0r.github.io/2024/05/06/%E5%BF%83%E5%BE%97/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6%E8%80%85%E7%9A%84%E8%87%AA%E6%88%91%E4%BF%AE%E5%85%BB/index.html">
+<meta property="og:site_name" content="k3ppf0r&#39;s blog">
+<meta property="og:description" content="转载自知乎">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://k3ppf0r.github.io/img/tab-about/red_bear.jpg">
+<meta property="article:published_time" content="2024-05-06T10:00:00.000Z">
+<meta property="article:modified_time" content="2024-05-06T10:00:00.000Z">
+<meta property="article:author" content="k3ppf0r">
+<meta property="article:tag" content="心得">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://k3ppf0r.github.io/img/tab-about/red_bear.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>安全研究者的自我修养 - k3ppf0r&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":null,"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>k3ppf0r&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/page-default/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="安全研究者的自我修养"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-06 18:00" pubdate>
+          2024年5月6日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">安全研究者的自我修养</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在上篇文章《推荐今年C3黑客大会上的几个议题》中提到”Attacking Chrome IPC“这个议题，我觉得该议题最大的亮点是在前半场，作者nedwill是之前在Hack2Win大赛上因攻破Chrome浏览器而一战成名，他讲了如何训练漏洞研究能力的过程，讲述自己这几年在漏洞研究上的历程和心得，很励志，其建议也非常具有可操作性，值得效仿学习。我反复看了多遍，对其作了一些总结和补充。</p>
+<h2 id="1、刻意练习10000小时"><a href="#1、刻意练习10000小时" class="headerlink" title="1、刻意练习10000小时"></a>1、刻意练习10000小时</h2><p>这份“鸡汤”道理，想必大家都懂，就不解释了，不懂的自行百度，或者去读读《异类》这本经典书籍。</p>
+<p>作者建议以月为单位来制定研究目标，他曾连续花了6个月的时间来研究Chrome Sandbox，但最终一无所获。</p>
+<p>所以，有时坚持了不一定能达到目标，但不坚持，就更没戏了。</p>
+<h2 id="2、训练挖洞的双技能"><a href="#2、训练挖洞的双技能" class="headerlink" title="2、训练挖洞的双技能"></a>2、训练挖洞的双技能</h2><p>（1）看洞：哪里看？历史漏洞的git log、bug报告、代码质量报告等等</p>
+<p>（2）识洞：就是肉眼看代码找漏洞，即代码审计，难点也就是在这上面，训练方法继续往下看</p>
+<h2 id="3、代码审计训练"><a href="#3、代码审计训练" class="headerlink" title="3、代码审计训练"></a>3、代码审计训练</h2><p>（1）根据自己目标定位，寻找相应的历史漏洞案例进行学习，比如要搞chrome就找chrome的历史漏洞</p>
+<p>（2）掌握漏洞所在的模块或子系统，但不看完整的漏洞细节描述，尝试在漏洞版本中找出对应的漏洞</p>
+<p>（3）如果（2）中未能找出漏洞，就去看漏洞细节描述，对比自己的审计过程，看遗漏了哪一步骤</p>
+<p>（4）不断重复上述训练，直至相信：挖洞只是体力消耗，而非能力问题</p>
+<p>这第4点说得，非常励志，因为挖洞挖久了，有时真的容易怀疑自己的能力，目标难度越大，越容易打击人。</p>
+<p>作者第一次训练的漏洞是j00ru（Project Zero成员）的IDA漏洞：<a target="_blank" rel="noopener" href="https://j00ru.vexillium.org/2014/10/secure-2014-slide-deck-and-hex-rays-ida-pro-advisories-published/%EF%BC%8C2014%E5%B9%B4%E7%9A%84%E6%96%87%E7%AB%A0%E4%BA%86">https://j00ru.vexillium.org/2014/10/secure-2014-slide-deck-and-hex-rays-ida-pro-advisories-published/，2014年的文章了</a></p>
+<h2 id="4、3-5年的训练计划"><a href="#4、3-5年的训练计划" class="headerlink" title="4、3~5年的训练计划"></a>4、3~5年的训练计划</h2><p>1~2年：做做 CTF 或 WarGames 题目，网上有很多CTF writeup可以参考学习</p>
+<p>2~3年：简单点的目标，就是找相对容易挖的产品</p>
+<p>3~5年：困难点的目标</p>
+<p>目标的难易程度可以直接参考相应的产品的漏洞奖励计划或私有市场的价格，挑选出一份目标清单，按难易程度排序，逐一去实现它。</p>
+<h2 id="5、Fuzzing训练"><a href="#5、Fuzzing训练" class="headerlink" title="5、Fuzzing训练"></a>5、Fuzzing训练</h2><p>作者代码审计2年后，才开始尝试Fuzzer开发。</p>
+<p>（1）拿已公开的历史漏洞问自己：如何写fuzzer挖掘到此漏洞？</p>
+<p>（2）如果自己不知道此漏洞，那又能够挖掘到呢？</p>
+<p>（3）不断重复训练并改进fuzzer，相信会有更多漏洞被意外发现</p>
+<h2 id="6、努力往往比运气和天赋更重要"><a href="#6、努力往往比运气和天赋更重要" class="headerlink" title="6、努力往往比运气和天赋更重要"></a>6、努力往往比运气和天赋更重要</h2><p>虽然挖洞也需要一定运气和天赋，但多数你认为的挖洞天才，其实只不过是花了比你多100倍，甚至更多的时间在这项技术研究上而已</p>
+<h2 id="7、进入研究者团队或社区，互相学习"><a href="#7、进入研究者团队或社区，互相学习" class="headerlink" title="7、进入研究者团队或社区，互相学习"></a>7、进入研究者团队或社区，互相学习</h2><p>国外的交流氛围会比国内的更好一些，也更愿意分享。</p>
+<p>很多时候自己的交流圈，大多是一些熟识的同行，或者同事，一般可交流的人还是比较少的。</p>
+<p>经常在网上看到不少人会问，如何认识xx大牛、黑客，但其实很多时候却是：</p>
+<p>努力提高自己的专业能力，圈子最终会吸纳你进去认识更多圈内人。</p>
+<h2 id="8、建立自己的漏洞信息来源"><a href="#8、建立自己的漏洞信息来源" class="headerlink" title="8、建立自己的漏洞信息来源"></a>8、建立自己的漏洞信息来源</h2><p>RSS订阅无疑是自己最好的方式，这个需要依赖平时自己去不断收集订阅。</p>
+<p>很多漏洞相关的博文，往往曝露出某些软件新的攻击面，抢占先机就显得尤为重要，比如当年Android stagefirght mp4漏洞、word公式编辑器、adobe图片转换器等等，如果能及时关注并尝试去挖掘，往往可以收获不少漏洞的。</p>
+<h2 id="9、收集和学习开源的漏洞挖掘工具"><a href="#9、收集和学习开源的漏洞挖掘工具" class="headerlink" title="9、收集和学习开源的漏洞挖掘工具"></a>9、收集和学习开源的漏洞挖掘工具</h2><p>比如afl、honggfuzz、libfuzzer等很多优秀的漏洞挖掘工具，都是值得好好阅读代码，学习其中的fuzzing思路，可以更好地应用到未来的漏洞挖掘研究上。</p>
+<h2 id="10、很多不愿搞研究工作的挖洞人，只不过是为了权衡利弊"><a href="#10、很多不愿搞研究工作的挖洞人，只不过是为了权衡利弊" class="headerlink" title="10、很多不愿搞研究工作的挖洞人，只不过是为了权衡利弊"></a>10、很多不愿搞研究工作的挖洞人，只不过是为了权衡利弊</h2><p>在《从0到1：开启商业与未来的秘密》一书中有一章叫做“秘密”，漏洞研究可以当作挖掘秘密，为什么人们不探索秘密呢？书中提到4种原因，我觉得同样适用于漏洞研究领域：</p>
+<p>（1）渐进主义：把目标定得低一些，更容易取得好成绩；</p>
+<p>（2）风险规避：人们害怕秘密是因为怕犯错，除此之外，可能也担心KPI没法完成，又或者挖洞拿到的奖金又该如何跟公司“分赃”呢？</p>
+<p>（3）自满：很多时候，某些人可以坐享其成，又何必自己去挖掘秘密；国内研究氛围又喜欢搞营销吹牛逼，牛逼吹多了吹大了，有时连自己都信了；</p>
+<p>（4）扁平化：任何一个拥有雄心壮志的人，在涉及某一研究领域之前都会问自己一个问题：如果有可能挖掘到漏洞，难道全球人才库中更加聪明、更加有技术能力的人还没有发现吗？这种怀疑的声音阻止了不少人去探索秘密，从事研究工作，因为身处的世界似乎大到任何个人都无法做出独特的贡献。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>今年因个人原因，已从安全研究转向业务安全，深知研究的不易。</p>
+<p>相信安全领域有秘密的存在，虽会导致黑产的诞生，但肯定也会因此诞生一些优秀的研究者。</p>
+<p>最后以白桦的《船》致敬所有仍在安全研究道路上前进的人，与诸君共勉：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs text">我有过多次这样的奇遇，<br>从天堂到地狱只在瞬息之间：<br>每一朵可爱、温柔的浪花<br>都成了突然崛起、随即倾倒的高山。<br><br>每一滴海水都变脸色，<br>刚刚还是那样的美丽、蔚蓝；<br>旋涡纠缠着旋涡，<br>我被抛向高空又投进深渊……<br><br>当时我甚至想到过轻生，<br>眼前一片苦海无边；<br>放弃了希望就像放弃了舵柄，<br>在暴力之下只能沉默和哀叹。<br><br>今天我才有资格嘲笑昨天的自己，<br>为昨天落叶似的惶恐感到羞惭；<br>虚度了多少年华，<br>船身多次被礁石撞穿……<br><br>千万次在大洋里撒网，<br>才捕获到一点点生活的经验，<br>才恍然大悟，<br>啊！道理原是如此浅显；<br><br>你要航行吗?<br>必然会有千妖百怪出来阻拦；<br>暴虐的欺凌是它们的游戏，<br>制造灭亡是它们唯一的才干。<br><br>命中注定我要常常和它们相逢，<br>因为我的名字叫做船；<br>面对强大于自身千万倍的对手，<br>能援救自己的只有清醒和勇敢。<br><br>恐惧只能使自己盲目，<br>盲目只能夸大魔鬼的狰狞嘴脸；<br>也许我的样子比它们更可怕，<br>当我以命相拼，一往无前！<br><br>只要我还有一根完整的龙骨，<br>绝不驶进避风的港湾；<br>把生命放在征途上，<br>让勇敢来决定道路的宽窄、长短。<br><br>我完完全全的自由了，<br>船头成为埋葬它们的铁铲；<br>我在波浪中有节奏地跳跃，<br>就像荡着一个巨大的秋千。<br><br>即使它们终于把我撕碎，<br>变成一些残破的木片，<br>我不会沉沦，决不！<br>我还会在浪尖上飞旋。<br><br>后来者还会在残片上认出我，<br>未来的诗人会唱然长叹：<br>“这里有一个幸福的灵魂，<br>它曾经是一艘前进着的航船……”<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/54205450">https://zhuanlan.zhihu.com/p/54205450</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%BF%83%E5%BE%97/" class="category-chain-item">心得</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BF%83%E5%BE%97/" class="print-no-link">#心得</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>安全研究者的自我修养</div>
+      <div>https://k3ppf0r.github.io/2024/05/06/心得/安全研究者的自我修养/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>泉哥</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/09/17/%E5%BF%83%E5%BE%97/%E5%86%99%E7%BB%99%E8%87%AA%E5%B7%B1%EF%BC%9A2024%E5%B9%B4%E6%88%91%E7%9A%84%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92/" title="写给自己：2024年我的职业规划">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">写给自己：2024年我的职业规划</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/04/%E7%BC%96%E7%A8%8B/linux%20c%20%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/" title="linux C 系统开发">
+                        <span class="hidden-mobile">linux C 系统开发</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

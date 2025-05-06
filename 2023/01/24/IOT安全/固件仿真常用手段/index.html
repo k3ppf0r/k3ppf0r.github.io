@@ -1,0 +1,776 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tab-about/red_bear.jpg">
+  <link rel="icon" href="/img/tab-about/red_bear.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="k3ppf0r">
+  <meta name="keywords" content="QEMU, IOT">
+  
+    <meta name="description" content="固件仿真工具- QEMUQEMU 是比较老的开源固件仿真工具，现如今的很多仿真工具大多都是在此框架的基础上进行修改或是优化。QEMU 有多种模式，比如 User mode、System mode、KVM Hosting、Xen Hosting。在实际的仿真过程中主要使用的其实就是 User mode、System mode，也就是用户模式和系统模式。用户模式就是 QEMU 运行针对不同指令编译的单">
+<meta property="og:type" content="article">
+<meta property="og:title" content="固件仿真常用手段">
+<meta property="og:url" content="https://k3ppf0r.github.io/2023/01/24/IOT%E5%AE%89%E5%85%A8/%E5%9B%BA%E4%BB%B6%E4%BB%BF%E7%9C%9F%E5%B8%B8%E7%94%A8%E6%89%8B%E6%AE%B5/index.html">
+<meta property="og:site_name" content="k3ppf0r&#39;s blog">
+<meta property="og:description" content="固件仿真工具- QEMUQEMU 是比较老的开源固件仿真工具，现如今的很多仿真工具大多都是在此框架的基础上进行修改或是优化。QEMU 有多种模式，比如 User mode、System mode、KVM Hosting、Xen Hosting。在实际的仿真过程中主要使用的其实就是 User mode、System mode，也就是用户模式和系统模式。用户模式就是 QEMU 运行针对不同指令编译的单">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://k3ppf0r.github.io/img/post-IOT/iot.jpg">
+<meta property="article:published_time" content="2023-01-24T04:00:00.000Z">
+<meta property="article:modified_time" content="2023-01-25T04:00:00.000Z">
+<meta property="article:author" content="k3ppf0r">
+<meta property="article:tag" content="QEMU">
+<meta property="article:tag" content="IOT">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://k3ppf0r.github.io/img/post-IOT/iot.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>固件仿真常用手段 - k3ppf0r&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":null,"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>k3ppf0r&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/page-default/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="固件仿真常用手段"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-24 12:00" pubdate>
+          2023年1月24日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">固件仿真常用手段</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2023年1月25日 中午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="固件仿真工具-QEMU"><a href="#固件仿真工具-QEMU" class="headerlink" title="固件仿真工具- QEMU"></a>固件仿真工具- QEMU</h1><p>QEMU 是比较老的开源固件仿真工具，现如今的很多仿真工具大多都是在此框架的基础上进行修改或是优化。QEMU 有多种模式，比如 User mode、System mode、KVM Hosting、Xen Hosting。在实际的仿真过程中主要使用的其实就是 User mode、System mode，也就是用户模式和系统模式。用户模式就是 QEMU 运行针对不同指令编译的单个 Linux 或 Darwin&#x2F;macOS 程序。系统模式就是 QEMU 模拟一个完整的计算机系统，包括外围设备。</p>
+<p>使用系统态仿真会比用户态慢很多，因为系统态仿真的开销是用户态的数倍。主要是因为内存地址转换、动态代码翻译、系统调用模拟这三个方面消耗较大。在 System mode 中，QEMU 使用软件模拟 MMU（内存管理单元）对所有内存访问进行地址转换，相比之下，User mode 的地址转换要简单的多；User mode 下做代码翻译比 System mode 要快，在 User mode 中调用转换程序的频率更高；在 User mode 中系统调用是由主机操作系统和硬件直接处理的，但在 System mode 中操作系统和硬件设备都得被模拟，这需要让程序正确的执行，就需要硬件模拟，但并不是所有的系统调用都需要依赖硬件模拟，这极大的加大了系统开销。</p>
+<p>对于路由器固件来说，这两种模式也是我们在固件分析、固件调试、漏洞利用等常用的模式。对于这两种模式，它们的安装和使用都是不同的，都需要单独安装，</p>
+<p>sudo apt-get install qemu （系统态）</p>
+<p>sudo apt-get install qemu-user-static （用户态）</p>
+<p>下面就对这两种模式进行介绍。</p>
+<h2 id="用户态仿真"><a href="#用户态仿真" class="headerlink" title="用户态仿真"></a>用户态仿真</h2><p>用户态仿真简单来说就是使用 QEMU 对固件的某个程序或是进程进行仿真，在这种模式下能够进行方便的交叉编译和调试，这种模式操作更为简单。在固件仿真之前需要确定的就是要仿真固件的 CPU 架构，主要有 arm 架构和 mips 架构，这两种架构的仿真方式和仿真环境搭建有很大不同。根据固件的架构下载对应的安装包，然后将 qemu-mips-static 文件拷贝到当前文件，拷贝指令为 cp &#x2F;usr&#x2F;bin&#x2F;qemu-mips-static .&#x2F;。然后切换到路由器的根路径运行 mips 指令集架构下的二进制程序(sudo chroot . .&#x2F;qemu-mips-static .&#x2F;bin&#x2F;busybox，其中.&#x2F;bin&#x2F;busybox 为要执行的 busybox 所在的相对路径)。下面是一个具体的示例来说明使用 qemu 用户态模拟 mips 架构的 NETIS 路由器固件。</p>
+<p>在解压固件之后进入到 squashfs-root 目录，因为固件是 mips 架构的需要将 qemu-mips-static 当前目录下。使用以下指令切换到路由器的根目录并开启路由器的 http 服务。</p>
+<p>sudo chroot .&#x2F; .&#x2F;qemu-mips-static -strace &#x2F;bin&#x2F;boa</p>
+<!-- （注：-strace 主要是看执行过程，方便调试，如图 1 所示） -->
+
+<p>sudo chroot .&#x2F; .&#x2F;qemu-mips-static -strace &#x2F;bin&#x2F;boa -p &#x2F;web -f &#x2F;etc&#x2F;boa.conf</p>
+<!-- 图 1 切换到路由器的根目录 -->
+
+<!-- 最后经过多次调试能够通过桥接网络的 ip 看到路由器 web 界面，如图 2 所示。 -->
+
+<!-- 图 2 netis 路由器 web 页面 -->
+
+<p>以上是一个 mips 架构的路由器固件的简单示例，在实际操作中还需要根据一些具体的仿真问题进行调试修改，这里给出一个使用 arm 架构进行用户态仿真的案例(<a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/wireless/166869.html)%EF%BC%8C%E5%9C%A8%E8%BF%99%E7%AF%87%E6%96%87%E7%AB%A0%E5%BD%93%E4%B8%AD%E8%BF%98%E6%8F%90%E5%88%B0%E4%BA%86%E9%80%9A%E8%BF%87patch%E4%BF%AE%E6%94%B9%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%B7%B3%E8%BD%AC%E6%9D%A1%E4%BB%B6%EF%BC%8C%E8%BF%90%E8%A1%8C%E6%BC%8F%E6%B4%9E%E6%96%87%E4%BB%B6%60bin/httpd%60%E8%BF%9B%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E8%B0%83%E8%AF%95%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%8C%E5%BE%88%E5%85%B7%E6%9C%89%E5%8F%82%E8%80%83%E6%84%8F%E4%B9%89%E3%80%82">https://www.freebuf.com/articles/wireless/166869.html)，在这篇文章当中还提到了通过patch修改程序的跳转条件，运行漏洞文件`bin/httpd`进行漏洞分析调试的过程，很具有参考意义。</a></p>
+<h2 id="系统态仿真"><a href="#系统态仿真" class="headerlink" title="系统态仿真"></a>系统态仿真</h2><p>系统态仿真就是对整个固件进行完整的仿真，可以更加全面的分析固件。而且如果我们要进行一些模糊测试时，系统态仿真是我们更好的选择。因为模糊测试对硬件配置有较高的要求，而 IoT 设备性能较低，往往直接对真机进行模糊测试都会失败；同时，也是因为如此，对比发现，软件进行系统模拟的效率要比使用 IoT 设备的效率高得多，所以系统态仿真往往是更好的选择，既能提高程序性能，又能提高模糊测试的成功率。</p>
+<p>使用系统态进行固件仿真之前也需要确定要仿真的路由器固件的 CPU 架构，主要有 arm 架构和 mips 架构，这两种架构的所需要的镜像和启动方式也有很大的不同。下面是一个具体的示例来说明使用 QEMU 系统态模拟 mips 架构的 Huawei HG532 路由器固件，进而分析漏洞 CVE-2017-17215。系统态仿真首先要根据要仿真的路由器固件的 CPU 架构来确定下载的镜像，Huawei HG532 这个路由器固件是 mips 架构的，可以下载 QEMU 需要的 Debian mips 系统的两个文件镜像下载(<a target="_blank" rel="noopener" href="https://people.debian.org/~aurel32/qemu/mips/),%E7%BB%8F%E8%BF%87%E6%88%90%E5%8A%9F%E9%AA%8C%E8%AF%81%E7%9A%84%E5%8F%AF%E7%94%A8%E9%95%9C%E5%83%8F%E4%B8%BA%60debian_squeeze_mips_standard.qcow2%E5%92%8Cvmlinux-2.6.32-5-4kc-malta%60%EF%BC%88%E8%A6%81%E6%8A%8A%E8%BF%99%E4%B8%A4%E4%B8%AA%E9%95%9C%E5%83%8F%E4%B8%8B%E8%BD%BD%E5%9C%A8%E5%90%8C%E4%B8%80%E6%96%87%E4%BB%B6%E5%A4%B9%E5%86%85%EF%BC%89%E3%80%82%E4%BD%BF%E7%94%A8%E4%BB%A5%E4%B8%8B%E6%8C%87%E4%BB%A4%E5%90%AF%E5%8A%A8%E5%88%9A%E4%B8%8B%E8%BD%BD%E7%9A%84%E9%95%9C%E5%83%8F%E3%80%82">https://people.debian.org/~aurel32/qemu/mips/),经过成功验证的可用镜像为`debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta`（要把这两个镜像下载在同一文件夹内）。使用以下指令启动刚下载的镜像。</a></p>
+<p>sudo qemu-system-mips -M malta -kernel vmlinux-2.6.32-5-4kc-malta -hda debian_squeeze_mips_standard.qcow2 -append “root&#x3D;&#x2F;dev&#x2F;sda1 console&#x3D;tty0” -net nic,macaddr&#x3D;00:16:3e:00:00:01 -net tap</p>
+<p>在启动的镜像当中输入用户名及密码 root&#x2F;root 登入到镜像当中。登进去后可以 ping 命令检查一下网络的连通性（若网络不通则检查环境配置是否正确）。然后使用指令将之前解压的固件拷贝到 QEMU 里面<code>scp -r ./squashfs-root  root@镜像的ip:/root/</code>。在 QEMU 当中切换到路由器的根路径<code>chroot /root/ _HG532eV100R001C01B020_upgrade_packet.bin.ex tracted/squashfs-root bin/sh</code>来切换根目录到路由器文件系统，启动 mic 服务。服务开启后可以打开浏览器，通过镜像 ip 访问路由器的 web 界面，如图 3 所示。默认的账号密码是：admin&#x2F;@Hua1234。在仿真成功后我们就可以对具体的漏洞进行分析了，具体的环境搭建及相应的操作过程可以参考文档 CVE-2017-17215 漏洞复现(在参考当中)。</p>
+<!-- 图 3 华为路由器 web 页面 -->
+
+<p>二、固件仿真工具-Firmadyne<br>Firmadyne 是一个自动化和可扩展的系统，用于对基于 Linux 的嵌入式固件执行仿真和动态分析。主要包含执行固件指令而修改的内核、用户空间 NVRAM 库，用于仿真硬件 NVRAM 外设、用于从固件中提取文件系统和内核的解压器、小型控制台用来调试、超过 42 个供应商的固件支持这几个组件，作者还编写了可访问的网页、SNMP 信息、漏洞检查这三个基本的自动分析。和 QEMU 相比，Firmadyne 提出了自动化的仿真，这种仿真对于用户来说是极大的便利，是完全的一键式仿真，使用这种工具的好处是简单易操作、也能很快知道仿真结果。Firmadyne 自动仿真固件主要步骤有解析固件提取文件系统、根据提取的文件系统，判断固件的架构信息、 修复文件系统如 libnvram.so 常见的设备文件等，并打包镜像、获取目标固件的网络配置信息，并生成 QEMU 的启动脚本、执行生成的启动脚本，开始仿真。</p>
+<p>Firmware Analysis Toolkit-固件分析工具包是基于 Firmadyne 进行了一些更改。主要包含 Firmadyne、Binwalk、Firmware-Mod-Kit、MITMproxy、Firmwalker 这些现有工具和项目的基础上构建的。因为固件分析工具包 fat 当中包含了 Firmadyne,所以本文当中直接使用 fat 进行示例仿真。以下是对 Netgear DGN2200v1 路由器固件进行仿真的示例介绍。（对于 Firmadyne 这个工具来说，环境搭建并不是那么简单，在搭建好环境后就可以完全的一键式仿真了。）仿真过程如图 4 所示：</p>
+<!-- 图 4 firmadyne 仿真过程 -->
+
+<p>根据仿真出的路由器 ip 可以在浏览器当中访问，可以看到对应品牌的路由器 web 界面，如图 5 所示：</p>
+<!-- 图 5 netgear 路由器 web 界面 -->
+
+<p>Netgear DGN2200v1 的默认用户名和密码是 admin&#x2F;password，可以登进去看到正常的路由器子页面。在子页面就可以对仿真的路由器进行相关的设置操作，比如修改用户名和密码等。使用这种工具仿真过程简单、仿真速度快，缺点就是仿真成功率低。主要是因为固件品牌的高度定制化和固件的异构性。但对于固件仿真来说，Firmadyne 这个工具还是值得用起来的。</p>
+<p>三、固件仿真工具-firmAE<br>上面提到的一个自动化的仿真工具 Firmadyne 缺点是仿真成功率低，在 Firmadyne 的基础上，韩国的一个团队提出了另外一种执行仿真和漏洞分析的全自动框架—FirmAE。FirmAE 提出仲裁仿真的方式，从固件的启动、网络、NVRAM、内核以及其它五个方面，总结了导致固件仿真失败的原因以及具备通用性的方法。将原本 Firmadyne 16.28% 的成功率（183 个成功仿真），提高到 79.36%（892 个成功仿真）。</p>
+<p>FirmAE 中主要集成了四种模式，check 模式、run 模式、analyze 模式、debug 模式。在固件仿真当中我们通常利用的是前两种模式 check 模式和 run 模式。check 模式会对固件进行仲裁仿真的各项操作，将设备运行后，检查网络连通性和服务可用性，最后仿真退出，保存相关的日志信息记录在缓存文件中。run 模式是根据 check 模式构建的各种处理信息，进行仿真，在仿真程序时不会退出。</p>
+<p>使用 FirmAE 进行仿真时可以利用这个工具的模式特点之一先进行初步的仿真判断。FirmAE 提供了 check 模式可以检查下固件是否可以仿真，会给出仿真成功后可以访问 web 页面的 ip,亦或是仿真失败给出仿真失败的原因比如固件提取失败、网络构建失败、服务启动失败等。以下通过对 Netgear DGN2200v1 路由器固件进行仿真来对 FirmAE 的使用进行介绍。</p>
+<p>在固件仿真之前可以通过 check 模式对固件是否能进行仿真有初步的了解，如图 6 所示。</p>
+<!-- 图 6 FirmAE check 模式 -->
+
+<p>在 check 模式可以进行仿真的情况下，下一步就可以使用运行模式进行固件的仿真。在已经执行过 check 模式下再进行仿真时，仿真的速度会变得很快。下图就是 FirmAE 仿真成功的界面，我们可以打开浏览器，通过仿真出的路由器 ip 访问到路由器 web 界面，登进去再访问子页面，如图 7 图 8 所示。</p>
+<!-- 图 7 FirmAE 仿真过程 -->
+
+<!-- 图 8 FirmAE 仿真的路由器 web 界面 -->
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本文当中介绍的几种固件仿真工具都是作者本人用过的，所以会在使用上略有一点心得。还有一些优秀的仿真工具比如 firmware-analysis-plus，是在 binwalk、firmadyne 、firmware-analysis-toolkit 的基础上做出了改进和定制，但因为本人未使用过所有没有对这种工具进行介绍。此外，本文当中也并没有对这些仿真工具的环境搭建进行介绍，因为每一种仿真工具的环境搭建方式都不一样，可以查看项目仓库进行安装，因此就没有在文中进行叙述说明了。</p>
+<p>随着近些年来研究者对于物联网安全的关注，固件仿真变得很重要。对于固件仿真本身来说，因为固件设备来自于非标准化的开发过程，使得设备驱动、库、内核都存在差异，更有一些固件厂商对固件进行加密或者其他的私人定制也让固件仿真变得困难了起来，这也是这些固件仿真工具仿真成功率不是很高的原因。在实际的固件研究当中，了解多种仿真工具以及对于可仿真的固件品牌、固件版本进行整理是很有必要的，可以极大的方便我们的物联网安全性研究。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/IOT%E5%AE%89%E5%85%A8/" class="category-chain-item">IOT安全</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/IOT%E5%AE%89%E5%85%A8/QEMU/" class="category-chain-item">QEMU</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/QEMU/" class="print-no-link">#QEMU</a>
+      
+        <a href="/tags/IOT/" class="print-no-link">#IOT</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>固件仿真常用手段</div>
+      <div>https://k3ppf0r.github.io/2023/01/24/IOT安全/固件仿真常用手段/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>k3ppf0r</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/02/24/Vulnerability/CVE/CVE-2021-3156%20sudo%20%E5%A0%86%E6%BA%A2%E5%87%BA%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" title="CVE-2021-3156 sudo 堆溢出漏洞复现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CVE-2021-3156 sudo 堆溢出漏洞复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/" title="IOT 固件分析入门">
+                        <span class="hidden-mobile">IOT 固件分析入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

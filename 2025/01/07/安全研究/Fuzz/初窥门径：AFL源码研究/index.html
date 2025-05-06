@@ -1,0 +1,980 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tab-about/red_bear.jpg">
+  <link rel="icon" href="/img/tab-about/red_bear.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="k3ppf0r">
+  <meta name="keywords" content="安全研究,AFL,源码">
+  
+    <meta name="description" content="AFL 源码解释与研究一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初窥门径：AFL源码研究">
+<meta property="og:url" content="https://k3ppf0r.github.io/2025/01/07/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/Fuzz/%E5%88%9D%E7%AA%A5%E9%97%A8%E5%BE%84%EF%BC%9AAFL%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6/index.html">
+<meta property="og:site_name" content="k3ppf0r&#39;s blog">
+<meta property="og:description" content="AFL 源码解释与研究一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://k3ppf0r.github.io/img/post-%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/afl.png">
+<meta property="article:published_time" content="2025-01-07T09:00:00.000Z">
+<meta property="article:modified_time" content="2025-01-08T04:00:00.000Z">
+<meta property="article:author" content="k3ppf0r">
+<meta property="article:tag" content="安全研究">
+<meta property="article:tag" content="AFL">
+<meta property="article:tag" content="源码">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://k3ppf0r.github.io/img/post-%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/afl.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>初窥门径：AFL源码研究 - k3ppf0r&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"k3ppf0r.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null},"gtag":null,"woyaola":null,"cnzz":null},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>k3ppf0r&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/page-default/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="初窥门径：AFL源码研究"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-01-07 17:00" pubdate>
+          2025年1月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">初窥门径：AFL源码研究</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2025年1月8日 中午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <p>AFL, 作为fuzz类工具的开山鼻祖，笔者认为对于其源码十分有研究的价值。本文即是记录笔者在阅读AFL源码过程中对于重点和大体流程的解读与理解。可能存在个人理解上的错误，欢迎指正。</p>
+<p>源码批注版项目：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs git">https://github.com/k3ppf0r/AFL<br></code></pre></td></tr></table></figure>
+
+<h1 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h1><p><img src="/2025/01/07/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/Fuzz/%E5%88%9D%E7%AA%A5%E9%97%A8%E5%BE%84%EF%BC%9AAFL%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84.png" srcset="/img/loading.gif" lazyload alt="项目结构"></p>
+<p>重点需要关注AFL 的根目录下<code>afl-fuzz.c</code>、<code>afl-gcc.c</code>、<code>afl-tmin.c</code> 等核心程序的实现上，独立功能<code>llvm_mode</code>、<code>qemu_mode</code>被放在单独的文件夹中，其中<code>afl-fuzz.c</code> 是项目核心，代码量有 8k 行左右。</p>
+<p>项目模块主要功能：</p>
+<ul>
+<li><p>插桩模块<br>插桩模块负责在目标程序中插入代码以收集执行路径的信息，这是 AFL 实现模糊测试的基础。AFL 提供了多种插桩模式，以适应不同的编译环境和需求：</p>
+<ul>
+<li>源码级插桩：通过 <code>afl-as.h</code>, <code>afl-as.c</code> 和 <code>afl-gcc.c</code> 文件实现，针对源码插桩，编译器可以使用 gcc， clang；</li>
+<li>LLVM 插桩模式：由 <code>llvm_mode</code> 目录下的文件提供支持，llvm 插桩模式，针对源码插桩，编译器使用 clang；</li>
+<li>QEMU 插桩模式：通过 <code>qemu_mode</code> 模块实现，针对二进制文件进行插桩，无需源代码即可对已编译的应用程序进行模糊测试。</li>
+</ul>
+</li>
+<li><p>Fuzzer 模块<br>核心模糊测试逻辑由 <code>afl-fuzz.c</code> 文件中的代码实现，它是 AFL 的主体部分，负责管理和驱动整个模糊测试过程，包括生成输入、监控程序行为以及基于反馈调整未来的测试用例。</p>
+</li>
+<li><p>辅助工具模块<br>AFL 还配备了一系列辅助工具，用于增强模糊测试的效果和分析能力：</p>
+<ul>
+<li><code>afl-analyze</code>：分析给定的测试用例，帮助识别有意义的数据字段</li>
+<li><code>afl-plot</code>：生成图表来可视化模糊测试的状态和进度</li>
+<li><code>afl-tmin</code>：对测试用例进行最小化处理，去除不必要的部分，使得测试用例尽可能简洁且有效</li>
+<li><code>afl-cmin</code>：对语料库进行精简，保留最具代表性的样本，减少冗余并优化后续的模糊测试效率</li>
+<li><code>afl-showmap</code>：跟踪单个测试用例的执行路径，显示程序执行过程中触发的基本块覆盖情况</li>
+<li><code>afl-whatsup</code>：汇总并行运行的多个模糊测试实例的结果</li>
+<li><code>afl-gotcpu</code>：检查当前系统的 CPU 使用状态</li>
+</ul>
+</li>
+<li><p>头文件说明<br>为了支持上述功能的实现，AFL 依赖于一些关键头文件：</p>
+<ul>
+<li><code>alloc-inl.h</code>：定义了带有检测功能的内存分配和释放操作</li>
+<li><code>config.h</code>：包含配置选项的定义</li>
+<li><code>debug.h</code>：提供了与调试信息相关的宏定义</li>
+<li><code>hash.h</code>：实现了哈希函数</li>
+<li><code>types.h</code>：定义了一些常用的数据类型和宏</li>
+</ul>
+</li>
+</ul>
+<p>查看项目的Makefile,可以看到相关生成的目标文件的命名细节和配置细节：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><br>PROGNAME    = afl<br><span class="hljs-comment"># #不需要转义，但能working. e.g. echo &#x27;#define VERSION &quot;2.57b&quot;&#x27; | grep &#x27;^\#\d\efine VERSION &#x27;</span><br>VERSION     = <span class="hljs-variable">$(<span class="hljs-built_in">shell</span> grep &#x27;^\#define VERSION &#x27; config.h | cut -d &#x27;<span class="hljs-string">&quot;&#x27; -f2)</span></span><br><span class="hljs-string"><span class="hljs-variable"></span></span><br><span class="hljs-string"><span class="hljs-variable">PREFIX     ?= /usr/local</span></span><br><span class="hljs-string"><span class="hljs-variable">BIN_PATH    = <span class="hljs-variable">$(PREFIX)</span>/bin</span></span><br><span class="hljs-string"><span class="hljs-variable">HELPER_PATH = <span class="hljs-variable">$(PREFIX)</span>/lib/afl</span></span><br><span class="hljs-string"><span class="hljs-variable">DOC_PATH    = <span class="hljs-variable">$(PREFIX)</span>/share/doc/afl</span></span><br><span class="hljs-string"><span class="hljs-variable">MISC_PATH   = <span class="hljs-variable">$(PREFIX)</span>/share/afl</span></span><br><span class="hljs-string"><span class="hljs-variable"></span></span><br><span class="hljs-string"><span class="hljs-variable"># PROGS intentionally omit afl-as, which gets installed elsewhere.</span></span><br><span class="hljs-string"><span class="hljs-variable"></span></span><br><span class="hljs-string"><span class="hljs-variable">PROGS       = afl-gcc afl-fuzz afl-showmap afl-tmin afl-gotcpu afl-analyze</span></span><br><span class="hljs-string"><span class="hljs-variable">SH_PROGS    = afl-plot afl-cmin afl-whatsup</span></span><br><span class="hljs-string"><span class="hljs-variable"></span></span><br><span class="hljs-string"><span class="hljs-variable">CFLAGS     ?= -O3 -funroll-loops</span></span><br><span class="hljs-string"><span class="hljs-variable">CFLAGS     += -Wall -D_FORTIFY_SOURCE=2 -g -Wno-pointer-sign \</span></span><br><span class="hljs-string"><span class="hljs-variable">	      -DAFL_PATH=\&quot;<span class="hljs-variable">$(HELPER_PATH)\&quot;</span> -DDOC_PATH=\&quot;<span class="hljs-variable">$(DOC_PATH)\&quot;</span> \</span></span><br><span class="hljs-string"><span class="hljs-variable">	      -DBIN_PATH=\&quot;<span class="hljs-variable">$(BIN_PATH)\&quot;</span></span></span><br><span class="hljs-string"><span class="hljs-variable"></span></span><br><span class="hljs-string"><span class="hljs-variable">ifneq &quot;</span>$(<span class="hljs-built_in">filter</span> Linux GNU%,$(<span class="hljs-built_in">shell</span> uname)</span>)<span class="hljs-string">&quot; &quot;</span><span class="hljs-string">&quot;</span><br><span class="hljs-string">  LDFLAGS  += -ldl</span><br><span class="hljs-string">endif</span><br><span class="hljs-string"></span><br><span class="hljs-string">ifeq &quot;</span><span class="hljs-variable">$(<span class="hljs-built_in">findstring</span> clang, $(<span class="hljs-built_in">shell</span> <span class="hljs-variable">$(CC)</span> --version 2&gt;/dev/null)</span>)<span class="hljs-string">&quot; &quot;</span><span class="hljs-string">&quot;</span><br><span class="hljs-string">  TEST_CC   = afl-gcc</span><br><span class="hljs-string">else</span><br><span class="hljs-string">  TEST_CC   = afl-clang</span><br><span class="hljs-string">endif</span><br><span class="hljs-string"></span><br><span class="hljs-string">COMM_HDR    = alloc-inl.h config.h debug.h types.h</span><br><span class="hljs-string"></span><br><span class="hljs-string">all: test_x86 <span class="hljs-variable">$(PROGS)</span> afl-as test_build all_done</span><br><span class="hljs-string"></span><br><span class="hljs-string">ifndef AFL_NO_X86</span><br><span class="hljs-string"></span><br><span class="hljs-string">test_x86:</span><br><span class="hljs-string">	@echo &quot;</span>[*] Checking for the ability to compile x86 code...<span class="hljs-string">&quot;</span><br><span class="hljs-string">	@echo &#x27;main() &#123; __asm__(&quot;</span>xorb %al, %al<span class="hljs-string">&quot;); &#125;&#x27; | <span class="hljs-variable">$(CC)</span> -w -x c - -o .test || ( echo; echo &quot;</span>Oops, looks like your compiler can&#x27;t generate x86 code.<span class="hljs-string">&quot;; echo; echo &quot;</span>Don&#x27;t panic! You can use the LLVM or QEMU mode, but see docs/INSTALL first.<span class="hljs-string">&quot;; echo &quot;</span>(To ignore this error, set AFL_NO_X86=1 and try again.)<span class="hljs-string">&quot;; echo; exit 1 )</span><br><span class="hljs-string">	@rm -f .test</span><br><span class="hljs-string">	@echo &quot;</span>[+] Everything seems to be working, ready to compile.<span class="hljs-string">&quot;</span><br><span class="hljs-string"></span><br><span class="hljs-string">else</span><br><span class="hljs-string"></span><br><span class="hljs-string">test_x86:</span><br><span class="hljs-string">	@echo &quot;</span>[!] Note: skipping x86 compilation checks (AFL_NO_X86 set).<span class="hljs-string">&quot;</span><br><span class="hljs-string"></span><br><span class="hljs-string">endif</span><br><span class="hljs-string"></span><br><span class="hljs-string">afl-gcc: afl-gcc.c <span class="hljs-variable">$(COMM_HDR)</span> | test_x86</span><br><span class="hljs-string">	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$@</span>.c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string">	set -e; for i in afl-g++ afl-clang afl-clang++; do ln -sf afl-gcc $$i; done</span><br><span class="hljs-string"></span><br><span class="hljs-string">afl-as: afl-as.c afl-as.h <span class="hljs-variable">$(COMM_HDR)</span> | test_x86</span><br><span class="hljs-string">	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$@</span>.c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string">	ln -sf afl-as as</span><br><span class="hljs-string"></span><br><span class="hljs-string">afl-fuzz: afl-fuzz.c <span class="hljs-variable">$(COMM_HDR)</span> | test_x86</span><br><span class="hljs-string">	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$@</span>.c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">afl-showmap: afl-showmap.c <span class="hljs-variable">$(COMM_HDR)</span> | test_x86</span><br><span class="hljs-string">	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$@</span>.c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">afl-tmin: afl-tmin.c <span class="hljs-variable">$(COMM_HDR)</span> | test_x86</span><br><span class="hljs-string">	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$@</span>.c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">afl-analyze: afl-analyze.c <span class="hljs-variable">$(COMM_HDR)</span> | test_x86</span><br><span class="hljs-string">	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$@</span>.c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">afl-gotcpu: afl-gotcpu.c <span class="hljs-variable">$(COMM_HDR)</span> | test_x86</span><br><span class="hljs-string">	<span class="hljs-variable">$(CC)</span> <span class="hljs-variable">$(CFLAGS)</span> <span class="hljs-variable">$@</span>.c -o <span class="hljs-variable">$@</span> <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string"></span><br><span class="hljs-string">ifndef AFL_NO_X86</span><br><span class="hljs-string"></span><br><span class="hljs-string">test_build: afl-gcc afl-as afl-showmap</span><br><span class="hljs-string">	@echo &quot;</span>[*] Testing the CC wrapper and instrumentation output...<span class="hljs-string">&quot;</span><br><span class="hljs-string">	unset AFL_USE_ASAN AFL_USE_MSAN; AFL_QUIET=1 AFL_INST_RATIO=100 AFL_PATH=. ./<span class="hljs-variable">$(TEST_CC)</span> <span class="hljs-variable">$(CFLAGS)</span> test-instr.c -o test-instr <span class="hljs-variable">$(LDFLAGS)</span></span><br><span class="hljs-string">	./afl-showmap -m none -q -o .test-instr0 ./test-instr &lt; /dev/null</span><br><span class="hljs-string">	echo 1 | ./afl-showmap -m none -q -o .test-instr1 ./test-instr</span><br><span class="hljs-string">	@rm -f test-instr</span><br><span class="hljs-string">	@cmp -s .test-instr0 .test-instr1; DR=&quot;</span>$<span class="hljs-variable">$?</span><span class="hljs-string">&quot;; rm -f .test-instr0 .test-instr1; if [ &quot;</span>$$DR<span class="hljs-string">&quot; = &quot;</span>0<span class="hljs-string">&quot; ]; then echo; echo &quot;</span>Oops, the instrumentation does not seem to be behaving correctly!<span class="hljs-string">&quot;; echo; echo &quot;</span>Please ping &lt;lcamtuf@google.com&gt; to troubleshoot the issue.<span class="hljs-string">&quot;; echo; exit 1; fi</span><br><span class="hljs-string">	@echo &quot;</span>[+] All right, the instrumentation seems to be working!<span class="hljs-string">&quot;</span><br><span class="hljs-string"></span><br><span class="hljs-string">else</span><br><span class="hljs-string"></span><br><span class="hljs-string">test_build: afl-gcc afl-as afl-showmap</span><br><span class="hljs-string">	@echo &quot;</span>[!] Note: skipping build tests (you may need to use LLVM or QEMU mode).<span class="hljs-string">&quot;</span><br><span class="hljs-string"></span><br><span class="hljs-string">endif</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>创建符号链接，使得 afl-g++, afl-clang, 和 afl-clang++ 都指向 afl-gcc</li>
+<li>创建符号链接，使得 as 指向 afl-as</li>
+</ul>
+<h1 id="可能遇到的问题"><a href="#可能遇到的问题" class="headerlink" title="可能遇到的问题"></a>可能遇到的问题</h1><h2 id="clangd-插件找不到常量"><a href="#clangd-插件找不到常量" class="headerlink" title="clangd 插件找不到常量"></a>clangd 插件找不到常量</h2><p>解决办法：<br>clangd 可以从 compile_commands.json 中获取编译 flag，使用下面的命令就能生成：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">sudo apt <span class="hljs-keyword">install </span><span class="hljs-keyword">bear</span><br><span class="hljs-keyword"></span><span class="hljs-keyword">bear </span>-- make<br></code></pre></td></tr></table></figure>
+<h2 id="vscode-快捷键"><a href="#vscode-快捷键" class="headerlink" title="vscode 快捷键"></a>vscode 快捷键</h2><ul>
+<li><code>f12</code>: 锁定变量\函数，跳转到定义 </li>
+<li><code>ctrl+click</code>: 跳转到定义</li>
+</ul>
+<h1 id="afl-gcc"><a href="#afl-gcc" class="headerlink" title="afl-gcc"></a>afl-gcc</h1><p>afl-gcc 是对  GCC\CLANG 的一个wrapper ,通过 <code>Makefile</code> 文件可以看到是各种命名编译器的实际指向, 内部逻辑是首先找到afl-as（预处理汇编器），接着根据系统环境变量和提供的编译参数来去设置<strong>定制化编译参数</strong>，最后去调用下游汇编器 GCC\CLANG</p>
+<p>main 函数核心代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C">find_as(argv[<span class="hljs-number">0</span>]);<br>edit_params(argc, argv);<br>execvp(cc_params[<span class="hljs-number">0</span>], (<span class="hljs-type">char</span>**)cc_params);<br></code></pre></td></tr></table></figure>
+<p>其中主要有如下三个函数的调用：</p>
+<ul>
+<li><code>find_as(argv[0])</code> ：查找汇编器路径，会从环境变量<code>$AFL_PATH</code>、<code>argv[0]</code> 所在的目录下、配置变量 <code>AFL_PATH</code> 依次寻找，缺省下为<code>本地项目路径/afl-as</code> </li>
+<li><code>edit_params(argc, argv)</code>：处理传入的编译参数，将处理好的参数放入 <code>cc_params[]</code> 数组，并根据<code>argv[0]</code>确定使用哪一个编译器</li>
+<li><code>execvp(cc_params[0], (cahr**)cc_params)</code> : 执行真正的编译器： GCC\CLANG</li>
+</ul>
+<h2 id="edit-params"><a href="#edit-params" class="headerlink" title="edit_params"></a>edit_params</h2><h3 id="逻辑如下："><a href="#逻辑如下：" class="headerlink" title="逻辑如下："></a>逻辑如下：</h3><ol>
+<li><p>首先处理编译器的选择问题：</p>
+<ul>
+<li>分析  <code>argv[0]</code> ，提取到变量 <code>name</code> ( 其值为最后一个<code>/</code>后的字符串 ), 接着开始与固定字符串<code>afl-clang</code>进行对比，来确定自己需要调用哪个下游编译器。</li>
+<li>例如，如果 <code>argv[0]</code> 是 <code>/afl/afl-clang </code>, 走入对应判断分支后,先获取<code>环境变量AFL_CC</code>的值，如果存在就填入<code>cc_params[0]</code>；否则将afl-clang赋值给cc_params[0]。这里可以看到 AFL 允许用户自己指定下游编译器，如果 AFL_CC 和 AFL_CXX 等变量都存在，则会覆盖掉默认编译器。</li>
+</ul>
+</li>
+<li><p>接下来，进入 while 循环,  遍历从argv[1]开始的argv参数：</p>
+<ul>
+<li>如果扫描到 -B ，-B选项用于设置编译器的搜索路径，直接跳过。（find_as已处理as_path）</li>
+<li>如果扫描到 -integrated-as，跳过</li>
+<li>如果扫描到 -pipe，跳过</li>
+<li>如果扫描到 <code>-fsanitize=address</code> 和 <code>-fsanitize=memory</code> 告诉 gcc 检查内存访问的错误，比如数组越界之类，设置 <code>asan_set = 1</code></li>
+<li>如果扫描到 FORTIFY_SOURCE ，设置 <code>fortify_set = 1</code> 。FORTIFY_SOURCE 主要进行缓冲区溢出问题的检查，检查的常见函数有 <code>memcpy</code>, <code>mempcpy</code>, <code>memmove</code>, <code>memset</code>, <code>strcpy</code>, <code>stpcpy</code>, <code>strncpy</code>, <code>strcat</code>, <code>strncat</code>, <code>sprintf</code>, <code>vsprintf</code>, <code>snprintf</code>, <code>gets</code> 等</li>
+</ul>
+</li>
+<li><p>接下来，跳出 while 循环,设置其他参数：</p>
+<ul>
+<li>设置 <code>-B as_path</code></li>
+<li>如果是 <code>clang_mode</code> ，则设置 <code>-no-integrated-as</code></li>
+<li>如果存在环境变量 AFL_HARDEN，则设置<code>-fstack-protector-all</code>。且如果没有设置 fortify_set ，追加 <code>-D_FORTIFY_SOURCE=2</code></li>
+</ul>
+</li>
+<li><p>编译器优化相关参数，通过多个 if&#x2F;elif 进行判断:</p>
+<ul>
+<li>if + elif:<ul>
+<li>如果 asan_set 在前面被设置为 1，即手动设置了<code>-fsanitize=memory</code>或者<code>-fsanitize=address</code>,则设置环境变量 <code>AFL_USE_ASAN=&quot;1&quot;</code></li>
+<li>如果 asan_set 不为 1 且存在 AFL_USE_ASAN 环境变量，则<br>设置 <code>-U_FORTIFY_SOURCE -fsanitize=address</code></li>
+<li>如果不存在 AFL_USE_ASAN 环境变量，但存在 AFL_USE_MSAN 环境变量，则<br>设置 <code>-U_FORTIFY_SOURCE -fsanitize=memory</code><br>不能同时指定AFL_USE_ASAN或者AFL_USE_MSAN，也不能同时指定 AFL_USE_MSAN 和 AFL_HARDEN，因为这样运行时速度过慢</li>
+</ul>
+</li>
+<li>如果不存在 AFL_DONT_OPTIMIZE 环境变量，则<br>   设置<code>-g -O3 -funroll-loops -D__AFL_COMPILER=1 -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1</code></li>
+<li>如果存在 AFL_NO_BUILTIN 环境变量，则表示允许进行优化，<br>   设置  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">-fno-builtin-strcmp<br>-fno-builtin-strncmp<br>-fno-builtin-strcasecmp<br>-fno-builtin-strncasecmp<br>-fno-builtin-memcmp<br>-fno-builtin-strstr<br>-fno-builtin-strcasestr<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h1 id="afl-as"><a href="#afl-as" class="headerlink" title="afl-as"></a>afl-as</h1><p>在afl-gcc 的封装中，其中一个目的就是将原生 GNU as 替换为 afl-as。</p>
+<p><code>afl-as</code> 也是一个原生 GNU as 的 wrapper。它的作用是预处理由 GCC&#x2F;clang 生成的汇编文件，并注入包含在 afl-as.h 中的插桩代码。 在上文 edit_params 函数中，已经通过<code>-B afl-as</code> 参数指定它参与到编译工具链中。</p>
+<p>main 函数核心代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs C">u8* inst_ratio_str = getenv(<span class="hljs-string">&quot;AFL_INST_RATIO&quot;</span>);<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">timeval</span> <span class="hljs-title">tv</span>;</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">timezone</span> <span class="hljs-title">tz</span>;</span><br>gettimeofday(&amp;tv, &amp;tz);<br>rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();<br><span class="hljs-comment">// 初始化随机数种子</span><br>srandom(rand_seed);<br>edit_params(argc, argv);<br><span class="hljs-comment">// 在汇编指令序列上插桩  </span><br><span class="hljs-keyword">if</span> (!just_version) add_instrumentation();<br><span class="hljs-comment">// few </span><br><span class="hljs-comment">// 子进程</span><br><span class="hljs-keyword">if</span> (!(pid = fork())) &#123;<br>  execvp(as_params[<span class="hljs-number">0</span>], (<span class="hljs-type">char</span>**)as_params);<br>  FATAL(<span class="hljs-string">&quot;Oops, failed to execute &#x27;%s&#x27; - check your PATH&quot;</span>, as_params[<span class="hljs-number">0</span>]);<br><br>&#125;<br><span class="hljs-keyword">if</span> (pid &lt; <span class="hljs-number">0</span>) PFATAL(<span class="hljs-string">&quot;fork() failed&quot;</span>);<br><span class="hljs-keyword">if</span> (waitpid(pid, &amp;status, <span class="hljs-number">0</span>) &lt;= <span class="hljs-number">0</span>) PFATAL(<span class="hljs-string">&quot;waitpid() failed&quot;</span>);<br><span class="hljs-keyword">if</span> (!getenv(<span class="hljs-string">&quot;AFL_KEEP_ASSEMBLY&quot;</span>)) unlink(modified_file);<br><span class="hljs-built_in">exit</span>(WEXITSTATUS(status));<br></code></pre></td></tr></table></figure>
+<h2 id="main函数逻辑"><a href="#main函数逻辑" class="headerlink" title="main函数逻辑"></a>main函数逻辑</h2><ol>
+<li><p>通过 <code>gettimeofday(&amp;tv,&amp;tz)</code>;获取时区和时间，然后设置 <code>srandom()</code> 的随机种子</p>
+</li>
+<li><p>调用 <code>edit_params</code> 函数，进行参数处理,确定 as 程序的名字，默认就是 GNU as，但用户也可以提供 AFL_AS 来覆盖,设置临时文件 <code>modified_file</code> 路径为 <code>/tmp/.afl-pid-timestamp.s</code></p>
+</li>
+<li><p>调用 <code>add_instrumentation()</code> 函数，这是实际的插桩函数</p>
+</li>
+<li><p>fork 一个子进程来执行 <code>execvp(as_params[0], (char**)as_params)</code>;。这里采用的是 fork 一个子进程的方式来执行插桩。这其实是因为我们的 execvp 执行的时候，会用 as_params[0] 来完全替换掉当前进程空间中的程序，如果不通过子进程来执行实际的 as，那么后续就无法在执行完实际的 as 之后，还能 <code>unlink</code> 掉 <code>modified_file</code></p>
+</li>
+<li><p>调用 <code>waitpid(pid, &amp;status, 0)</code> 等待子进程执行结束</p>
+</li>
+<li><p>判断是否设置 <code>AFL_KEEP_ASSEMBLY</code> ，如果没有设置这个环境变量，就 unlink 掉 <code>modified_file</code>(已插完桩的文件)。设置该环境变量主要是为了防止 afl-as 删掉插桩后的汇编文件，设置为 1 则会保留插桩后的汇编文件</p>
+</li>
+</ol>
+<h2 id="add-instrumentation-插桩逻辑"><a href="#add-instrumentation-插桩逻辑" class="headerlink" title="add_instrumentation 插桩逻辑"></a>add_instrumentation 插桩逻辑</h2><ol>
+<li><p>判断 <code>input_file</code> 是否为空，如果不为空则尝试打开文件获取 fd 赋值给 <code>inf</code>，失败则抛出异常；<code>input_file</code> 为空则 <code>inf</code> 设置为标准输入；</p>
+</li>
+<li><p>打开 <code>modified_file</code> ，获取 fd 赋值给 <code>outfd</code>，失败返回异常；进一步验证该文件是否可写，不可写返回异常；</p>
+</li>
+<li><p><code>while</code> 循环读取 <code>inf</code> 指向文件的每一行到 <code>line</code> 数组，每行最多 <code>MAX_LINE = 8192</code>个字节（含末尾的‘\0’），从<code>line</code>数组里将读取到的内容写入到 <code>outf</code> 指向的文件，然后进入到真正的插桩逻辑。这里需要注意的是，插桩只向 <code>.text</code> 段插入，：</p>
+<ol>
+<li><p>首先跳过标签、宏、注释；</p>
+</li>
+<li><p>这里结合部分关键代码进行解释。需要注意的是，变量 <code>instr_ok</code> 本质上是一个 flag，用于表示是否位于<code>.text</code>段。变量设置为 1，表示位于 <code>.text</code> 中，如果不为 1，则表示不再。于是，如果<code>instr_ok</code> 为 1，就会在分支处执行插桩逻辑，否则就不插桩。</p>
+<ol>
+<li><p>首先判断读入的行是否以‘\t’ 开头，本质上是在匹配<code>.s</code>文件中声明的段，然后判断<code>line[1]</code>是否为<code>.</code>：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-keyword">if</span> (line[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;\t&#x27;</span> &amp;&amp; line[<span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;.&#x27;</span>) &#123;<br> <br>      <span class="hljs-comment">/* OpenBSD puts jump tables directly inline with the code, which is</span><br><span class="hljs-comment">         a bit annoying. They use a specific format of p2align directives</span><br><span class="hljs-comment">         around them, so we use that as a signal. */</span><br> <br>      <span class="hljs-keyword">if</span> (!clang_mode &amp;&amp; instr_ok &amp;&amp; !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;p2align &quot;</span>, <span class="hljs-number">8</span>) &amp;&amp;<br>          <span class="hljs-built_in">isdigit</span>(line[<span class="hljs-number">10</span>]) &amp;&amp; line[<span class="hljs-number">11</span>] == <span class="hljs-string">&#x27;\n&#x27;</span>) skip_next_label = <span class="hljs-number">1</span>;<br> <br>      <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;text\n&quot;</span>, <span class="hljs-number">5</span>) ||<br>          !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;section\t.text&quot;</span>, <span class="hljs-number">13</span>) ||<br>          !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;section\t__TEXT,__text&quot;</span>, <span class="hljs-number">21</span>) ||<br>          !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;section __TEXT,__text&quot;</span>, <span class="hljs-number">21</span>)) &#123;<br>        instr_ok = <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">continue</span>;<br>      &#125;<br> <br>      <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;section\t&quot;</span>, <span class="hljs-number">8</span>) ||<br>          !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;section &quot;</span>, <span class="hljs-number">8</span>) ||<br>          !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;bss\n&quot;</span>, <span class="hljs-number">4</span>) ||<br>          !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">2</span>, <span class="hljs-string">&quot;data\n&quot;</span>, <span class="hljs-number">5</span>)) &#123;<br>        instr_ok = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">continue</span>;<br>      &#125;<br> <br>    &#125;<br><br></code></pre></td></tr></table></figure>
+
+<ol>
+<li>‘\t’开头，且<code>line[1]==&#39;.&#39;</code>，检查是否为 <code>p2align</code> 指令，如果是，则设置 <code>skip_next_label = 1</code>；</li>
+<li>尝试匹配 <code>&quot;text\n&quot;</code> <code>&quot;section\t.text&quot;</code> <code>&quot;section\t__TEXT,__text&quot;</code> <code>&quot;section __TEXT,__text&quot;</code> 其中任意一个，匹配成功， 设置 <code>instr_ok = 1</code>， 表示位于 <code>.text</code> 段中，<code>continue</code> 跳出，进行下一次遍历；</li>
+<li>尝试匹配<code>&quot;section\t&quot;</code> <code>&quot;section &quot;</code> <code>&quot;bss\n&quot;</code> <code>&quot;data\n&quot;</code> 其中任意一个，匹配成功，设置 <code>instr_ok = 0</code>，表位于其他段中，<code>continue</code> 跳出，进行下一次遍历；</li>
+</ol>
+</li>
+<li><p>接下来通过几个 <code>if</code> 判断，来设置一些标志信息，包括 <code>off-flavor assembly</code>，<code>Intel/AT&amp;T</code>的块处理方式、<code>ad-hoc __asm__</code>块的处理方式等；</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-comment">/* Detect off-flavor assembly (rare, happens in gdb). When this is</span><br><span class="hljs-comment">   encountered, we set skip_csect until the opposite directive is</span><br><span class="hljs-comment">   seen, and we do not instrument. */</span><br> <br><span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;.code&quot;</span>)) &#123;<br> <br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;.code32&quot;</span>)) skip_csect = use_64bit;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;.code64&quot;</span>)) skip_csect = !use_64bit;<br> <br>&#125;<br> <br><span class="hljs-comment">/* Detect syntax changes, as could happen with hand-written assembly.</span><br><span class="hljs-comment">   Skip Intel blocks, resume instrumentation when back to AT&amp;T. */</span><br> <br><span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;.intel_syntax&quot;</span>)) skip_intel = <span class="hljs-number">1</span>;<br><span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;.att_syntax&quot;</span>)) skip_intel = <span class="hljs-number">0</span>;<br> <br><span class="hljs-comment">/* Detect and skip ad-hoc __asm__ blocks, likewise skipping them. */</span><br> <br><span class="hljs-keyword">if</span> (line[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;#&#x27;</span> || line[<span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;#&#x27;</span>) &#123;<br> <br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;#APP&quot;</span>)) skip_app = <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;#NO_APP&quot;</span>)) skip_app = <span class="hljs-number">0</span>;<br> <br>&#125;<br><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>AFL 在插桩时重点关注的内容包括：<code>^main, ^.L0, ^.LBB0_0, ^\tjnz foo</code> （_main 函数， gcc 和 clang 下的分支标记，条件跳转分支标记），这些内容通常标志了程序的流程变化，因此 AFL 会重点在这些位置进行插桩：</p>
+<p>对于形如<code>\tj[^m].</code>格式的指令，即条件跳转指令，且<code>R(100)</code>产生的随机数小于插桩密度<code>inst_ratio</code>，直接使用<code>fprintf</code>将<code>trampoline_fmt_64</code>(插桩部分的指令) 写入 <code>outf</code> 指向的文件，写入大小为小于 <code>MAP_SIZE</code>的随机数——<code>R(MAP_SIZE)</code></p>
+<p>，然后插桩计数<code>ins_lines</code>加一，<code>continue</code> 跳出，进行下一次遍历；</p>
+<figure class="highlight hsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs hsp"><span class="hljs-comment">/* If we&#x27;re in the right mood for instrumenting, check for function</span><br><span class="hljs-comment">   names or conditional labels. This is a bit messy, but in essence,</span><br><span class="hljs-comment">   we want to catch:</span><br><span class="hljs-comment"> </span><br><span class="hljs-comment">     ^main:      - function entry point (always instrumented)</span><br><span class="hljs-comment">     ^.L0:       - GCC branch label</span><br><span class="hljs-comment">     ^.LBB0_0:   - clang branch label (but only in clang mode)</span><br><span class="hljs-comment">     ^\tjnz foo  - conditional branches</span><br><span class="hljs-comment"> </span><br><span class="hljs-comment">   ...but not:</span><br><span class="hljs-comment"> </span><br><span class="hljs-comment">     ^# BB#0:    - clang comments</span><br><span class="hljs-comment">     ^ # BB#0:   - ditto</span><br><span class="hljs-comment">     ^.Ltmp0:    - clang non-branch labels</span><br><span class="hljs-comment">     ^.LC0       - GCC non-branch labels</span><br><span class="hljs-comment">     ^.LBB0_0:   - ditto (when in GCC mode)</span><br><span class="hljs-comment">     ^\tjmp foo  - non-conditional jumps</span><br><span class="hljs-comment"> </span><br><span class="hljs-comment">   Additionally, clang and GCC on MacOS X follow a different convention</span><br><span class="hljs-comment">   with no leading dots on labels, hence the weird maze of #ifdefs</span><br><span class="hljs-comment">   later on.</span><br><span class="hljs-comment"> </span><br><span class="hljs-comment"> */</span><br> <br><span class="hljs-keyword">if</span> (skip_intel || skip_app || skip_csect || !instr_ok ||<br>    <span class="hljs-keyword">line</span>[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;#&#x27;</span> || <span class="hljs-keyword">line</span>[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27; &#x27;</span>) <span class="hljs-keyword">continue</span><span class="hljs-comment">;</span><br> <br><span class="hljs-comment">/* Conditional branch instruction (jnz, etc). We append the instrumentation</span><br><span class="hljs-comment">   right after the branch (to instrument the not-taken path) and at the</span><br><span class="hljs-comment">   branch destination label (handled later on). */</span><br> <br><span class="hljs-keyword">if</span> (<span class="hljs-keyword">line</span>[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;\t&#x27;</span>) &#123;<br> <br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">line</span>[<span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;j&#x27;</span> &amp;&amp; <span class="hljs-keyword">line</span>[<span class="hljs-number">2</span>] != <span class="hljs-string">&#x27;m&#x27;</span> &amp;&amp; R(<span class="hljs-number">100</span>) &lt; inst_ratio) &#123;<br> <br>    fprintf(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,<br>            R(MAP_SIZE))<span class="hljs-comment">;</span><br> <br>    ins_lines++<span class="hljs-comment">;</span><br> <br>  &#125;<br> <br>  <span class="hljs-keyword">continue</span><span class="hljs-comment">;</span><br> <br>&#125;<br><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>对于 label 的相关评估，有一些 label 可能是一些分支的目的地，需要自己的评判</p>
+<p>首先检查该行中是否存在<code>:</code>，然后检查是否以<code>.</code>开始</p>
+<ol>
+<li><p>如果以<code>.</code>开始，则代表想要插桩<code>^.L0:</code>或者 <code>^.LBB0_0:</code>这样的 branch label，即 style jump destination</p>
+<ol>
+<li>检查 <code>line[2]</code>是否为数字 或者 如果是在 clang_mode 下，比较从<code>line[1]</code>开始的三个字节是否为<code>LBB.</code>，前述所得结果和<code>R(100) &lt; inst_ratio)</code>相与。如果结果为真，则设置<code>instrument_next = 1</code>；</li>
+</ol>
+</li>
+<li><p>否则代表这是一个 function，插桩<code>^func:</code>，function entry point，直接设置<code>instrument_next = 1</code>（defer mode）。</p>
+</li>
+</ol>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs arduino">    <span class="hljs-comment">/* Label of some sort. This may be a branch destination, but we need to</span><br><span class="hljs-comment">       tread carefully and account for several different formatting</span><br><span class="hljs-comment">       conventions. */</span><br> <br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __APPLE__</span><br> <br>    <span class="hljs-comment">/* Apple: L: */</span><br> <br>    <span class="hljs-keyword">if</span> ((colon_pos = <span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;:&quot;</span>))) &#123;<br> <br>      <span class="hljs-keyword">if</span> (line[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;L&#x27;</span> &amp;&amp; <span class="hljs-built_in">isdigit</span>(*(colon_pos - <span class="hljs-number">1</span>))) &#123;<br> <br><span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br> <br>    <span class="hljs-comment">/* Everybody else: .L: */</span><br> <br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;:&quot;</span>)) &#123;<br> <br>      <span class="hljs-keyword">if</span> (line[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;.&#x27;</span>) &#123;<br> <br><span class="hljs-meta">#<span class="hljs-keyword">endif</span> <span class="hljs-comment">/* __APPLE__ */</span></span><br> <br>        <span class="hljs-comment">/* .L0: or LBB0_0: style jump destination */</span><br> <br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __APPLE__</span><br> <br>        <span class="hljs-comment">/* Apple: L / LBB */</span><br> <br>        <span class="hljs-keyword">if</span> ((<span class="hljs-built_in">isdigit</span>(line[<span class="hljs-number">1</span>]) || (clang_mode &amp;&amp; !<span class="hljs-built_in">strncmp</span>(line, <span class="hljs-string">&quot;LBB&quot;</span>, <span class="hljs-number">3</span>)))<br>            &amp;&amp; <span class="hljs-built_in">R</span>(<span class="hljs-number">100</span>) &lt; inst_ratio) &#123;<br> <br><span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br> <br>        <span class="hljs-comment">/* Apple: .L / .LBB */</span><br> <br>        <span class="hljs-keyword">if</span> ((<span class="hljs-built_in">isdigit</span>(line[<span class="hljs-number">2</span>]) || (clang_mode &amp;&amp; !<span class="hljs-built_in">strncmp</span>(line + <span class="hljs-number">1</span>, <span class="hljs-string">&quot;LBB&quot;</span>, <span class="hljs-number">3</span>)))<br>            &amp;&amp; <span class="hljs-built_in">R</span>(<span class="hljs-number">100</span>) &lt; inst_ratio) &#123;<br> <br><span class="hljs-meta">#<span class="hljs-keyword">endif</span> <span class="hljs-comment">/* __APPLE__ */</span></span><br> <br>          <span class="hljs-comment">/* An optimization is possible here by adding the code only if the</span><br><span class="hljs-comment">             label is mentioned in the code in contexts other than call / jmp.</span><br><span class="hljs-comment">             That said, this complicates the code by requiring two-pass</span><br><span class="hljs-comment">             processing (messy with stdin), and results in a speed gain</span><br><span class="hljs-comment">             typically under 10%, because compilers are generally pretty good</span><br><span class="hljs-comment">             about not generating spurious intra-function jumps.</span><br><span class="hljs-comment"> </span><br><span class="hljs-comment">             We use deferred output chiefly to avoid disrupting</span><br><span class="hljs-comment">             .Lfunc_begin0-style exception handling calculations (a problem on</span><br><span class="hljs-comment">             MacOS X). */</span><br> <br>          <span class="hljs-keyword">if</span> (!skip_next_label) instrument_next = <span class="hljs-number">1</span>; <span class="hljs-keyword">else</span> skip_next_label = <span class="hljs-number">0</span>;<br> <br>        &#125;<br> <br>      &#125; <span class="hljs-keyword">else</span> &#123;<br> <br>        <span class="hljs-comment">/* Function label (always instrumented, deferred mode). */</span><br> <br>        instrument_next = <span class="hljs-number">1</span>;<br> <br>      &#125;<br>    &#125;<br>  &#125; <br></code></pre></td></tr></table></figure>
+</li>
+<li><p>上述过程完成后，来到 <code>while</code> 循环的下一个循环，在 <code>while</code> 的开头，可以看到对以 defered mode 进行插桩的位置进行了真正的插桩处理：</p>
+<figure class="highlight sas"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sas"><span class="hljs-keyword">if</span> (!pass_thru <span class="hljs-variable">&amp;&amp;</span> !skip_intel <span class="hljs-variable">&amp;&amp;</span> !skip_app <span class="hljs-variable">&amp;&amp;</span> !skip_csect <span class="hljs-variable">&amp;&amp;</span> instr_ok <span class="hljs-variable">&amp;&amp;</span><br>    instrument_next <span class="hljs-variable">&amp;&amp;</span> line[0] == <span class="hljs-string">&#x27;\t&#x27;</span> <span class="hljs-variable">&amp;&amp;</span> isalpha(line[1])) &#123;<br> <br>  fprintf(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,<br>          R(MAP_SIZE));<br> <br>  instrument_next = 0;<br>  ins_lines++;<br> <br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这里对 <code>instr_ok, instrument_next</code> 变量进行了检验是否为 1，而且进一步校验是否位于 <code>.text</code> 段中，且设置了 defered mode 进行插桩，则就进行插桩操作，写入 <code>trampoline_fmt_64/32</code> 。</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p>至此，插桩函数 <code>add_instrumentation</code> 的主要逻辑已梳理完成。</p>
+<h2 id="afl-as-h-桩代码逻辑"><a href="#afl-as-h-桩代码逻辑" class="headerlink" title="afl-as.h 桩代码逻辑"></a>afl-as.h 桩代码逻辑</h2><p>关于这部分的分析，最好的学习办法是设置 <code>AFL_KEEP_ASSEMBLY=1 </code>去编译 ,对比插桩前后汇编代码差异</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># afl-gcc</span><br>AFL_KEEP_ASSEMBLY=1 AFL_DONT_OPTIMIZE=1 ../afl-gcc test_as.c -o test_as -O0 -fno-asynchronous-unwind-tables<br><span class="hljs-built_in">ls</span> -al /tmp/.afl-16830-1734879283.s<br><span class="hljs-built_in">cp</span> /tmp/.afl-16830-1734879283.s ./<br><span class="hljs-comment"># 原生gcc</span><br>gcc -S test_as.c -O0 -fno-asynchronous-unwind-tables  -o test_as1.o<br></code></pre></td></tr></table></figure>
+
+<p>插桩后的汇编代码会在每一个基本块入口处插入了一段代码，且在程序末尾，写有 AFL 桩代码变量定义和桩代码函数实现</p>
+<p>关于instrumentation trampoline 代码带注释分析</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* --- AFL TRAMPOLINE (64-BIT) --- */</span><br><br>.align <span class="hljs-number">4</span><br><br>leaq -(<span class="hljs-number">128</span>+<span class="hljs-number">24</span>)(%rsp), %rsp<br>movq %rdx,  <span class="hljs-number">0</span>(%rsp)<br>movq %rcx,  <span class="hljs-number">8</span>(%rsp)<br>movq %rax, <span class="hljs-number">16</span>(%rsp)<br>movq $<span class="hljs-number">0x0000eb91</span>, %rcx <span class="hljs-comment">// 向ecx中存入识别代码块的随机桩代码id</span><br>call __afl_maybe_log<br>movq <span class="hljs-number">16</span>(%rsp), %rax<br>movq  <span class="hljs-number">8</span>(%rsp), %rcx<br>movq  <span class="hljs-number">0</span>(%rsp), %rdx<br><span class="hljs-title function_">leaq</span> <span class="hljs-params">(<span class="hljs-number">128</span>+<span class="hljs-number">24</span>)</span><span class="hljs-params">(%rsp)</span>, %rsp<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// RCX: 识别代码块的随机桩代码id</span><br>__afl_maybe_log:<br><span class="hljs-comment">// 将标志位加载到 AH</span><br><span class="hljs-comment">// 将 OF 位保存在 al</span><br>  lahf<br>  seto  %al<br><br>  <span class="hljs-comment">/* Check if SHM region is already mapped. */</span><br><br>  movq  __afl_area_ptr(%rip), %rdx<br>  <span class="hljs-comment">//按位与=&gt; 检查rdx是否为0  如果结果为0 ZF is 1</span><br>  testq %rdx, %rdx<br>  je    __afl_setup<br><br>__afl_store:<br><br>  <span class="hljs-comment">/* Calculate and store hit for the code location specified in rcx. */</span><br>  <span class="hljs-comment">// 更新rcx的值为__afl_prev_loc(%rip) ^ rcx</span><br>  <span class="hljs-comment">// 更新__afl_prev_loc(%rip)的值为 原rcx</span><br>  xorq __afl_prev_loc(%rip), %rcx<br>  xorq %rcx, __afl_prev_loc(%rip)<br>  shrq $<span class="hljs-number">1</span>, __afl_prev_loc(%rip)<br><br>  <span class="hljs-comment">// [rdx +rcx*1] += 1  增加 hit count</span><br>  incb (%rdx, %rcx, <span class="hljs-number">1</span>)<br><br>__afl_return:<br><br>  addb $<span class="hljs-number">127</span>, %al<br>  sahf<br>  ret<br><br>.align <span class="hljs-number">8</span><br><br>__afl_setup:<br><br>  <span class="hljs-comment">/* Do not retry setup if we had previous failures. */</span><br><br>  cmpb $<span class="hljs-number">0</span>, __afl_setup_failure(%rip)<br>  jne __afl_return<br><br>  <span class="hljs-comment">/* Check out if we have a global pointer on file. */</span><br><br>  movq  __afl_global_area_ptr@GOTPCREL(%rip), %rdx<br>  <span class="hljs-title function_">movq</span>  <span class="hljs-params">(%rdx)</span>, %rdx<br>  <span class="hljs-comment">// 判断rdx 是否为0</span><br>  testq %rdx, %rdx<br>  <span class="hljs-comment">// 为0 跳到__afl_setup_first</span><br>  je    __afl_setup_first<br><br>  movq %rdx, __<span class="hljs-title function_">afl_area_ptr</span><span class="hljs-params">(%rip)</span><br>  jmp  __afl_store<br><br>__afl_setup_first:<br><br>  <span class="hljs-comment">/* Save everything that is not yet saved and that may be touched by</span><br><span class="hljs-comment">     getenv() and several other libcalls we&#x27;ll be relying on. */</span><br>  <span class="hljs-comment">// </span><br>  leaq -352<span class="hljs-params">(%rsp)</span>, %rsp<br><br>  movq %rax,   0<span class="hljs-params">(%rsp)</span><br>  movq %rcx,   8<span class="hljs-params">(%rsp)</span><br>  movq %rdi,  16<span class="hljs-params">(%rsp)</span><br>  movq %rsi,  32<span class="hljs-params">(%rsp)</span><br>  movq %r8,   40<span class="hljs-params">(%rsp)</span><br>  movq %r9,   48<span class="hljs-params">(%rsp)</span><br>  movq %r10,  56<span class="hljs-params">(%rsp)</span><br>  movq %r11,  64<span class="hljs-params">(%rsp)</span><br><br>  movq %xmm0,  96<span class="hljs-params">(%rsp)</span><br>  movq %xmm1,  112<span class="hljs-params">(%rsp)</span><br>  movq %xmm2,  128<span class="hljs-params">(%rsp)</span><br>  movq %xmm3,  144<span class="hljs-params">(%rsp)</span><br>  movq %xmm4,  160<span class="hljs-params">(%rsp)</span><br>  movq %xmm5,  176<span class="hljs-params">(%rsp)</span><br>  movq %xmm6,  192<span class="hljs-params">(%rsp)</span><br>  movq %xmm7,  208<span class="hljs-params">(%rsp)</span><br>  movq %xmm8,  224<span class="hljs-params">(%rsp)</span><br>  movq %xmm9,  240<span class="hljs-params">(%rsp)</span><br>  movq %xmm10, 256<span class="hljs-params">(%rsp)</span><br>  movq %xmm11, 272<span class="hljs-params">(%rsp)</span><br>  movq %xmm12, 288<span class="hljs-params">(%rsp)</span><br>  movq %xmm13, 304<span class="hljs-params">(%rsp)</span><br>  movq %xmm14, 320<span class="hljs-params">(%rsp)</span><br>  movq %xmm15, 336<span class="hljs-params">(%rsp)</span><br><br>  <span class="hljs-comment">/* Map SHM, jumping to __afl_setup_abort if something goes wrong. */</span><br><br>  <span class="hljs-comment">/* The 64-bit ABI requires 16-byte stack alignment. We&#x27;ll keep the</span><br><span class="hljs-comment">     original stack ptr in the callee-saved r12. */</span><br><br>  <span class="hljs-comment">// 堆栈对齐</span><br>  pushq %r12<br>  movq  %rsp, %r12<br>  subq  $16, %rsp<br>  andq  $0xfffffffffffffff0, %rsp<br>  <span class="hljs-comment">//0x5555555557d7 (.AFL_VARS) =&gt; getenv(&quot;__AFL_SHM_ID&quot;) 如果不存在返回0</span><br>  leaq .<span class="hljs-title function_">AFL_SHM_ENV</span><span class="hljs-params">(%rip)</span>, %rdi<br>call getenv@PLT<br><br>  testq %rax, %rax<br>  je    __afl_setup_abort<br><br>  <span class="hljs-comment">// 把 __AFL_SHM_ID 从字符串转成整数</span><br>  movq  %rax, %rdi<br>call atoi@PLT<br><br>  xorq %rdx, %rdx   <span class="hljs-comment">/* shmat flags    */</span><br>  xorq %rsi, %rsi   <span class="hljs-comment">/* requested addr */</span><br>  <span class="hljs-comment">// rax 返回值</span><br>  movq %rax, %rdi   <span class="hljs-comment">/* SHM ID         */</span><br>call shmat@PLT<br><br>  cmpq $-1, %rax<br>  je   __afl_setup_abort<br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">    　　上面的汇编代码中，如果发现 attach 失败，则进入 AFL 的错误处理流程。不过读到这里，我们有一个小疑问：一片共享内存，首先应当由 shmget() 创建，再由 shmat() 映射到当前程序的虚拟内存空间中。那么，这片虚拟内存是什么时候创建的？答案是 afl-fuzz 在 setup_shm() 流程中调用 shmget() 创建了虚拟内存，并将 shm id 写入 __AFL_SHM_ID 环境变量。如果我们并非通过 afl-fuzz 运行程序，自然这片虚拟内存不会被创建，也不会存在 __AFL_SHM_ID 环境变量了。</span><br><span class="hljs-comment">  */</span><br><br>  <span class="hljs-comment">/* Store the address of the SHM region. */</span><br><br>  movq %rax, %rdx<br>  movq %rax, __<span class="hljs-title function_">afl_area_ptr</span><span class="hljs-params">(%rip)</span><br><br>  movq __afl_global_area_ptr@<span class="hljs-title function_">GOTPCREL</span><span class="hljs-params">(%rip)</span>, %rdx<br>  movq %rax, <span class="hljs-params">(%rdx)</span><br>  movq %rax, %rdx<br><br>__afl_forkserver:<br><br>  <span class="hljs-comment">/* Enter the fork server mode to avoid the overhead of execve() calls. We</span><br><span class="hljs-comment">     push rdx (area ptr) twice to keep stack alignment neat. */</span><br><br>  pushq %rdx<br>  pushq %rdx<br><br>  <span class="hljs-comment">/* Phone home and tell the parent that we&#x27;re OK. (Note that signals with</span><br><span class="hljs-comment">     no SA_RESTART will mess it up). If this fails, assume that the fd is</span><br><span class="hljs-comment">     closed because we were execve()d from an instrumented binary, or because</span><br><span class="hljs-comment">     the parent doesn&#x27;t want to use the fork server. */</span><br>  <span class="hljs-comment">// 等待 fuzzer 通过控制管道发送过来的命令，读入到 __afl_temp 中</span><br>  movq $4, %rdx               <span class="hljs-comment">/* length    */</span><br>  leaq __<span class="hljs-title function_">afl_temp</span><span class="hljs-params">(%rip)</span>, %rsi <span class="hljs-comment">/* data      */</span><br>  movq $<span class="hljs-params">(<span class="hljs-number">198</span> + <span class="hljs-number">1</span>)</span>, %rdi       <span class="hljs-comment">/* file desc */</span><br>call write@PLT<br><br>  cmpq $4, %rax<br>  jne  __afl_fork_resume<br><br>__afl_fork_wait_loop:<br><br>  <span class="hljs-comment">/* Wait for parent by reading from the pipe. Abort if read fails. */</span><br><br>  movq $4, %rdx               <span class="hljs-comment">/* length    */</span><br>  leaq __<span class="hljs-title function_">afl_temp</span><span class="hljs-params">(%rip)</span>, %rsi <span class="hljs-comment">/* data      */</span><br>  movq $198, %rdi             <span class="hljs-comment">/* file desc */</span><br>call read@PLT<br>  cmpq $4, %rax<br>  jne  __afl_die<br><br>  <span class="hljs-comment">/* Once woken up, create a clone of our process. This is an excellent use</span><br><span class="hljs-comment">     case for syscall(__NR_clone, 0, CLONE_PARENT), but glibc boneheadedly</span><br><span class="hljs-comment">     caches getpid() results and offers no way to update the value, breaking</span><br><span class="hljs-comment">     abort(), raise(), and a bunch of other things :-( */</span><br><br>call fork@PLT<br>  cmpq $0, %rax<br>  <span class="hljs-comment">//jump if rax &lt; 0</span><br>  jl   __afl_die<br>  <span class="hljs-comment">// child</span><br>  je   __afl_fork_resume<br><br>  <span class="hljs-comment">/* In parent process: write PID to pipe, then wait for child. */</span><br>  <span class="hljs-comment">//将子进程的 pid 保存到 __afl_fork_pid 变量</span><br>  movl %eax, __<span class="hljs-title function_">afl_fork_pid</span><span class="hljs-params">(%rip)</span><br><br>  <span class="hljs-comment">//向 fd 199 写入子进程的 pid</span><br>  movq $4, %rdx                   <span class="hljs-comment">/* length    */</span><br>  leaq __<span class="hljs-title function_">afl_fork_pid</span><span class="hljs-params">(%rip)</span>, %rsi <span class="hljs-comment">/* data      */</span><br>  movq $<span class="hljs-params">(<span class="hljs-number">198</span> + <span class="hljs-number">1</span>)</span>, %rdi             <span class="hljs-comment">/* file desc */</span><br>call write@PLT<br><br>  movq $0, %rdx                   <span class="hljs-comment">/* no flags  */</span><br>  leaq __<span class="hljs-title function_">afl_temp</span><span class="hljs-params">(%rip)</span>, %rsi     <span class="hljs-comment">/* status    */</span><br>  movq __<span class="hljs-title function_">afl_fork_pid</span><span class="hljs-params">(%rip)</span>, %rdi <span class="hljs-comment">/* PID       */</span><br>call waitpid@PLT<br>  cmpq $0, %rax<br>  jle  __afl_die<br><br>  <span class="hljs-comment">/* Relay wait status to pipe, then loop back. */</span><br>  <span class="hljs-comment">// 写入状态管道告知 fuzzer</span><br>  movq $4, %rdx               <span class="hljs-comment">/* length    */</span><br>  leaq __<span class="hljs-title function_">afl_temp</span><span class="hljs-params">(%rip)</span>, %rsi <span class="hljs-comment">/* data      */</span><br>  movq $<span class="hljs-params">(<span class="hljs-number">198</span> + <span class="hljs-number">1</span>)</span>, %rdi         <span class="hljs-comment">/* file desc */</span><br>call write@PLT<br><br>  jmp  __afl_fork_wait_loop<br><br>__afl_fork_resume:<br><br>  <span class="hljs-comment">/* In child process: close fds, resume execution. */</span><br><br>  movq $198, %rdi<br>call close@PLT<br><br>  movq $<span class="hljs-params">(<span class="hljs-number">198</span> + <span class="hljs-number">1</span>)</span>, %rdi<br>call close@PLT<br><br>  popq %rdx<br>  popq %rdx<br><br>  movq %r12, %rsp<br>  popq %r12<br><br>  movq  0<span class="hljs-params">(%rsp)</span>, %rax<br>  movq  8<span class="hljs-params">(%rsp)</span>, %rcx<br>  movq 16<span class="hljs-params">(%rsp)</span>, %rdi<br>  movq 32<span class="hljs-params">(%rsp)</span>, %rsi<br>  movq 40<span class="hljs-params">(%rsp)</span>, %r8<br>  movq 48<span class="hljs-params">(%rsp)</span>, %r9<br>  movq 56<span class="hljs-params">(%rsp)</span>, %r10<br>  movq 64<span class="hljs-params">(%rsp)</span>, %r11<br><br>  movq  96<span class="hljs-params">(%rsp)</span>, %xmm0<br>  movq 112<span class="hljs-params">(%rsp)</span>, %xmm1<br>  movq 128<span class="hljs-params">(%rsp)</span>, %xmm2<br>  movq 144<span class="hljs-params">(%rsp)</span>, %xmm3<br>  movq 160<span class="hljs-params">(%rsp)</span>, %xmm4<br>  movq 176<span class="hljs-params">(%rsp)</span>, %xmm5<br>  movq 192<span class="hljs-params">(%rsp)</span>, %xmm6<br>  movq 208<span class="hljs-params">(%rsp)</span>, %xmm7<br>  movq 224<span class="hljs-params">(%rsp)</span>, %xmm8<br>  movq 240<span class="hljs-params">(%rsp)</span>, %xmm9<br>  movq 256<span class="hljs-params">(%rsp)</span>, %xmm10<br>  movq 272<span class="hljs-params">(%rsp)</span>, %xmm11<br>  movq 288<span class="hljs-params">(%rsp)</span>, %xmm12<br>  movq 304<span class="hljs-params">(%rsp)</span>, %xmm13<br>  movq 320<span class="hljs-params">(%rsp)</span>, %xmm14<br>  movq 336<span class="hljs-params">(%rsp)</span>, %xmm15<br><br>  leaq 352<span class="hljs-params">(%rsp)</span>, %rsp<br><br>  jmp  __afl_store<br><br>__afl_die:<br><br>  xorq %rax, %rax<br>call _exit@PLT<br><br>__afl_setup_abort:<br><br>  <span class="hljs-comment">/* Record setup failure so that we don&#x27;t keep calling</span><br><span class="hljs-comment">     shmget() / shmat() over and over again. */</span><br><br>  incb __<span class="hljs-title function_">afl_setup_failure</span><span class="hljs-params">(%rip)</span><br><br>  movq %r12, %rsp<br>  popq %r12<br><br>  movq  0<span class="hljs-params">(%rsp)</span>, %rax<br>  movq  8<span class="hljs-params">(%rsp)</span>, %rcx<br>  movq 16<span class="hljs-params">(%rsp)</span>, %rdi<br>  movq 32<span class="hljs-params">(%rsp)</span>, %rsi<br>  movq 40<span class="hljs-params">(%rsp)</span>, %r8<br>  movq 48<span class="hljs-params">(%rsp)</span>, %r9<br>  movq 56<span class="hljs-params">(%rsp)</span>, %r10<br>  movq 64<span class="hljs-params">(%rsp)</span>, %r11<br><br>  movq  96<span class="hljs-params">(%rsp)</span>, %xmm0<br>  movq 112<span class="hljs-params">(%rsp)</span>, %xmm1<br>  movq 128<span class="hljs-params">(%rsp)</span>, %xmm2<br>  movq 144<span class="hljs-params">(%rsp)</span>, %xmm3<br>  movq 160<span class="hljs-params">(%rsp)</span>, %xmm4<br>  movq 176<span class="hljs-params">(%rsp)</span>, %xmm5<br>  movq 192<span class="hljs-params">(%rsp)</span>, %xmm6<br>  movq 208<span class="hljs-params">(%rsp)</span>, %xmm7<br>  movq 224<span class="hljs-params">(%rsp)</span>, %xmm8<br>  movq 240<span class="hljs-params">(%rsp)</span>, %xmm9<br>  movq 256<span class="hljs-params">(%rsp)</span>, %xmm10<br>  movq 272<span class="hljs-params">(%rsp)</span>, %xmm11<br>  movq 288<span class="hljs-params">(%rsp)</span>, %xmm12<br>  movq 304<span class="hljs-params">(%rsp)</span>, %xmm13<br>  movq 320<span class="hljs-params">(%rsp)</span>, %xmm14<br>  movq 336<span class="hljs-params">(%rsp)</span>, %xmm15<br><br>  leaq 352<span class="hljs-params">(%rsp)</span>, %rsp<br><br>  jmp __afl_return<br><br>.AFL_VARS:<br><br>  .lcomm   __afl_area_ptr, 8<br>  .lcomm   __afl_prev_loc, 8<br>  .lcomm   __afl_fork_pid, 4<br>  .lcomm   __afl_temp, 4<br>  .lcomm   __afl_setup_failure, 1<br>  .comm    __afl_global_area_ptr, 8, 8<br><br>.AFL_SHM_ENV:<br>  .asciz &quot;__AFL_SHM_ID&quot;<br><br><span class="hljs-comment">/* --- END --- */</span><br></code></pre></td></tr></table></figure>
+
+
+<h1 id="afl-tmin"><a href="#afl-tmin" class="headerlink" title="afl-tmin"></a>afl-tmin</h1><p>afl-tmin是一个简单的测试用例最小化器，它接受一个输入文件，并试图删除尽可能多的数据，同时保持二进制文件处于崩溃状态或产生一致的仪器输出（模式是根据最初观察到的行为自动选择的）</p>
+<p>afl-tmin 用于将测试用例最小化，同时保持触发相同的代码路径或行为的能力</p>
+<p>main 函数核心代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs C">setup_shm();<br>setup_signal_handlers();<br>set_up_environment();<br><br>find_binary(argv[optind]);<br>detect_file_args(argv + optind);<br>read_initial_file();<br>run_target(use_argv, in_data, in_len, <span class="hljs-number">1</span>);<br>minimize(use_argv);<br>unlink(prog_in);<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="main-函数逻辑"><a href="#main-函数逻辑" class="headerlink" title="main 函数逻辑"></a>main 函数逻辑</h2><ol>
+<li>初始化共享内存， 初始化共享内存（Shared Memory, shm）</li>
+<li><code>setup_signal_handlers() </code> 设置信号处理程序是为了确保程序能够在接收到特定信号（如用户中断 Ctrl+C）时优雅地结束运行，而不是突然终止，这样可以避免数据丢失或文件损坏</li>
+<li><code>set_up_environment()</code>  配置环境变量，比如设置临时文件的位置、启用地址&#x2F;内存 sanitizer (ASAN&#x2F;MSAN) 工具来检测潜在的安全问题，以及可能预加载某些库（通过 LD_PRELOAD 环境变量）</li>
+<li><code>find_binary(argv[optind]) </code> 查找并确认将要模糊测试的目标程序（二进制文件）。<code>argv[optind]</code> 是命令行参数数组的一部分，包含了目标程序的路径</li>
+<li><code>detect_file_args(argv + optind);</code>  分析命令行参数，识别出哪些参数代表文件路径，并特别处理占位符 <code>@@</code>，将其替换为实际的输入文件位置</li>
+<li><code>read_initial_file();</code> 读取提供的初始输入文件内容，这些内容将被用作模糊测试的基础或作为最小化过程的起点</li>
+<li><code>run_target(use_argv, in_data, in_len, 1);</code> 使用指定的参数和输入数据对目标程序进行一次无操作运行（dry run），目的是检查是否存在超时或崩溃的问题，以确保后续最小化过程的正确性</li>
+<li><code>minimize(use_argv);</code> <strong>执行核心的最小化逻辑</strong>，尝试减少输入文件的大小而不改变其触发相同代码路径或行为的能力</li>
+<li><code>unlink(prog_in);</code>  最后，删除创建的临时输入文件（prog_in）</li>
+</ol>
+<p>可以看出，重点函数是 <code>minimize</code> 最小化逻辑，其中 <code>run_target</code>函数逻辑里有一个<code>hit count</code>机制的实现，也比较关键，故我们重点分析这两个函数</p>
+<h2 id="run-target"><a href="#run-target" class="headerlink" title="run_target"></a>run_target</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* Execute target application. Returns 0 if the changes are a dud, or</span><br><span class="hljs-comment">   1 if they should be kept. */</span><br><br><span class="hljs-type">static</span> u8 <span class="hljs-title function_">run_target</span><span class="hljs-params">(<span class="hljs-type">char</span>** argv, u8* mem, u32 len, u8 first_run)</span> &#123;<br><br>  <span class="hljs-comment">//  运行前的准备</span><br>  <span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">itimerval</span> <span class="hljs-title">it</span>;</span><br>  <span class="hljs-type">int</span> status = <span class="hljs-number">0</span>;<br><br>  s32 prog_in_fd;<br>  u32 cksum;<br><br>  <span class="hljs-built_in">memset</span>(trace_bits, <span class="hljs-number">0</span>, MAP_SIZE);<br>  MEM_BARRIER();<br><br>  prog_in_fd = write_to_file(prog_in, mem, len);<br><br>  child_pid = fork();<br><br>  <span class="hljs-keyword">if</span> (child_pid &lt; <span class="hljs-number">0</span>) PFATAL(<span class="hljs-string">&quot;fork() failed&quot;</span>);<br><br>  <span class="hljs-keyword">if</span> (!child_pid) &#123;<br>    <span class="hljs-comment">//  子进程代码</span><br>      <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">rlimit</span> <span class="hljs-title">r</span>;</span><br>    <span class="hljs-comment">// stdin 指向输入文件、stdout 和 stderr 指向 /dev/null</span><br>    <span class="hljs-keyword">if</span> (dup2(use_stdin ? prog_in_fd : dev_null_fd, <span class="hljs-number">0</span>) &lt; <span class="hljs-number">0</span> ||<br>        dup2(dev_null_fd, <span class="hljs-number">1</span>) &lt; <span class="hljs-number">0</span> ||<br>        dup2(dev_null_fd, <span class="hljs-number">2</span>) &lt; <span class="hljs-number">0</span>) &#123;<br><br>      *(u32*)trace_bits = EXEC_FAIL_SIG;<br>      PFATAL(<span class="hljs-string">&quot;dup2() failed&quot;</span>);<br>    &#125;<br><br>    close(dev_null_fd);<br>    close(prog_in_fd);<br><br>    setsid();<br><br>    <span class="hljs-comment">// 设置内存限制</span><br>    <span class="hljs-keyword">if</span> (mem_limit) &#123;<br><br>      r.rlim_max = r.rlim_cur = ((<span class="hljs-type">rlim_t</span>)mem_limit) &lt;&lt; <span class="hljs-number">20</span>;<br><br>    <span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> RLIMIT_AS</span><br>        setrlimit(RLIMIT_AS, &amp;r); <span class="hljs-comment">/* Ignore errors */</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br>        setrlimit(RLIMIT_DATA, &amp;r); <span class="hljs-comment">/* Ignore errors */</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">endif</span> <span class="hljs-comment">/* ^RLIMIT_AS */</span></span><br><br>    &#125;<br><br>    r.rlim_max = r.rlim_cur = <span class="hljs-number">0</span>;<br>    setrlimit(RLIMIT_CORE, &amp;r); <span class="hljs-comment">/* Ignore errors */</span><br><br>    <span class="hljs-comment">// execv 目标程序</span><br>    execv(target_path, argv);<br><br>    <span class="hljs-comment">// 如果程序运行到了这里，说明 execv 失败了，把 shm 前四个字节设为 0xfee1dead</span><br>    *(u32*)trace_bits = EXEC_FAIL_SIG;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>  &#125;<br><br><br>  close(prog_in_fd);<br>  <span class="hljs-comment">// 设置 timeout</span><br>  child_timed_out = <span class="hljs-number">0</span>;<br>  it.it_value.tv_sec = (exec_tmout / <span class="hljs-number">1000</span>);<br>  it.it_value.tv_usec = (exec_tmout % <span class="hljs-number">1000</span>) * <span class="hljs-number">1000</span>;<br>  <span class="hljs-comment">// SIGALRM 的 handler 此前已被设为「kill 掉 child_pid」</span><br>  setitimer(ITIMER_REAL, &amp;it, <span class="hljs-literal">NULL</span>);<br>  <span class="hljs-keyword">if</span> (waitpid(child_pid, &amp;status, <span class="hljs-number">0</span>) &lt;= <span class="hljs-number">0</span>) FATAL(<span class="hljs-string">&quot;waitpid() failed&quot;</span>);<br><br>  <span class="hljs-comment">// 取消定时器</span><br>  child_pid = <span class="hljs-number">0</span>;<br>  it.it_value.tv_sec = <span class="hljs-number">0</span>;<br>  it.it_value.tv_usec = <span class="hljs-number">0</span>;<br>  setitimer(ITIMER_REAL, &amp;it, <span class="hljs-literal">NULL</span>);<br><br>  MEM_BARRIER();<br>  <span class="hljs-comment">// 接下来分析 shm</span><br><br>  <span class="hljs-comment">// execv 是否成功</span><br>  <span class="hljs-keyword">if</span> (*(u32*)trace_bits == EXEC_FAIL_SIG)<br>    FATAL(<span class="hljs-string">&quot;Unable to execute &#x27;%s&#x27;&quot;</span>, argv[<span class="hljs-number">0</span>]);<br><br>  <span class="hljs-comment">// 对 hit count 分桶</span><br>  classify_counts(trace_bits);<br>  apply_mask((u32*)trace_bits, (u32*)mask_bitmap);<br>  total_execs++;<br><br>  <span class="hljs-keyword">if</span> (stop_soon) &#123;<br>    SAYF(cRST cLRD <span class="hljs-string">&quot;\n+++ Minimization aborted by user +++\n&quot;</span> cRST);<br>    close(write_to_file(out_file, in_data, in_len));<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>  &#125;<br><br>  <span class="hljs-comment">// 如果执行超时，则返回 0，表示这个 input 应该忽略</span><br>  <span class="hljs-comment">/* Always discard inputs that time out. */</span><br>  <span class="hljs-keyword">if</span> (child_timed_out) &#123;<br>    missed_hangs++;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br><br>  <span class="hljs-keyword">if</span> (WIFSIGNALED(status) ||<br>      (WIFEXITED(status) &amp;&amp; WEXITSTATUS(status) == MSAN_ERROR) ||<br>      (WIFEXITED(status) &amp;&amp; WEXITSTATUS(status) &amp;&amp; exit_crash)) &#123;<br>    <span class="hljs-comment">// 若发现目标程序 crash</span><br>    <br>    <span class="hljs-comment">// 如果是初次运行就 crash，说明该使用 crash mode</span><br>    <span class="hljs-keyword">if</span> (first_run) crash_mode = <span class="hljs-number">1</span>;<br><br>    <span class="hljs-keyword">if</span> (crash_mode) &#123;<br>      <span class="hljs-comment">// 如果是 crash mode，且不要求 crash 路径与原 input 相同，则立即报告 input 有效，该保留</span><br>      <span class="hljs-keyword">if</span> (!exact_mode) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-comment">// 是 non-crash mode，但现在 crash 了，说明这个 input 与原 input 路径不同，该丢弃</span><br>      missed_crashes++;<br>      <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br><br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (crash_mode) &#123;<br>    <span class="hljs-comment">// 发现目标程序没有 crash，而目前处于 crash mode，则本 input 与原 input 路径不同，该丢弃</span><br>    missed_paths++;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  &#125;<br><br>  <span class="hljs-comment">// 对 shm 计算 hash，注意这里的 shm 已经是 hit count 分桶处理之后的了</span><br>  cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);<br><br>  <span class="hljs-keyword">if</span> (first_run) orig_cksum = cksum;<br><br>  <span class="hljs-comment">// 若本 input 的 shm hash 与原始 input 相同，则本 input 有效，予以保留</span><br>  <span class="hljs-keyword">if</span> (orig_cksum == cksum) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br><br>  missed_paths++;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中父进程创建了子进程，子进程执行目标程序，子进程执行完毕之后，父进程会读取子进程的 shm，并根据 shm 的内容 执行 <code>hit count机制</code> ，（shm 是 AFL 中用来记录程序执行过程中每个位置是否被触发了代码路径的，shm 的大小为 MAP_SIZE，MAP_SIZE 默认为 1M，每个字节代表一个位置，如果该位置被触发了代码路径，则该字节的值为 1，否则为 0） 判断本 input 是否有效，如果无效，则丢弃，如果有效，则保留。</p>
+<h3 id="hit-count-分桶机制"><a href="#hit-count-分桶机制" class="headerlink" title="hit count 分桶机制"></a>hit count 分桶机制</h3><p>关键代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">classify_counts(trace_bits);<br>apply_mask((u32*)trace_bits, (u32*)mask_bitmap);<br><span class="hljs-comment">// ...</span><br>cksum = hash32(trace_bits, MAP_SIZE, HASH_CONST);<br><br></code></pre></td></tr></table></figure>
+<p>上述代码计算出了运行 hash。先看 classify_counts 函数，它负责将 shm 的 hit count 分桶处理，将 hit count 改为其所在的桶 id</p>
+<p>AFL 设计了 8 个 hit count 桶，规则为输入走某个基本块的时候，如果命中的是 0、1、2、3、4-7、8-15、16-31、32-127、128+ 这些区间内，则认为是不同的命中，也就落入不同的桶内。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* Classify tuple counts. This is a slow &amp; naive version, but good enough here. */</span><br><br><span class="hljs-type">static</span> <span class="hljs-type">const</span> u8 count_class_lookup[<span class="hljs-number">256</span>] = &#123;<br><br>  [<span class="hljs-number">0</span>]           = <span class="hljs-number">0</span>,<br>  [<span class="hljs-number">1</span>]           = <span class="hljs-number">1</span>,<br>  [<span class="hljs-number">2</span>]           = <span class="hljs-number">2</span>,<br>  [<span class="hljs-number">3</span>]           = <span class="hljs-number">4</span>,<br>  [<span class="hljs-number">4</span> ... <span class="hljs-number">7</span>]     = <span class="hljs-number">8</span>,<br>  [<span class="hljs-number">8</span> ... <span class="hljs-number">15</span>]    = <span class="hljs-number">16</span>,<br>  [<span class="hljs-number">16</span> ... <span class="hljs-number">31</span>]   = <span class="hljs-number">32</span>,<br>  [<span class="hljs-number">32</span> ... <span class="hljs-number">127</span>]  = <span class="hljs-number">64</span>,<br>  [<span class="hljs-number">128</span> ... <span class="hljs-number">255</span>] = <span class="hljs-number">128</span><br><br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">classify_counts</span><span class="hljs-params">(u8* mem)</span> &#123;<br>  u32 i = MAP_SIZE;<br><br>  <span class="hljs-keyword">if</span> (edges_only) &#123;<br>    <span class="hljs-comment">// 若打开 -e 开关，则只要命中，无论命中多少次，都视为相同。</span><br>    <span class="hljs-keyword">while</span> (i--) &#123;<br>      <span class="hljs-keyword">if</span> (*mem) *mem = <span class="hljs-number">1</span>;<br>      mem++;<br>    &#125;<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// 将 hit count 改为其所在的桶 id</span><br>    <span class="hljs-keyword">while</span> (i--) &#123;<br>      *mem = count_class_lookup[*mem];<br>      mem++;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接着算shm 的 消息摘要 （hash） 来表达它，有 <code>hash32</code> 函数完成。</p>
+<h2 id="minimize"><a href="#minimize" class="headerlink" title="minimize"></a>minimize</h2><p>结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/* Actually minimize! */</span><br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">minimize</span><span class="hljs-params">(<span class="hljs-type">char</span>** argv)</span> &#123;<br><br>next_pass:<br>  <span class="hljs-comment">// bblock deletion</span><br>  <br>  <span class="hljs-comment">// alphabet minimization</span><br><br>  <span class="hljs-comment">// character minimization</span><br><br>  <span class="hljs-keyword">if</span> (changed_any) <span class="hljs-keyword">goto</span> next_pass;<br><br>finalize_all:<br><br>  <span class="hljs-comment">// 输出结果</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>minimize 最小化处理的手法：</p>
+<ul>
+<li>块归一化（Block Normalization）：首先，输入被划分为大约 128 个块（除了最后一个块外，块长度为 2 的幂次）, 尝试将输入数据中的非零块替换为全零，如果这样的更改不影响目标程序的行为，则应用这些更改。</li>
+<li>块删除（Block Deletion）：首先将 input 分为 16 个块, 通过逐步减小删除块的大小来移除尽可能多的数据片段，只要这样做不会改变目标程序的行为。</li>
+<li>字符集最小化（Alphabet Minimization）：减少输入中使用的不同字符   (共有 256 种) 的数量，用特定字符（如’0’）替代那些不影响程序行为的字符。</li>
+<li>字符简化（Character Minimization）：从前往后扫描逐个检查每个字符，如果可以安全地将其替换为一个简单字符（如’0’），则进行替换。</li>
+<li>重复上述步骤：直到没有进一步的变化为止，确保每次修改后的结果都能使文件更小或者更简单，但依然能够触发相同的程序行为。</li>
+<li>最终统计与输出：计算并报告最小化过程对文件大小的影响、简化了多少字符以及执行了多少次测试。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>非常感谢前人分析的优秀文章！这对我的学习帮助很大</p>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://github.com/google/AFL">https://github.com/google/AFL</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.ruanx.net/afl-source-1/">https://www.ruanx.net/afl-source-1/</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-269534.htm">https://bbs.kanxue.com/thread-269534.htm</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://eternalsakura13.com/2020/08/23/afl/">https://eternalsakura13.com/2020/08/23/afl/</a>
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:5" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-265936.htm">https://bbs.pediy.com/thread-265936.htm</a>
+<a href="#fnref:5" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" class="category-chain-item">安全研究</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/Fuzz/" class="category-chain-item">Fuzz</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/" class="print-no-link">#安全研究</a>
+      
+        <a href="/tags/AFL/" class="print-no-link">#AFL</a>
+      
+        <a href="/tags/%E6%BA%90%E7%A0%81/" class="print-no-link">#源码</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>初窥门径：AFL源码研究</div>
+      <div>https://k3ppf0r.github.io/2025/01/07/安全研究/Fuzz/初窥门径：AFL源码研究/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>k3ppf0r</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年1月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/03/01/%E5%AE%89%E5%85%A8%E7%A0%94%E7%A9%B6/Fuzz/%E5%90%83%E9%80%8F%E9%87%8D%E7%82%B9%EF%BC%9AAFL%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6%E4%BA%8C/" title="吃透重点：AFL源码研究二">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">吃透重点：AFL源码研究二</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/12/31/%E5%BF%83%E5%BE%97/CVE%E6%8F%90%E4%BA%A4%E6%B5%81%E7%A8%8B/" title="个人提交开源系统CVE流程">
+                        <span class="hidden-mobile">个人提交开源系统CVE流程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"Ov23liMVKVOtuwYuvkw8","clientSecret":"9cb05e91f4572848c2255807ec06c72dcf447340","repo":"blog-gitalk-comments","owner":"k3ppf0r","admin":["k3ppf0r"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: '764da976cb25d05891220c9782fb6936'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
