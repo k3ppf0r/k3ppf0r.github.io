@@ -254,7 +254,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.4k 字
+          1.5k 字
         
       </span>
     
@@ -334,8 +334,8 @@ spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" cl
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.7.18<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
-<p>那先让我们从这个漏洞 <code>CVE-2018-10054</code>开始入手: 在<code>1.4.198</code>之前的H2 Database版本中，任何用户都可以通过创建新的数据库文件或连接到内存数据库来访问Web管理页面。认证通过后，攻击者可在后台执行代码。</p>
-<p>具体来说，攻击者可以通过以下方式之一执行任意代码：</p>
+<p>那先让我们了解下这个漏洞 <code>CVE-2018-10054</code>: 在<code>1.4.198</code>之前的H2 Database版本中，任何用户都可以通过创建新的数据库文件或连接到内存数据库来访问Web管理页面。认证通过后，攻击者可在后台执行代码。<br>这个漏洞最初被披露出来是配合H2的web页面存在未授权，进而在后台执行sql 来实现RCE，后续又发现页面上的 <code>databaseUrl</code> 可进行JDBC 攻击。伴随着修修补补，直到<code>2.1.210</code>版本修复了<code>JDBC Attack</code>，Web Console RCE 的问题才得以解决。</p>
+<p>具体来说，在有漏洞的 H2 Web Console 上，攻击者可通过以下方式之一执行任意代码：</p>
 <ul>
 <li><code>CREATE ALIAS func AS code...; CALL func ...</code> （需要有<code>javac</code> ）</li>
 <li><code>CREATE TRIGGER ... AS code...</code></li>
