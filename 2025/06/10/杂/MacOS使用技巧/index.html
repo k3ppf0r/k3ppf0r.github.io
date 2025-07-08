@@ -251,7 +251,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          443 字
+          433 字
         
       </span>
     
@@ -337,12 +337,18 @@
 </ul>
 <hr>
 <h2 id="终端优化：Oh-My-Zsh-插件"><a href="#终端优化：Oh-My-Zsh-插件" class="headerlink" title="终端优化：Oh My Zsh + 插件"></a>终端优化：Oh My Zsh + 插件</h2><ol>
-<li><strong>安装 Oh My Zsh</strong>：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sh -c <span class="hljs-string">&quot;<span class="hljs-subst">$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)</span>&quot;</span><br></code></pre></td></tr></table></figure></li>
-<li><strong>配置别名</strong>（<code>~/.zshrc</code>）：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">alias</span> code=<span class="hljs-string">&quot;open -a &#x27;Visual Studio Code&#x27;&quot;</span><br></code></pre></td></tr></table></figure></li>
+<li><strong>安装 Oh My Zsh</strong>：  <figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sh</span> <span class="token parameter variable">-c</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">curl</span> <span class="token parameter variable">-fsSL</span> https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="token variable">)</span></span>"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure></li>
+<li><strong>配置别名</strong>（<code>~/.zshrc</code>）：  <figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">alias</span> <span class="token assign-left variable">code</span><span class="token operator">=</span><span class="token string">"open -a 'Visual Studio Code'"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure></li>
 <li><strong>安装插件</strong>：  <ul>
 <li><strong>自动补全</strong>：<code>zsh-autosuggestions</code>  </li>
 <li><strong>语法高亮</strong>：<code>zsh-syntax-highlighting</code>  </li>
-<li><strong>Git支持</strong>：<code>git</code>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 插件配置片段</span><br>plugins=( <br>    git<br>    zsh-autosuggestions<br>    zsh-syntax-highlighting<br>)<br><span class="hljs-built_in">source</span> ~/.zshrc<br></code></pre></td></tr></table></figure></li>
+<li><strong>Git支持</strong>：<code>git</code>  <figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 插件配置片段</span>
+<span class="token assign-left variable">plugins</span><span class="token operator">=</span><span class="token punctuation">(</span> 
+    <span class="token function">git</span>
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+<span class="token punctuation">)</span>
+<span class="token builtin class-name">source</span> ~/.zshrc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure></li>
 </ul>
 </li>
 </ol>
@@ -354,8 +360,15 @@
 </li>
 </ul>
 <h2 id="包管理器：Homebrew"><a href="#包管理器：Homebrew" class="headerlink" title="包管理器：Homebrew"></a>包管理器：Homebrew</h2><ul>
-<li><strong>安装命令</strong>：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/bin/bash -c <span class="hljs-string">&quot;<span class="hljs-subst">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)</span>&quot;</span><br></code></pre></td></tr></table></figure></li>
-<li><strong>常用操作</strong>：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">brew install cleanclip  <span class="hljs-comment"># 安装剪贴板管理器</span><br><span class="hljs-comment"># 安装php</span><br>brew install php@8.1<br>curl -sS https://getcomposer.org/installer | php<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mv</span> composer.phar /usr/local/bin/composer<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chmod</span> a+x /usr/local/bin/composer<br>composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/<br>brew update            <span class="hljs-comment"># 更新软件源</span><br></code></pre></td></tr></table></figure></li>
+<li><strong>安装命令</strong>：  <figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/bin/bash <span class="token parameter variable">-c</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">curl</span> <span class="token parameter variable">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="token variable">)</span></span>"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure></li>
+<li><strong>常用操作</strong>：  <figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">brew <span class="token function">install</span> cleanclip  <span class="token comment"># 安装剪贴板管理器</span>
+<span class="token comment"># 安装php</span>
+brew <span class="token function">install</span> php@8.1
+<span class="token function">curl</span> <span class="token parameter variable">-sS</span> https://getcomposer.org/installer <span class="token operator">|</span> php
+<span class="token function">sudo</span> <span class="token function">mv</span> composer.phar /usr/local/bin/composer
+<span class="token function">sudo</span> <span class="token function">chmod</span> a+x /usr/local/bin/composer
+<span class="token function">composer</span> config <span class="token parameter variable">-g</span> repo.packagist <span class="token function">composer</span> https://mirrors.aliyun.com/composer/
+brew update            <span class="token comment"># 更新软件源</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure></li>
 </ul>
 <h2 id="docker管理工具"><a href="#docker管理工具" class="headerlink" title="docker管理工具"></a>docker管理工具</h2><ul>
 <li>docker desktop</li>
@@ -368,14 +381,16 @@
 <li>文本拆分与格式预览</li>
 </ul>
 </li>
-<li><strong>安装命令</strong>：  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">brew install cleanclip<br></code></pre></td></tr></table></figure></li>
+<li><strong>安装命令</strong>：  <figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">brew <span class="token function">install</span> cleanclip<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure></li>
 </ul>
 <hr>
 <h2 id="自定义应用程序-Automator"><a href="#自定义应用程序-Automator" class="headerlink" title="自定义应用程序 Automator"></a>自定义应用程序 Automator</h2><h3 id="burpsuite"><a href="#burpsuite" class="headerlink" title="burpsuite"></a>burpsuite</h3><p>1、用Spotlight搜索打开Automator</p>
 <p>2、新建一个 <code>应用程序 </code> </p>
 <p>3、添加 <code>运行Shell脚本</code> 操作</p>
 <p>4、填写如下内容：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">cd</span> /Users/your_name/BurpSuiteV2025.6/macOS<br>/Users/your_name/BurpSuiteV2025.6/macOS/CN_Burp.sh<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token builtin class-name">cd</span> /Users/your_name/BurpSuiteV2025.6/macOS
+/Users/your_name/BurpSuiteV2025.6/macOS/CN_Burp.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 <p>5、按Command + S，选择一个名字，比如 Burp.app</p>
 <p>6、换一个burp小图标（格式为icons），显示包内容 -&gt; 替换 <code>/Contents/Resources/ApplicationStub.icns</code></p>
 
@@ -461,7 +476,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/06/29/WEB/h2database/" title="h2database 漏洞梳理">
+                      <a href="/2025/07/06/WEB/h2database/" title="h2database 漏洞梳理">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">h2database 漏洞梳理</span>
                         <span class="visible-mobile">上一篇</span>

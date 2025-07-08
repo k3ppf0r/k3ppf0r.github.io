@@ -251,7 +251,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          140 字
+          136 字
         
       </span>
     
@@ -325,14 +325,18 @@
 <li>从原电脑下载源码，删除 node_modules 文件夹，然后重新下载</li>
 <li>准备好 git 和 node.js,然后进入相应文件夹，用 git 打开，输入如下命令：</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install hexo-cli -g<br>npm install<br>npm install hexo-deployer-git -g<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> hexo-cli <span class="token parameter variable">-g</span>
+<span class="token function">npm</span> <span class="token function">install</span>
+<span class="token function">npm</span> <span class="token function">install</span> hexo-deployer-git <span class="token parameter variable">-g</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <ol start="3">
 <li>此时如果使用主题，需要把删除 node_modules 中的主题重新粘贴替换进来，主题文件就正常了。</li>
 <li>测试，用 hexo s 来看到你的博客是否迁移成功</li>
 <li>设置 git</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">git config --global user.name &quot;xxx&quot;<br>git config --global user.email &quot;xxx@xx.com&quot;<br>git init<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> user.name <span class="token string">"xxx"</span>
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> user.email <span class="token string">"xxx@xx.com"</span>
+<span class="token function">git</span> init<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <ol start="6">
 <li>编辑文章后，hexo d 上传成功即说明迁移成功</li>

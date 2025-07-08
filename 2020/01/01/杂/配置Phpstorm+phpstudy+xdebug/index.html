@@ -249,7 +249,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          477 字
+          561 字
         
       </span>
     
@@ -260,7 +260,7 @@
         
         
         
-          4 分钟
+          5 分钟
         
       </span>
     
@@ -314,7 +314,20 @@
                 <h1 id="1-启动phpstudy"><a href="#1-启动phpstudy" class="headerlink" title="1 启动phpstudy"></a>1 启动phpstudy</h1><p>Apache + mysql 的服务</p>
 <p>确认安装了xdebug扩展，php7的默认版本是xdebug2</p>
 <p>在小皮面板里面，编辑php7的php.ini</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-section">[Xdebug]</span><br><span class="hljs-attr">zend_extension</span>=D:/ENV/phpstudy_pro/Extensions/php/php7.<span class="hljs-number">3.4</span>nts/ext/php_xdebug.dll<br><span class="hljs-attr">xdebug.collect_params</span>=<span class="hljs-number">1</span><br><span class="hljs-attr">xdebug.collect_return</span>=<span class="hljs-number">1</span><br><span class="hljs-attr">xdebug.auto_trace</span>=<span class="hljs-literal">On</span><br><span class="hljs-attr">xdebug.trace_output_dir</span>=D:/ENV/phpstudy_pro/Extensions/php_log/php7.<span class="hljs-number">3.4</span>nts.xdebug.trace<br><span class="hljs-attr">xdebug.profiler_enable</span>=<span class="hljs-literal">On</span><br><span class="hljs-attr">xdebug.profiler_output_dir</span>=D:/ENV/phpstudy_pro/Extensions/php_log/php7.<span class="hljs-number">3.4</span>nts.xdebug.profiler<br><span class="hljs-attr">xdebug.remote_enable</span> = <span class="hljs-number">1</span><br><span class="hljs-attr">xdebug.remote_host</span>=<span class="hljs-string">&quot;127.0.0.1&quot;</span><br><span class="hljs-attr">xdebug.remote_port</span>=<span class="hljs-number">9000</span><br><span class="hljs-attr">xdebug.remote_handler</span>=<span class="hljs-string">&quot;dbgp&quot;</span><br><span class="hljs-attr">xdebug.idekey</span> = phpstorm-xdebug<br><span class="hljs-attr">xdebug.remote_log</span>=<span class="hljs-string">&quot;D:/ENV/phpstudy_pro/WWW/xdebug.log&quot;</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">[Xdebug]
+zend_extension&#x3D;D:&#x2F;ENV&#x2F;phpstudy_pro&#x2F;Extensions&#x2F;php&#x2F;php7.3.4nts&#x2F;ext&#x2F;php_xdebug.dll
+xdebug.collect_params&#x3D;1
+xdebug.collect_return&#x3D;1
+xdebug.auto_trace&#x3D;On
+xdebug.trace_output_dir&#x3D;D:&#x2F;ENV&#x2F;phpstudy_pro&#x2F;Extensions&#x2F;php_log&#x2F;php7.3.4nts.xdebug.trace
+xdebug.profiler_enable&#x3D;On
+xdebug.profiler_output_dir&#x3D;D:&#x2F;ENV&#x2F;phpstudy_pro&#x2F;Extensions&#x2F;php_log&#x2F;php7.3.4nts.xdebug.profiler
+xdebug.remote_enable &#x3D; 1
+xdebug.remote_host&#x3D;&quot;127.0.0.1&quot;
+xdebug.remote_port&#x3D;9000
+xdebug.remote_handler&#x3D;&quot;dbgp&quot;
+xdebug.idekey &#x3D; phpstorm-xdebug
+xdebug.remote_log&#x3D;&quot;D:&#x2F;ENV&#x2F;phpstudy_pro&#x2F;WWW&#x2F;xdebug.log&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>需要注意 你的remote_port 、remote_host、 idekey</p>
 <p>接下来去idea设置对应的字段</p>
@@ -322,7 +335,10 @@
 <p>设置php版本为小皮面板中的</p>
 <p>设置debug端口和remote_port 一致，默认9001</p>
 <p>加入一个服务器和remote_host 一致</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">name</span> www<br>host <span class="hljs-number">127.0.0.1</span><br>port <span class="hljs-number">80</span><br>debugger X<span class="hljs-literal">debug</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">name www
+host 127.0.0.1
+port 80
+debugger Xdebug<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 <p>在DBgp Proxy 中设置</p>
 <p>IDE key 同 php.ini中xdebug. idekey</p>
 <p>Host 同 php.ini中xdebug.remote_host</p>
@@ -331,13 +347,54 @@
 <p>接下来在运行配置中，加入一个PHP Web Page 也就是PHP网页</p>
 <p>如上，即可愉快的调试咯（记得运行小虫子Debug!!!!）</p>
 <h1 id="2-网页404解决方法："><a href="#2-网页404解决方法：" class="headerlink" title="2 网页404解决方法："></a>2 网页404解决方法：</h1><p>Apache伪静态(即系统自带的.htaccess文件)：</p>
-<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">IfModule</span> <span class="hljs-attr">mod_rewrite.c</span>&gt;</span></span><br><span class="language-xml">  Options +FollowSymlinks -Multiviews</span><br><span class="language-xml">  RewriteEngine On</span><br><span class="language-xml">RewriteCond %</span><span class="hljs-template-variable">&#123;REQUEST_FILENAME&#125;</span><span class="language-xml"> !-d</span><br><span class="language-xml">  RewriteCond %</span><span class="hljs-template-variable">&#123;REQUEST_FILENAME&#125;</span><span class="language-xml"> !-f</span><br><span class="language-xml">  RewriteRule ^(.*)</span><br><span class="language-xml">$ index.php?s=$</span><br><span class="language-xml">1 [QSA,PT,L]</span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">IfModule</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">&lt;IfModule mod_rewrite.c&gt;
+  Options +FollowSymlinks -Multiviews
+  RewriteEngine On
+RewriteCond %&#123;REQUEST_FILENAME&#125; !-d
+  RewriteCond %&#123;REQUEST_FILENAME&#125; !-f
+  RewriteRule ^(.*)
+$ index.php?s&#x3D;$
+1 [QSA,PT,L]
+&lt;&#x2F;IfModule&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>Nginx 伪静态</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs powershell">location / &#123;<br>  <span class="hljs-keyword">if</span> (!<span class="hljs-literal">-e</span> <br><span class="hljs-variable">$</span><span class="hljs-variable">$request_filename</span>)&#123;<br>    rewrite  ^(.*)<span class="hljs-variable">$</span><span class="hljs-variable">$</span>  /index.php?s=<span class="hljs-variable">$1</span>  last;   <span class="hljs-keyword">break</span>;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">location &#x2F; &#123;
+  if (!-e 
+$$request_filename)&#123;
+    rewrite  ^(.*)$$  &#x2F;index.php?s&#x3D;$1  last;   break;
+  &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>IIS</p>
-<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">system.webServer</span>&gt;</span></span><br><span class="language-xml"> <span class="hljs-tag">&lt;<span class="hljs-name">rewrite</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">rules</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">rule</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;OrgPage&quot;</span> <span class="hljs-attr">stopProcessing</span>=<span class="hljs-string">&quot;true&quot;</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">match</span> <span class="hljs-attr">url</span>=<span class="hljs-string">&quot;^(.*)</span></span></span><br><span class="hljs-string"><span class="hljs-tag"><span class="language-xml">$&quot;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">conditions</span> <span class="hljs-attr">logicalGrouping</span>=<span class="hljs-string">&quot;MatchAll&quot;</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">add</span> <span class="hljs-attr">input</span>=<span class="hljs-string">&quot;</span></span></span><span class="hljs-template-variable">&#123;HTTP_HOST&#125;</span><span class="language-xml"><span class="hljs-tag"><span class="hljs-string">&quot;</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;^(.*)$</span></span></span><br><span class="hljs-string"><span class="hljs-tag"><span class="language-xml">&quot;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">add</span> <span class="hljs-attr">input</span>=<span class="hljs-string">&quot;</span></span></span><span class="hljs-template-variable">&#123;REQUEST_FILENAME&#125;</span><span class="language-xml"><span class="hljs-tag"><span class="hljs-string">&quot;</span> <span class="hljs-attr">matchType</span>=<span class="hljs-string">&quot;IsFile&quot;</span> <span class="hljs-attr">negate</span>=<span class="hljs-string">&quot;true&quot;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">add</span> <span class="hljs-attr">input</span>=<span class="hljs-string">&quot;</span></span></span><span class="hljs-template-variable">&#123;REQUEST_FILENAME&#125;</span><span class="language-xml"><span class="hljs-tag"><span class="hljs-string">&quot;</span> <span class="hljs-attr">matchType</span>=<span class="hljs-string">&quot;IsDirectory&quot;</span> <span class="hljs-attr">negate</span>=<span class="hljs-string">&quot;true&quot;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">conditions</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">action</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;Rewrite&quot;</span> <span class="hljs-attr">url</span>=<span class="hljs-string">&quot;index.php?s=</span></span></span><span class="hljs-template-variable">&#123;R:1&#125;</span><span class="language-xml"><span class="hljs-tag"><span class="hljs-string">&quot;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">rule</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">rule</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;BlockDirectDownload&quot;</span> <span class="hljs-attr">enabled</span>=<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-attr">stopProcessing</span>=<span class="hljs-string">&quot;true&quot;</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">match</span> <span class="hljs-attr">url</span>=<span class="hljs-string">&quot;(?:asp|aspx|jsp|asa|dll|cgi|fcgi|htm)</span></span></span><br><span class="hljs-string"><span class="hljs-tag"><span class="language-xml">$&quot;</span> <span class="hljs-attr">ignoreCase</span>=<span class="hljs-string">&quot;true&quot;</span> /&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">conditions</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">add</span> <span class="hljs-attr">input</span>=<span class="hljs-string">&quot;</span></span></span><span class="hljs-template-variable">&#123;HTTP_REFERER&#125;</span><span class="language-xml"><span class="hljs-tag"><span class="hljs-string">&quot;</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;^http://(.*\.)?(abc\.net)/.*$</span></span></span><br><span class="hljs-string"><span class="hljs-tag"><span class="language-xml">&quot;</span> <span class="hljs-attr">negate</span>=<span class="hljs-string">&quot;true&quot;</span> /&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">conditions</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">action</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;CustomResponse&quot;</span> <span class="hljs-attr">statusCode</span>=<span class="hljs-string">&quot;404&quot;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">rule</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">rules</span>&gt;</span></span><br><span class="language-xml"> <span class="hljs-tag">&lt;/<span class="hljs-name">rewrite</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">system.webServer</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+    &lt;system.webServer&gt;
+ &lt;rewrite&gt;
+  &lt;rules&gt;
+    &lt;rule name&#x3D;&quot;OrgPage&quot; stopProcessing&#x3D;&quot;true&quot;&gt;
+    &lt;match url&#x3D;&quot;^(.*)
+$&quot; &#x2F;&gt;
+    &lt;conditions logicalGrouping&#x3D;&quot;MatchAll&quot;&gt;
+    &lt;add input&#x3D;&quot;&#123;HTTP_HOST&#125;&quot; pattern&#x3D;&quot;^(.*)$
+&quot; &#x2F;&gt;
+    &lt;add input&#x3D;&quot;&#123;REQUEST_FILENAME&#125;&quot; matchType&#x3D;&quot;IsFile&quot; negate&#x3D;&quot;true&quot; &#x2F;&gt;
+    &lt;add input&#x3D;&quot;&#123;REQUEST_FILENAME&#125;&quot; matchType&#x3D;&quot;IsDirectory&quot; negate&#x3D;&quot;true&quot; &#x2F;&gt;
+    &lt;&#x2F;conditions&gt;
+    &lt;action type&#x3D;&quot;Rewrite&quot; url&#x3D;&quot;index.php?s&#x3D;&#123;R:1&#125;&quot; &#x2F;&gt;
+    &lt;&#x2F;rule&gt;
+    &lt;rule name&#x3D;&quot;BlockDirectDownload&quot; enabled&#x3D;&quot;true&quot; stopProcessing&#x3D;&quot;true&quot;&gt;
+  &lt;match url&#x3D;&quot;(?:asp|aspx|jsp|asa|dll|cgi|fcgi|htm)
+$&quot; ignoreCase&#x3D;&quot;true&quot; &#x2F;&gt;
+  &lt;conditions&gt;
+  &lt;add input&#x3D;&quot;&#123;HTTP_REFERER&#125;&quot; pattern&#x3D;&quot;^http:&#x2F;&#x2F;(.*\.)?(abc\.net)&#x2F;.*$
+&quot; negate&#x3D;&quot;true&quot; &#x2F;&gt;
+  &lt;&#x2F;conditions&gt;
+  &lt;action type&#x3D;&quot;CustomResponse&quot; statusCode&#x3D;&quot;404&quot; &#x2F;&gt;
+    &lt;&#x2F;rule&gt;
+  &lt;&#x2F;rules&gt;
+ &lt;&#x2F;rewrite&gt;
+    &lt;&#x2F;system.webServer&gt;
+&lt;&#x2F;configuration&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
                 
               </div>
             

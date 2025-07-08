@@ -251,7 +251,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          405 字
+          399 字
         
       </span>
     
@@ -325,54 +325,74 @@
 <p><img src="/img/%E6%9D%82/%E5%B8%B8%E7%94%A8%E5%AE%89%E8%A3%85/th1.jpg" srcset="/img/loading.gif" lazyload alt="寄你太美"></p>
 <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>由于笔者的记性不好，故专门弄一个专区记录下在学习中的重复性操作，不断更新（也是逼迫自己不断学习）~<br>也会记录一点小 trick XD</p>
 <h2 id="python2-安装-pwntools"><a href="#python2-安装-pwntools" class="headerlink" title="python2 安装 pwntools"></a>python2 安装 pwntools</h2><p>三条命令解决：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py<br>sudo python2 get-pip.py<br>pip2 install pwntools<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> https://bootstrap.pypa.io/pip/2.7/get-pip.py <span class="token parameter variable">-o</span> get-pip.py
+<span class="token function">sudo</span> python2 get-pip.py
+pip2 <span class="token function">install</span> pwntools<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h2 id="hexo-博客迁移"><a href="#hexo-博客迁移" class="headerlink" title="hexo 博客迁移"></a>hexo 博客迁移</h2><ol>
 <li>从原电脑下载源码，删除 node_modules 文件夹，然后重新下载</li>
 <li>准备好 git 和 node.js,然后进入相应文件夹，用 git 打开，输入如下命令：</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">npm install hexo-cli -g<br>npm install<br>npm install hexo-deployer-git --save<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> hexo-cli <span class="token parameter variable">-g</span>
+<span class="token function">npm</span> <span class="token function">install</span>
+<span class="token function">npm</span> <span class="token function">install</span> hexo-deployer-git <span class="token parameter variable">--save</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <ol start="3">
 <li>此时如果使用主题，需要把删除 node_modules 中的主题重新粘贴替换进来，主题文件就正常了。</li>
 <li>测试，用 hexo s 来看到你的博客是否迁移成功</li>
 <li>设置 git</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">git config --global user.name &quot;xxx&quot;<br>git config --global user.email &quot;xxx@xx.com&quot;<br>git init<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> user.name <span class="token string">"xxx"</span>
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> user.email <span class="token string">"xxx@xx.com"</span>
+<span class="token function">git</span> init<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <ol start="6">
 <li>编辑文章后，hexo d 上传成功即说明迁移成功</li>
 </ol>
 <h2 id="libc-版本的指定"><a href="#libc-版本的指定" class="headerlink" title="libc 版本的指定"></a>libc 版本的指定</h2><p>需要用到 <strong>patchelf</strong> 和 <strong>glibc-all-in-one</strong><br>patchelf 的安装：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone https://github.com/NixOS/patchelf/<br>cd patchelf<br>ls<br>./bootstrap.sh<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/NixOS/patchelf/
+<span class="token builtin class-name">cd</span> patchelf
+<span class="token function">ls</span>
+./bootstrap.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>如果报错则<code>sudo apt-get install autoconf automake libtool</code><br>继续执行：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">./bootstrap.sh<br>./configure<br>make<br>make check<br>sudo make install<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./bootstrap.sh
+./configure
+<span class="token function">make</span>
+<span class="token function">make</span> check
+<span class="token function">sudo</span> <span class="token function">make</span> <span class="token function">install</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>glibc-all-in-one 的安装：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone https://github.com/matrix1001/glibc-all-in-one.git<br>cd glibc-all-in-one<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/matrix1001/glibc-all-in-one.git
+<span class="token builtin class-name">cd</span> glibc-all-in-one<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>有可能需要配置软连接到 python：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd /usr/bin<br>ln -s /usr/bin/python3.8 python<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> /usr/bin
+<span class="token function">ln</span> <span class="token parameter variable">-s</span> /usr/bin/python3.8 python<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>再运行<code>./update_list</code>更新到列表 ; <code>cat list</code> 即可看到 libc 列表<br>下载所需：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">download list<br>download_old old_list<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">download list
+download_old old_list<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>使用场景：</p>
 <ol>
 <li>根据题目所给的 libc ，找对应版本的连接器（e.g. 2.27-3ubuntu1.6_amd64）</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">./download 2.27-3ubuntu1.6_amd64<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./download <span class="token number">2.27</span>-3ubuntu1.6_amd64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <ol start="2">
 <li>然后把 ld 文件和 libc 复制到 pwn 题目录下</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd ./libs/2.27-3ubuntu1.6_amd64/<br>cp ./ld-2.27.so /tmp<br>cp ./libc-2.27.so /tmp<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> ./libs/2.27-3ubuntu1.6_amd64/
+<span class="token function">cp</span> ./ld-2.27.so /tmp
+<span class="token function">cp</span> ./libc-2.27.so /tmp<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <ol start="3">
 <li>修改解释器和 libc：</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">ldd pwn<br>patchelf --set-interpreter ./ld-2.27.so ./pwn<br>patchelf --replace-needed libc.so.6 ./libc-2.27.so ./pwn<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">ldd pwn
+patchelf --set-interpreter ./ld-2.27.so ./pwn
+patchelf --replace-needed libc.so.6 ./libc-2.27.so ./pwn<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h2 id="未完待续…"><a href="#未完待续…" class="headerlink" title="未完待续…"></a>未完待续…</h2>
                 

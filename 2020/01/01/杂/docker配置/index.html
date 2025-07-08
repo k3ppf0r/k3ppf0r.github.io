@@ -249,7 +249,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          79 字
+          65 字
         
       </span>
     
@@ -320,11 +320,23 @@
               <div class="markdown-body">
                 
                 <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p><a target="_blank" rel="noopener" href="https://www.vps69.com/posts/install-docker/">https://www.vps69.com/posts/install-docker/</a></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">sudo</span> apt install -y docker.io  docker-compose<br>systemctl <span class="hljs-built_in">enable</span> --now docker<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token parameter variable">-y</span> docker.io  <span class="token function">docker-compose</span>
+systemctl <span class="token builtin class-name">enable</span> <span class="token parameter variable">--now</span> <span class="token function">docker</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
-<h1 id="配置镜像加速"><a href="#配置镜像加速" class="headerlink" title="配置镜像加速"></a>配置镜像加速</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># cat /etc/docker/daemon.json</span><br>&#123;<br><span class="hljs-string">&quot;registry-mirrors&quot;</span>: [<br><span class="hljs-string">&quot;https://docker.m.daocloud.io&quot;</span>,<br><span class="hljs-string">&quot;https://dockerproxy.com&quot;</span>,<br><span class="hljs-string">&quot;https://docker.mirrors.ustc.edu.cn&quot;</span>,<br><span class="hljs-string">&quot;https://docker.nju.edu.cn&quot;</span>,<br><span class="hljs-string">&quot;http://hammal.staronearth.win/&quot;</span>,<br><span class="hljs-string">&quot;http://hub.staronearth.win/&quot;</span><br>]<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="配置镜像加速"><a href="#配置镜像加速" class="headerlink" title="配置镜像加速"></a>配置镜像加速</h1><figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># cat /etc/docker/daemon.json</span>
+<span class="token punctuation">&#123;</span>
+<span class="token string">"registry-mirrors"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+<span class="token string">"https://docker.m.daocloud.io"</span>,
+<span class="token string">"https://dockerproxy.com"</span>,
+<span class="token string">"https://docker.mirrors.ustc.edu.cn"</span>,
+<span class="token string">"https://docker.nju.edu.cn"</span>,
+<span class="token string">"http://hammal.staronearth.win/"</span>,
+<span class="token string">"http://hub.staronearth.win/"</span>
+<span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
-<h1 id="加入用户进docker组"><a href="#加入用户进docker组" class="headerlink" title="加入用户进docker组"></a>加入用户进docker组</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">sudo</span> gpasswd -a <span class="hljs-variable">$USER</span> docker<br>newgrp docker<br></code></pre></td></tr></table></figure>
+<h1 id="加入用户进docker组"><a href="#加入用户进docker组" class="headerlink" title="加入用户进docker组"></a>加入用户进docker组</h1><figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> gpasswd <span class="token parameter variable">-a</span> <span class="token environment constant">$USER</span> <span class="token function">docker</span>
+newgrp <span class="token function">docker</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
                 
               </div>
             

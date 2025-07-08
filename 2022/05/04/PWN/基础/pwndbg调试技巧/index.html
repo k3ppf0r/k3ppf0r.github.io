@@ -329,25 +329,43 @@
 </blockquote>
 <h1 id="常用技巧"><a href="#常用技巧" class="headerlink" title="常用技巧"></a>常用技巧</h1><ol>
 <li><p>在 GDB 里面用 magic 可查看后下断点在 hook 函数，之后继续运行即可断在 hook 函数之前，</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; magic<br>pwndbg&gt; b *__malloc_hook<br>pwndbg&gt; c<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">pwndbg&gt; magic
+pwndbg&gt; b *__malloc_hook
+pwndbg&gt; c<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 </li>
 <li><p>断点断在 IDA 中的地址再加随机偏移</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; b *$rebase(0x400123)<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">pwndbg&gt; b *$rebase(0x400123)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 </li>
 <li><p>通过泄露双向列表 bins 中的 main_arena+0x88 的 fd 指针来得到 libc 基址，并查看：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; heap<br>pwndbg&gt; p &amp;main_arena<br>pwndbg&gt; libc<br>pwndbg&gt; p 0x1 - 0x2<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">pwndbg&gt; heap
+pwndbg&gt; p &amp;main_arena
+pwndbg&gt; libc
+pwndbg&gt; p 0x1 - 0x2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 </li>
 <li><p>通过 realloc_hook 调整栈帧使 one_gadget 生效</p>
 <p>点打在 hook 函数，一步步走到 exec_comm ,然后查看堆栈，查看 realloc 调整偏移</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">pwndbg&gt; b *__malloc_hook<br>pwndbg&gt; c<br>...<br>pwndbg&gt; x/20gx $rsp + 0x30<br><br>pwndbg&gt; x/20i __libc_realloc<br></code></pre></td></tr></table></figure></li>
+<figure><div class="code-wrapper"><pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">pwndbg&gt; b *__malloc_hook
+pwndbg&gt; c
+...
+pwndbg&gt; x&#x2F;20gx $rsp + 0x30
+
+pwndbg&gt; x&#x2F;20i __libc_realloc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure></li>
 </ol>
 <h1 id="常用指令："><a href="#常用指令：" class="headerlink" title="常用指令："></a>常用指令：</h1><p>查看帮助信息： <code>help</code></p>
 <p>查看一些信息</p>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">i</span> 	<span class="hljs-comment">//info，只输入info可以看可以接什么参数，下面几个比较常用</span><br><span class="hljs-selector-tag">i</span> <span class="hljs-selector-tag">b</span> <span class="hljs-comment">//常用，info break 查看所有断点信息（编号、断点位置）</span><br><span class="hljs-selector-tag">i</span> <span class="hljs-selector-tag">r</span> <span class="hljs-comment">//常用，info registers 查看各个寄存器当前的值</span><br><span class="hljs-selector-tag">i</span> <span class="hljs-selector-tag">f</span> <span class="hljs-comment">//info function 查看所有函数名，需保留符号</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">i 	&#x2F;&#x2F;info，只输入info可以看可以接什么参数，下面几个比较常用
+i b &#x2F;&#x2F;常用，info break 查看所有断点信息（编号、断点位置）
+i r &#x2F;&#x2F;常用，info registers 查看各个寄存器当前的值
+i f &#x2F;&#x2F;info function 查看所有函数名，需保留符号<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>查看调用栈 <code>backtrace </code></p>
 <p>GDB’s <code>follow-fork-mode</code> parameter can be used to set whether to trace parent or child after fork() calls</p>
-<h2 id="执行指令"><a href="#执行指令" class="headerlink" title="执行指令"></a>执行指令</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs awk">s <span class="hljs-regexp">//</span>单步步入，遇到调用跟进函数中，相当于step into，源码层面的一步<br>si <span class="hljs-regexp">//</span>常用，同s，汇编层面的一步<br>n <span class="hljs-regexp">//</span>单步补过，遇到调用永不跟进，相当于step over，源码层面的一步<br>ni <span class="hljs-regexp">//</span>常用，同n，汇编层面的一步<br>c <span class="hljs-regexp">//</span><span class="hljs-keyword">continue</span>，常用，继续执行到断点，没断点就一直执行下去<br>r <span class="hljs-regexp">//</span>run，常用，重新开始执行<br></code></pre></td></tr></table></figure>
+<h2 id="执行指令"><a href="#执行指令" class="headerlink" title="执行指令"></a>执行指令</h2><figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">s &#x2F;&#x2F;单步步入，遇到调用跟进函数中，相当于step into，源码层面的一步
+si &#x2F;&#x2F;常用，同s，汇编层面的一步
+n &#x2F;&#x2F;单步补过，遇到调用永不跟进，相当于step over，源码层面的一步
+ni &#x2F;&#x2F;常用，同n，汇编层面的一步
+c &#x2F;&#x2F;continue，常用，继续执行到断点，没断点就一直执行下去
+r &#x2F;&#x2F;run，常用，重新开始执行<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h2 id="断点指令"><a href="#断点指令" class="headerlink" title="断点指令"></a>断点指令</h2><blockquote>
 <p>涉及 IO， 断点打在 send 之前！这样在 IO 停止暂停后，GDB 就可以一步一步走程序 pause()就是 python 程序的断点</p>
@@ -362,7 +380,17 @@
 <p>内存断点指令 watch：<br>0x123456 地址的数据改变的时候会断 <code>watch 0x123456</code><br>变量 a 改变的时候会断 <code>watch a</code><br>查看 watch 断点信息 <code>info watchpoints</code></p>
 <p>捕获断点 catch：<br>syscall 系统调用的时候断住 <code>catch syscall</code><br>syscall 系统调用的时候断住，只断一次 <code>tcatch syscall </code></p>
 <p><code>info break</code></p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs text">除syscall外还可以使用的有：<br>1）throw: 抛出异常<br>2）catch: 捕获异常<br>3）exec: exec被调用<br>4）fork: fork被调用<br>5）vfork: vfork被调用<br>6）load: 加载动态库<br>7）load libname: 加载名为libname的动态库<br>8）unload: 卸载动态库<br>9）unload libname: 卸载名为libname的动态库<br>10）syscall [args]: 调用系统调用，args可以指定系统调用号，或者系统名称<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">除syscall外还可以使用的有：
+1）throw: 抛出异常
+2）catch: 捕获异常
+3）exec: exec被调用
+4）fork: fork被调用
+5）vfork: vfork被调用
+6）load: 加载动态库
+7）load libname: 加载名为libname的动态库
+8）unload: 卸载动态库
+9）unload libname: 卸载名为libname的动态库
+10）syscall [args]: 调用系统调用，args可以指定系统调用号，或者系统名称<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h2 id="打印查看"><a href="#打印查看" class="headerlink" title="打印查看"></a>打印查看</h2><p>巨牛逼的命令：查看泄露地址相关信息： <code>xi 0x123</code></p>
 <p>查看 libc 基地址：<code>libc</code></p>
@@ -386,7 +414,13 @@
 <p>查看 0x123456 地址的值，注意和 x 指令的区别，x 指令查看地址的值不用星号 <code>p *(0x123456)</code></p>
 <p>打印 rdi 寄存器的值 p, 注意和 x 的区别，这只是显示 rdi 的值，而不是 rdi 指向的值 <code>p $rdi</code></p>
 <p>打印 rdi 指向的值，注意和 x 的区别，p 会打印出数字 <code>p *($rdi)</code></p>
-<h2 id="修改和查找指令"><a href="#修改和查找指令" class="headerlink" title="修改和查找指令"></a>修改和查找指令</h2><h5 id="修改数据指令-set"><a href="#修改数据指令-set" class="headerlink" title="修改数据指令 set"></a>修改数据指令 set</h5><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">set</span> <span class="hljs-variable">$rdi</span>=0x10 //把rdi寄存器的值变为0x10<br><br><span class="hljs-built_in">set</span> *(0x123456)=0x10 //0x123456地址的值变为0x10，注意带星号<br><span class="hljs-built_in">set</span> *0x7fffffffdbe8 = 0x5555555552d2 //更改返回地址<br><br><span class="hljs-built_in">set</span> args <span class="hljs-string">&quot;abc&quot;</span> <span class="hljs-string">&quot;def&quot;</span> <span class="hljs-string">&quot;gh&quot;</span>//给参数1,参数2,参数3赋值<br><span class="hljs-built_in">set</span> args <span class="hljs-string">&quot;python -c &#x27;print(b&quot;</span>1234\x7f\xde<span class="hljs-string">&quot;)&#x27; &quot;</span> //使用python给参数赋值不可见字符<br></code></pre></td></tr></table></figure>
+<h2 id="修改和查找指令"><a href="#修改和查找指令" class="headerlink" title="修改和查找指令"></a>修改和查找指令</h2><h5 id="修改数据指令-set"><a href="#修改数据指令-set" class="headerlink" title="修改数据指令 set"></a>修改数据指令 set</h5><figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">set</span> <span class="token variable">$rdi</span><span class="token operator">=</span>0x10 //把rdi寄存器的值变为0x10
+
+<span class="token builtin class-name">set</span> *<span class="token punctuation">(</span>0x123456<span class="token punctuation">)</span><span class="token operator">=</span>0x10 //0x123456地址的值变为0x10，注意带星号
+<span class="token builtin class-name">set</span> *0x7fffffffdbe8 <span class="token operator">=</span> 0x5555555552d2 //更改返回地址
+
+<span class="token builtin class-name">set</span> args <span class="token string">"abc"</span> <span class="token string">"def"</span> <span class="token string">"gh"</span>//给参数1,参数2,参数3赋值
+<span class="token builtin class-name">set</span> args <span class="token string">"python -c 'print(b"</span><span class="token number">1234</span><span class="token punctuation">\</span>x7f<span class="token punctuation">\</span>xde<span class="token string">")' "</span> //使用python给参数赋值不可见字符<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h5 id="查找数据："><a href="#查找数据：" class="headerlink" title="查找数据："></a>查找数据：</h5><p>从当前位置向后查包含 rdi 的指令，返回若干 <code>search rdi </code></p>
 <p>寻找输入的字符串：<code>search k3ppf0r3</code></p>
@@ -396,39 +430,163 @@
 <li><code>heap</code> 命令显示的<code>Addr</code>为 chunk 的首地址，含有 chunk 头部；<code>Size</code>为内存中实际的内存值，往往最后面为 1，表示 prev_in_use</li>
 <li></li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs shell">arena //显示arena的详细信息,过于详细<br>arenas //显示所有arena的基本信息<br>arenainfo //好看的显示所有arena的信息<br>bins //常用，查看所有种类的堆块的链表情况<br>fastbins //单独查看fastbins的链表情况<br>largebins //同上，单独查看largebins的链表情况<br>smallbins //同上，单独查看smallbins的链表情况<br>unsortedbin //同上，单独查看unsortedbin链表情况<br>tcachebins //同上，单独查看tcachebins的链表情况<br>tcache //查看tcache详细信息<br>heap //数据结构的形式显示所有堆块，会显示一大堆<br>heap -v // 查看完整数据结构<br>parseheap //显示堆结构，很好用，与heap大同小异<br>mp  //查看堆相关结构体信息<br>heapbase //查看堆起始地址<br>heapinfo、heapinfoall //显示堆的信息，和bins的挺像的，没bins好用<br>tracemalloc //好用，会跟提示所有操作堆的地方<br><br>其他pwndbg插件独有指令<br>cyclc 50 //生成50个用来溢出的字符，如：aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaama<br><span class="hljs-meta prompt_">$</span><span class="language-bash">reabse //开启PIE的情况的地址偏移</span><br>b *$reabse(0x123456) //断住PIE状态下的二进制文件中0x123456的地方<br>codebase //打印PIE偏移，与rebase不同，这是打印，rebase是使用<br>stack //查看栈<br>retaddr //打印包含返回地址的栈地址<br>canary //直接看canary的值<br>plt //查看plt表<br>got //查看got表<br>hexdump //想IDA那样显示数据，带字符串<br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">arena //显示arena的详细信息,过于详细
+arenas //显示所有arena的基本信息
+arenainfo //好看的显示所有arena的信息
+bins //常用，查看所有种类的堆块的链表情况
+fastbins //单独查看fastbins的链表情况
+largebins //同上，单独查看largebins的链表情况
+smallbins //同上，单独查看smallbins的链表情况
+unsortedbin //同上，单独查看unsortedbin链表情况
+tcachebins //同上，单独查看tcachebins的链表情况
+tcache //查看tcache详细信息
+heap //数据结构的形式显示所有堆块，会显示一大堆
+heap <span class="token parameter variable">-v</span> // 查看完整数据结构
+parseheap //显示堆结构，很好用，与heap大同小异
+mp  //查看堆相关结构体信息
+heapbase //查看堆起始地址
+heapinfo、heapinfoall //显示堆的信息，和bins的挺像的，没bins好用
+tracemalloc //好用，会跟提示所有操作堆的地方
 
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs text"># x /nuf 0x123 指令格式:<br># number<br># unit b(1 Byte),h(2 Bytes),w(4 Bytes),g(8 Bytes)<br># format 见下表<br><br>x 按十六进制格式显示变量。<br>d 按十进制格式显示变量。<br>u 按十六进制格式显示无符号整型。<br>o 按八进制格式显示变量。<br>t 按二进制格式显示变量。<br>a 按十六进制格式显示变量。<br>c 按字符格式显示变量。<br>f 按浮点数格式显示变量。<br>s 按字符串显示。<br>b 按字符显示。<br>i 显示汇编指令。<br></code></pre></td></tr></table></figure>
+其他pwndbg插件独有指令
+cyclc <span class="token number">50</span> //生成50个用来溢出的字符，如：aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaama
+<span class="token variable">$reabse</span> //开启PIE的情况的地址偏移
+b *<span class="token variable">$reabse</span><span class="token punctuation">(</span>0x123456<span class="token punctuation">)</span> //断住PIE状态下的二进制文件中0x123456的地方
+codebase //打印PIE偏移，与rebase不同，这是打印，rebase是使用
+stack //查看栈
+retaddr //打印包含返回地址的栈地址
+canary //直接看canary的值
+plt //查看plt表
+got //查看got表
+hexdump //想IDA那样显示数据，带字符串
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
-<h2 id="调试备忘："><a href="#调试备忘：" class="headerlink" title="调试备忘："></a>调试备忘：</h2><pre><code class="hljs">gdb查看技巧：最左边的地址编号代表的是所在那一格子（由dd dq决定）中最右边，故小端序整体从右往左读（明确数据按照地址从小往大填入），对于两位16进制需一体从左往右顺序读 在gdb排版的最右边它将顺序调整好后输出ASCII码
-</code></pre>
+<figure><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text"># x /nuf 0x123 指令格式:
+# number
+# unit b(1 Byte),h(2 Bytes),w(4 Bytes),g(8 Bytes)
+# format 见下表
+
+x 按十六进制格式显示变量。
+d 按十进制格式显示变量。
+u 按十六进制格式显示无符号整型。
+o 按八进制格式显示变量。
+t 按二进制格式显示变量。
+a 按十六进制格式显示变量。
+c 按字符格式显示变量。
+f 按浮点数格式显示变量。
+s 按字符串显示。
+b 按字符显示。
+i 显示汇编指令。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
+
+<h2 id="调试备忘："><a href="#调试备忘：" class="headerlink" title="调试备忘："></a>调试备忘：</h2><figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">gdb查看技巧：最左边的地址编号代表的是所在那一格子（由dd dq决定）中最右边，故小端序整体从右往左读（明确数据按照地址从小往大填入），对于两位16进制需一体从左往右顺序读 在gdb排版的最右边它将顺序调整好后输出ASCII码
+</code></pre></div></figure>
 <h4 id="gdb-attach"><a href="#gdb-attach" class="headerlink" title="gdb.attach()"></a>gdb.attach()</h4><p>1 gdb 如果断不住，就这样断：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 开头</span><br>gdb.attach(p)<br>...<br><span class="hljs-comment"># 输入之前暂停</span><br>pause()<br>p.sendline()<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 开头</span>
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>p<span class="token punctuation">)</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token comment"># 输入之前暂停</span>
+pause<span class="token punctuation">(</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>2 左边是交互，右边是程序在内存中的运行情况，可以查看堆栈、寄存器情况等<br>3 继续运行， 在右边按<code>c</code>或【<code>ni </code> + <code>finish</code> 】 ，在左边进行 IO 交互；<br>中断查看堆栈情况， 在右边按<code>CTRL + c</code></p>
-<h4 id="查看-rop-链等运行时的信息"><a href="#查看-rop-链等运行时的信息" class="headerlink" title="查看 rop 链等运行时的信息"></a>查看 rop 链等运行时的信息</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 断点打在read之后</span><br>gdb.attach(p, <span class="hljs-string">&#x27;b $rebase(0x400123)&#x27;</span>)<br><br></code></pre></td></tr></table></figure>
+<h4 id="查看-rop-链等运行时的信息"><a href="#查看-rop-链等运行时的信息" class="headerlink" title="查看 rop 链等运行时的信息"></a>查看 rop 链等运行时的信息</h4><figure><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 断点打在read之后</span>
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>p<span class="token punctuation">,</span> <span class="token string">'b $rebase(0x400123)'</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
-<h1 id="脚本预设"><a href="#脚本预设" class="headerlink" title="脚本预设"></a>脚本预设</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><span class="hljs-comment"># context.terminal = [&#x27;tmux&#x27;, &#x27;splitw&#x27;, &#x27;-h&#x27;, &#x27;-F&#x27;, &#x27;#&#123;pane_pid&#125;&#x27;, &#x27;-P&#x27;]</span><br><br>gdb.attach(p,<span class="hljs-string">&#x27;break main&#x27;</span>)<br>raw_input()<br><br></code></pre></td></tr></table></figure>
+<h1 id="脚本预设"><a href="#脚本预设" class="headerlink" title="脚本预设"></a>脚本预设</h1><figure><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+<span class="token comment"># context.terminal = ['tmux', 'splitw', '-h', '-F', '#&#123;pane_pid&#125;', '-P']</span>
+
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>p<span class="token punctuation">,</span><span class="token string">'break main'</span><span class="token punctuation">)</span>
+<span class="token builtin">raw_input</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>这样调试有一个缺点，那就是 gdb 在 attach 到程序之后，你要调试的断点可能已经早就过去了，来不及下断点，这就会导致 gdbscript 执行失败。 若第一种失败，那么可以这样做：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-comment"># 断点打在read之后</span><br><span class="hljs-comment"># p=gdb.debug(&quot;./pwn&quot;,&quot;b *0x400123&quot;)</span><br>p=gdb.debug(<span class="hljs-string">&quot;./pwn&quot;</span>,<span class="hljs-string">&quot;b main&quot;</span>)<br>raw_input()<br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token comment"># 断点打在read之后</span>
+<span class="token comment"># p=gdb.debug("./pwn","b *0x400123")</span>
+p<span class="token operator">=</span>gdb<span class="token punctuation">.</span>debug<span class="token punctuation">(</span><span class="token string">"./pwn"</span><span class="token punctuation">,</span><span class="token string">"b main"</span><span class="token punctuation">)</span>
+<span class="token builtin">raw_input</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h1 id="在-GDB-过程中的理解"><a href="#在-GDB-过程中的理解" class="headerlink" title="在 GDB 过程中的理解"></a>在 GDB 过程中的理解</h1><h3 id="堆栈形状"><a href="#堆栈形状" class="headerlink" title="堆栈形状"></a>堆栈形状</h3><p><strong>栈(高地址向低地址生长)：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs asm">low<br><br>| new_space | &lt;- rsp<br>| new_space |<br>| new_space |<br>| prev_rbp  | &lt;- rbp<br>| 0x400456  |  return_addr<br><br>high<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">low
+
+| new_space | &lt;- rsp
+| new_space |
+| new_space |
+| prev_rbp  | &lt;- rbp
+| 0x400456  |  return_addr
+
+high<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p><strong>堆：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs asm">Allocated chunk | PREV_INUSE<br>Addr: 0x55555555f000<br>Size: 0x291<br><br>Free chunk (tcache) | PREV_INUSE<br>Addr: 0x55555555f290<br>Size: 0x51<br>fd: 0x00<br><br>Top chunk | PREV_INUSE<br>Addr: 0x55555555f2e0<br>Size: 0x20d21<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">Allocated chunk | PREV_INUSE
+Addr: 0x55555555f000
+Size: 0x291
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x55555555f290
+Size: 0x51
+fd: 0x00
+
+Top chunk | PREV_INUSE
+Addr: 0x55555555f2e0
+Size: 0x20d21<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h3 id="数据流"><a href="#数据流" class="headerlink" title="数据流"></a>数据流</h3><p>二进制程序以 <strong>read</strong> 函数接收，当 socket 用 <strong>send</strong> 发过去的字节流（明确以字节为单位，debug 显示的是人类的阅读顺序），以发送时的字节排列顺序填入虚拟内存中（从小到大填）；<br>二进制程序以 <strong>write</strong> 函数打印，将内存中数据 (以从小到大的顺序) 忠实的打印出来</p>
-<h3 id="x-命令的打印阅读顺序："><a href="#x-命令的打印阅读顺序：" class="headerlink" title="x 命令的打印阅读顺序："></a>x 命令的打印阅读顺序：</h3><pre><code class="hljs">&lt;-  __\ 0    &lt;- __\ 4/8
-</code></pre>
+<h3 id="x-命令的打印阅读顺序："><a href="#x-命令的打印阅读顺序：" class="headerlink" title="x 命令的打印阅读顺序："></a>x 命令的打印阅读顺序：</h3><figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">&lt;-  __\ 0    &lt;- __\ 4/8
+</code></pre></div></figure>
 <p>用<code>db addr</code>指令可验证<br>寄存中显示字符串存在 bug，它将字符串当成指针反过来解析了</p>
 <h3 id="去掉符号表的混淆调试"><a href="#去掉符号表的混淆调试" class="headerlink" title="去掉符号表的混淆调试"></a>去掉符号表的混淆调试</h3><ul>
 <li>对应着 ida 的汇编代码看，ida 中地址与 gdb 中的地址后三位一样</li>
 </ul>
 <h1 id="terminal-优化："><a href="#terminal-优化：" class="headerlink" title="terminal 优化："></a>terminal 优化：</h1><p>安装 <a target="_blank" rel="noopener" href="https://github.com/apogiatzis/gdb-peda-pwndbg-gef">gdb-peda-pwndbg-gef</a></p>
 <p>~&#x2F;.gdbinit 内容如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs sh">define init-peda<br><span class="hljs-built_in">source</span> ~/peda/peda.py<br>end<br>document init-peda<br>Initializes the PEDA (Python Exploit Development Assistant <span class="hljs-keyword">for</span> GDB) framework<br>end<br><br>define init-peda-arm<br><span class="hljs-built_in">source</span> ~/peda-arm/peda-arm.py<br>end<br>document init-peda-arm<br>Initializes the PEDA (Python Exploit Development Assistant <span class="hljs-keyword">for</span> GDB) framework <span class="hljs-keyword">for</span> ARM.<br>end<br><br>define init-peda-intel<br><span class="hljs-built_in">source</span> ~/peda-arm/peda-intel.py<br>end<br>document init-peda-intel<br>Initializes the PEDA (Python Exploit Development Assistant <span class="hljs-keyword">for</span> GDB) framework <span class="hljs-keyword">for</span> INTEL.<br>end<br><br>define init-pwndbg<br><span class="hljs-built_in">source</span> ~/pwndbg/gdbinit.py<br><br><span class="hljs-built_in">source</span> ~/Pwngdb/pwngdb.py<br><span class="hljs-built_in">source</span> ~/Pwngdb/angelheap/gdbinit.py<br>define hook-run<br>python<br>import angelheap<br>angelheap.init_angelheap()<br>end<br>end<br><br>end<br>document init-pwndbg<br>Initializes PwnDBG<br>end<br><br>define init-gef<br><span class="hljs-built_in">source</span> ~/gef/gef.py<br>end<br>document init-gef<br>Initializes GEF (GDB Enhanced Features)<br>end<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">define init-peda
+<span class="token builtin class-name">source</span> ~/peda/peda.py
+end
+document init-peda
+Initializes the PEDA <span class="token punctuation">(</span>Python Exploit Development Assistant <span class="token keyword">for</span> GDB<span class="token punctuation">)</span> framework
+end
+
+define init-peda-arm
+<span class="token builtin class-name">source</span> ~/peda-arm/peda-arm.py
+end
+document init-peda-arm
+Initializes the PEDA <span class="token punctuation">(</span>Python Exploit Development Assistant <span class="token keyword">for</span> GDB<span class="token punctuation">)</span> framework <span class="token keyword">for</span> ARM.
+end
+
+define init-peda-intel
+<span class="token builtin class-name">source</span> ~/peda-arm/peda-intel.py
+end
+document init-peda-intel
+Initializes the PEDA <span class="token punctuation">(</span>Python Exploit Development Assistant <span class="token keyword">for</span> GDB<span class="token punctuation">)</span> framework <span class="token keyword">for</span> INTEL.
+end
+
+define init-pwndbg
+<span class="token builtin class-name">source</span> ~/pwndbg/gdbinit.py
+
+<span class="token builtin class-name">source</span> ~/Pwngdb/pwngdb.py
+<span class="token builtin class-name">source</span> ~/Pwngdb/angelheap/gdbinit.py
+define hook-run
+python
+<span class="token function">import</span> angelheap
+angelheap.init_angelheap<span class="token punctuation">(</span><span class="token punctuation">)</span>
+end
+end
+
+end
+document init-pwndbg
+Initializes PwnDBG
+end
+
+define init-gef
+<span class="token builtin class-name">source</span> ~/gef/gef.py
+end
+document init-gef
+Initializes GEF <span class="token punctuation">(</span>GDB Enhanced Features<span class="token punctuation">)</span>
+end<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
                 
               </div>

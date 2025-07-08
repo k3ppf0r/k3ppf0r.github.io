@@ -253,7 +253,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.2k 字
+          2.1k 字
         
       </span>
     
@@ -344,7 +344,24 @@
 </ul>
 </li>
 <li><p>使用统一的大括号换行习惯</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 习惯 A</span><br><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i ++) &#123;<br>    foo(x, i);<br>    <span class="hljs-keyword">if</span> (i == n / <span class="hljs-number">2</span>) &#123;<br>        y = f(i);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>, y);<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 习惯 B</span><br><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i ++)<br>&#123;<br>    foo(x, i);<br>    <span class="hljs-keyword">if</span> (i == n / <span class="hljs-number">2</span>)<br>    &#123;<br>        y = f(i);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d\n&quot;</span>, y);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// 习惯 A</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i <span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">foo</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">==</span> n <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        y <span class="token operator">=</span> <span class="token function">f</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// 习惯 B</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i <span class="token operator">++</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">foo</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">==</span> n <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        y <span class="token operator">=</span> <span class="token function">f</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 </li>
 <li><p>勤加注释</p>
 <ul>
@@ -361,14 +378,28 @@
 </ul>
 </li>
 <li><p>善用结构体</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 使用结构体</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Student</span> &#123;</span><br>    <span class="hljs-type">char</span> name[<span class="hljs-number">20</span>];<br>    <span class="hljs-type">int</span> id;<br>    <span class="hljs-type">int</span> age;<br>    <span class="hljs-type">int</span> grade;<br>&#125;;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Student</span> <span class="hljs-title">students</span>[50];</span><br><span class="hljs-comment">// 不使用结构体</span><br><span class="hljs-type">char</span> name[<span class="hljs-number">50</span>][<span class="hljs-number">20</span>];<br><span class="hljs-type">int</span> id[<span class="hljs-number">50</span>];<br><span class="hljs-type">int</span> age[<span class="hljs-number">50</span>];<br><span class="hljs-type">int</span> grade[<span class="hljs-number">50</span>];<br></code></pre></td></tr></table></figure></li>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// 使用结构体</span>
+<span class="token keyword">struct</span> <span class="token class-name">Student</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> id<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> age<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> grade<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token keyword">struct</span> <span class="token class-name">Student</span> students<span class="token punctuation">[</span><span class="token number">50</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token comment">// 不使用结构体</span>
+<span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">50</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> id<span class="token punctuation">[</span><span class="token number">50</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> age<span class="token punctuation">[</span><span class="token number">50</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> grade<span class="token punctuation">[</span><span class="token number">50</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure></li>
 </ol>
 </li>
 <li><p>在布尔表达式中勤加括号</p>
 </li>
 <li><p>避免对同一数据存放多个无关副本</p>
 <p>对于同一份数据，我们应当尽量只存放一个副本。例如：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> N 1000000</span><br><span class="hljs-type">int</span> data[N], id[N], sum[N], son[<span class="hljs-number">2</span>][N];<br><span class="hljs-type">double</span> value[N];<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">N</span> <span class="token expression"><span class="token number">1000000</span></span></span>
+<span class="token keyword">int</span> data<span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">,</span> id<span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">,</span> sum<span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">,</span> son<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">double</span> value<span class="token punctuation">[</span>N<span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 </li>
 <li><p>处理简单的错误输入</p>
 </li>
@@ -377,10 +408,14 @@
 <h3 id="关注问题的边界条件"><a href="#关注问题的边界条件" class="headerlink" title="关注问题的边界条件"></a>关注问题的边界条件</h3><p>养成习惯：在解决问题、实现接口或函数时，总是关注边界条件。</p>
 <h3 id="写循环时关注下标越界"><a href="#写循环时关注下标越界" class="headerlink" title="写循环时关注下标越界"></a>写循环时关注下标越界</h3><p>养成习惯：当你在循环中使用间接的下标时，总是关注下标越界问题。例如你在一个 i∈[0,n-1]<em>i</em>∈[0,<em>n</em>−1] 的循环中会访问数组元素，而当你使用 a[i+1] 或 a[i−1] 时，就应当认识到循环条件需要更改。如果能够养成关注下标越界的习惯，你就不会写出类似下面这样的代码：</p>
 <p>当然，这种错误本身也不难排查，只不过，如果养成习惯，只要使用间接的下标，就去考虑越界：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; n; i ++) &#123;<br>    <span class="hljs-keyword">if</span> (a[i] &gt; <span class="hljs-comment">// 当你即将写下 a[i + 1] 时</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i <span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>a<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">></span> <span class="token comment">// 当你即将写下 a[i + 1] 时</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>那么你就能在多数时候提前发现问题，很大地减少犯下此类错误的概率：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i + <span class="hljs-number">1</span> &lt; n; i ++) &#123; <span class="hljs-comment">// 及时对循环条件进行应有的改变</span><br>    <span class="hljs-keyword">if</span> (a[i] &gt; a[i + <span class="hljs-number">1</span>]) &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">+</span> <span class="token number">1</span> <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i <span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token comment">// 及时对循环条件进行应有的改变</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>a<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">></span> a<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h3 id="多进行阶段性测试"><a href="#多进行阶段性测试" class="headerlink" title="多进行阶段性测试"></a>多进行阶段性测试</h3><p>养成习惯：在写代码量比较大或很大的程序时，每写完一个局部的代码后，都要考虑进行阶段性测试，保证这一部分的正确性。这样，当出现 BUG 时，我们可以认为错误大概率发生在新写的代码中，而错误出现在之前的代码中的概率很低。即便是出现在之前的部分中，你也能根据之前的阶段测试的结果，排除掉一些可能性。这可以提高我们的编程效率。</p>
 <h3 id="多考虑是否应该使用函数"><a href="#多考虑是否应该使用函数" class="headerlink" title="多考虑是否应该使用函数"></a>多考虑是否应该使用函数</h3><p>养成习惯：在写代码时，总是考虑这段代码是不是一个独立的子功能，是否可以包装成函数。</p>
@@ -696,7 +731,7 @@
 <p>作为初学者，调试技巧是有必要掌握的，你不能每次都因为一些特别智障的错误去请教他人，次数多了会令他人感到反感，而且也无益于你自身能力的提升。即便你还功力尚浅，也至少应该学会去独立排查并解决一些简单的问题。毕竟，迟早你将不再是一名初学者，如果届时你未能掌握与写代码能力相匹配的 DEBUG 能力，你恐怕会遇到不小的麻烦。</p>
 <p>学习调试技巧之前，你需要养成遇到 BUG 先自己独立尝试解决的习惯。如果你总是依赖于他人帮你 DEBUG 的话，你永远也学不会自己 DEBUG 。就像提高代码能力需要自己多写代码一样，学习调试也需要自己多去独立尝试。当然，如果你花费了很长时间也无法解决，或是经过认真思考也一头雾水毫无头绪，向他人求助才是合适的，再自己死磕就没有意义了。</p>
 <p>求助：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">xxx （学长/老师/...） 你好/您好，我在编程时遇到了无法解决的困难，下面是我的代码，可否请您帮我看看问题出在哪？谢谢！<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">xxx （学长/老师/...） 你好/您好，我在编程时遇到了无法解决的困难，下面是我的代码，可否请您帮我看看问题出在哪？谢谢！<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>基本的调试方法说白了也就是两大类：</p>
 <ul>

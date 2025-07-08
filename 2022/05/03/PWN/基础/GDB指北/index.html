@@ -253,7 +253,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          939 字
+          930 字
         
       </span>
     
@@ -357,7 +357,7 @@
 </ol>
 <h3 id="断点"><a href="#断点" class="headerlink" title="断点"></a>断点</h3><p><code>b main</code></p>
 <h3 id="查看-设置-内存"><a href="#查看-设置-内存" class="headerlink" title="查看&#x2F;设置 内存"></a>查看&#x2F;设置 内存</h3><p>x | p | set</p>
-<pre><code class="hljs">字节大小
+<figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">字节大小
 BYTE 1  8  缩写b
 WORD 2  16  缩写h
 DWORD 4  32  缩写w
@@ -371,7 +371,7 @@ t 按二进制格式显示变量。
 a 按十六进制格式显示变量。
 c 按字符格式显示变量。
 f 按浮点数格式显示变量。
-</code></pre>
+</code></pre></div></figure>
 <p>查看汇编：<code>x/20i $rip</code><br>查看内存：<code>x/20gx 0x7fxx10</code> <code>x/20wx 0x7fxx10</code><br>查看字符：<code>x/20s 0x7fxx20</code><br>查看变量：<code>p __malloc_hook</code>、<code>p &amp;__malloc_hook</code><br>赋值： <code>set *0x7fxx1 = 1</code>、 <code>set $rax = 1</code>、<code>set *((unsigned int)$ebp) = 0x61 </code></p>
 <hr>
 <p>dq | dd | dw | db</p>
@@ -379,11 +379,26 @@ f 按浮点数格式显示变量。
 <h1 id="TMUX-分屏复用"><a href="#TMUX-分屏复用" class="headerlink" title="TMUX - 分屏复用"></a>TMUX - 分屏复用</h1><p>官方文档: <a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man1/tmux.1.html">https://man7.org/linux/man-pages/man1/tmux.1.html</a></p>
 <p>tmux 使用手册: <a target="_blank" rel="noopener" href="http://louiszhai.github.io/2017/09/30/tmux/#%E5%AF%BC%E8%AF%BB">http://louiszhai.github.io/2017/09/30/tmux/#导读</a></p>
 <p>~&#x2F;.tmux.conf 文件配置如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sh">set-option -g mouse on<br><br>unbind C-b<br><span class="hljs-built_in">bind</span> C-a send-prefix<br>set-option -g prefix2 `<br>unbind <span class="hljs-string">&#x27;&quot;&#x27;</span><br><span class="hljs-built_in">bind</span> - splitw -v -c <span class="hljs-string">&#x27;#&#123;pane_current_path&#125;&#x27;</span> <span class="hljs-comment"># 垂直方向新增面板，默认进入当前目录</span><br>unbind %<br><span class="hljs-built_in">bind</span> = splitw -h -c <span class="hljs-string">&#x27;#&#123;pane_current_path&#125;&#x27;</span> <span class="hljs-comment"># 水平方向新增面板，默认进入当前目录</span><br><br><span class="hljs-comment"># 绑定hjkl键为面板切换的上下左右键</span><br><span class="hljs-built_in">bind</span> -r i select-pane -U <span class="hljs-comment"># 绑定k为↑</span><br><span class="hljs-built_in">bind</span> -r k select-pane -D <span class="hljs-comment"># 绑定j为↓</span><br><span class="hljs-built_in">bind</span> -r j select-pane -L <span class="hljs-comment"># 绑定h为←</span><br><span class="hljs-built_in">bind</span> -r l select-pane -R <span class="hljs-comment"># 绑定l为→</span><br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">set-option <span class="token parameter variable">-g</span> mouse on
+
+unbind C-b
+<span class="token builtin class-name">bind</span> C-a send-prefix
+set-option <span class="token parameter variable">-g</span> prefix2 `
+unbind <span class="token string">'"'</span>
+<span class="token builtin class-name">bind</span> - splitw <span class="token parameter variable">-v</span> <span class="token parameter variable">-c</span> <span class="token string">'#&#123;pane_current_path&#125;'</span> <span class="token comment"># 垂直方向新增面板，默认进入当前目录</span>
+unbind %
+<span class="token builtin class-name">bind</span> <span class="token operator">=</span> splitw <span class="token parameter variable">-h</span> <span class="token parameter variable">-c</span> <span class="token string">'#&#123;pane_current_path&#125;'</span> <span class="token comment"># 水平方向新增面板，默认进入当前目录</span>
+
+<span class="token comment"># 绑定hjkl键为面板切换的上下左右键</span>
+<span class="token builtin class-name">bind</span> <span class="token parameter variable">-r</span> i select-pane <span class="token parameter variable">-U</span> <span class="token comment"># 绑定k为↑</span>
+<span class="token builtin class-name">bind</span> <span class="token parameter variable">-r</span> k select-pane <span class="token parameter variable">-D</span> <span class="token comment"># 绑定j为↓</span>
+<span class="token builtin class-name">bind</span> <span class="token parameter variable">-r</span> j select-pane <span class="token parameter variable">-L</span> <span class="token comment"># 绑定h为←</span>
+<span class="token builtin class-name">bind</span> <span class="token parameter variable">-r</span> l select-pane <span class="token parameter variable">-R</span> <span class="token comment"># 绑定l为→</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>windows terminal +tmux 鼠标选中后 按下 C-v 即可复制</p>
 <p>tmux 分屏复用功能：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">tmux send-keys -t 1:0.1 <span class="hljs-string">&quot;date&quot;</span> Enter<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">tmux send-keys <span class="token parameter variable">-t</span> <span class="token number">1</span>:0.1 <span class="token string">"date"</span> Enter<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <h1 id="反编译工具-IDA-Ghidra-jeb"><a href="#反编译工具-IDA-Ghidra-jeb" class="headerlink" title="反编译工具 IDA&#x2F;Ghidra&#x2F;jeb"></a>反编译工具 IDA&#x2F;Ghidra&#x2F;jeb</h1><p>IDA 帮助文档：</p>
 <p><a target="_blank" rel="noopener" href="https://hex-rays.com/ida-pro/">https://hex-rays.com/ida-pro/</a></p>

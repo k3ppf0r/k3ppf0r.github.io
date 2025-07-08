@@ -253,7 +253,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.7k 字
+          5.6k 字
         
       </span>
     
@@ -324,9 +324,9 @@
               <div class="markdown-body">
                 
                 <blockquote>
-<pre><code class="hljs">        linux_c 系统开发学习笔记
+<figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">        linux_c 系统开发学习笔记
                         -------k3ppf0r(qcw)
-</code></pre>
+</code></pre></div></figure>
 </blockquote>
 <p>目前需要实现基于客户机和服务器 CS 模型的网络音频 广播&#x2F;点播 系统<br>本音频系统可以广泛用于在语言教室和公共广播等多种场所，该软件分为 CS，服务器运行在 PC 机器上，客户机可运行在 PC 或嵌入式，服务器以多播的方式向局域网中所有客户机发送数据，客户机可以根据自己的选择来决定要接收的数据。<br>服务器 &#x3D;》 路由器&#x2F;交换机 &#x3D;》 客户机 1，客户机 2，<br>类似 arp 协议？</p>
 <p>参考书目：<br>UNIX 环境高级编程<br>UNIX 网络编程<br>TCP&#x2F;IP 详解<br>深入理解计算机系统</p>
@@ -349,19 +349,29 @@
 <p>FILE *tmpfile(void); &#x3D;&gt; 给你一个匿名文件</p>
 <h2 id="系统层面-IO："><a href="#系统层面-IO：" class="headerlink" title="系统层面 IO："></a>系统层面 IO：</h2><p><strong>操作系统直接提供的接口函数</strong></p>
 <p>文件描述符 fd 是在文件 IO 中贯穿始终的类型</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">open,close,read,write, lseek<br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c">open<span class="token punctuation">,</span>close<span class="token punctuation">,</span>read<span class="token punctuation">,</span>write<span class="token punctuation">,</span> lseek
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>(学习方法： 猜 FILE 内容 然后去验证)<br>FILE<br>| … |<br>| POS |<br>| FD |</p>
 <p>文件描述符<br>就是一个数组下标，int 类型，通过整形数,找到文件结构体，再找到实际的文件<br>会优先使用当前最小的下标<br>|0|<br>|1|<br>|2|<br>打开同一个文件<br>|3|-&gt; struct1|…|pos|count|…| -&gt; inode1</p>
 <p>|4|-&gt; struct2|…|pos|count|…| -&gt; inode1</p>
 <p>一个结构体被引用到两个 fd<br>|5|-&gt; struct3|…|pos|count(记录被引用次数)|…| -&gt; inode2</p>
 <p>|6|-&gt; struct3</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/stat.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">open</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *pathname, <span class="hljs-type">int</span> flags)</span>;  变参实现<br>flags : O_NOATIME(不去修改access time)<br>O_NONBLOCK 非阻塞<br>r ~ O_RDONLY<br>r+ ~ O_RDWR<br>w ~ O_WRONLY | O_CREATE | O_TRUNC<br>w+ ~ O_RDWR | O_CREATE | O_TRUNC<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/types.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/stat.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;fcntl.h></span></span>
+<span class="token keyword">int</span> <span class="token function">open</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>pathname<span class="token punctuation">,</span> <span class="token keyword">int</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>  变参实现
+flags <span class="token operator">:</span> <span class="token function">O_NOATIME</span><span class="token punctuation">(</span>不去修改access time<span class="token punctuation">)</span>
+O_NONBLOCK 非阻塞
+r <span class="token operator">~</span> O_RDONLY
+r<span class="token operator">+</span> <span class="token operator">~</span> O_RDWR
+w <span class="token operator">~</span> O_WRONLY <span class="token operator">|</span> O_CREATE <span class="token operator">|</span> O_TRUNC
+w<span class="token operator">+</span> <span class="token operator">~</span> O_RDWR <span class="token operator">|</span> O_CREATE <span class="token operator">|</span> O_TRUNC<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>将文件 IO 与标准 IO（FILE ）的区别<br>举例： 传达室老大爷跑邮局<br>标准 IO 是有缓存的，适用于吞吐量大，使用简单<br>文件 IO，无缓存 IO， 响应速度快，user_to_kernel</p>
 <p>面试：如何使一个程序变快？ 使用文件 IO<br>提醒： 标准 IO 与文件 IO 不可混用<br>要转换： fileno() fdopen()</p>
 <p>IO 的效率问题</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">time ./myps<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c">time <span class="token punctuation">.</span><span class="token operator">/</span>myps<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>文件共享问题：多个任务共同操作一个文件或者协同完成任务<br>写程序删除一个文件的第十行<br>1、覆盖写<br>1-&gt; open r -&gt; fd1 -&gt; lseek 11<br>1-&gt; open r+ -&gt; fd2 -&gt; lseek 10<br>while()<br>{<br>1-&gt; fd1 -&gt; read<br>2-&gt; fd2 -&gt; write<br>}</p>
 <p>2、truncate&#x2F;ftruncate</p>
@@ -393,10 +403,18 @@
 <p>9.目录的创建和销毁<br>mkdir();<br>rmdir();</p>
 <p>10.更改工作路径<br>man 2 cd<br>chdir(path);fchdir(fd);<br>可以突破 chroot();<br>getcwd(buf,BUFSIZE);&#x2F;&#x2F;pwd</p>
 <p>11.分析目录，读取目录</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;glob.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">glob</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *pattern, <span class="hljs-type">int</span> flags,<span class="hljs-type">int</span> (*errfunc) (<span class="hljs-type">const</span> <span class="hljs-type">char</span> *epath, <span class="hljs-type">int</span> eerrno),<span class="hljs-type">glob_t</span> *pglob)</span>;<br><span class="hljs-comment">// 释放glob函数调用的空间</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">globfree</span><span class="hljs-params">(<span class="hljs-type">glob_t</span> *pglob)</span>;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;glob.h></span></span>
+<span class="token keyword">int</span> <span class="token function">glob</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>pattern<span class="token punctuation">,</span> <span class="token keyword">int</span> flags<span class="token punctuation">,</span><span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>errfunc<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>epath<span class="token punctuation">,</span> <span class="token keyword">int</span> eerrno<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token class-name">glob_t</span> <span class="token operator">*</span>pglob<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 释放glob函数调用的空间</span>
+<span class="token keyword">void</span> <span class="token function">globfree</span><span class="token punctuation">(</span><span class="token class-name">glob_t</span> <span class="token operator">*</span>pglob<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>或者 API：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c">opendir();<br>clsedir();<br>readdir();<br>rewinddir();<br>seekdir();<br>telldir();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">opendir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">clsedir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">readdir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">rewinddir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">seekdir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">telldir</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h2 id="二、-系统数据文件和信息"><a href="#二、-系统数据文件和信息" class="headerlink" title="二、 系统数据文件和信息"></a>二、 系统数据文件和信息</h2><p>&#x2F;etc&#x2F;passwd</p>
 <p>&#x2F;etc&#x2F;group<br>getgrgid();<br>getgrgrnam();</p>
@@ -404,7 +422,7 @@
 <p>时间戳<br>time();<br>gmtime();<br>localtime();<br>mktime();<br>strfttime();</p>
 <p>加解密:<br>hash 混淆,不可逆，如果原串相同，所得串也相同，防备撞库<br>x % 5 &#x3D; 2 &#x3D;&gt; x&#x3D;?<br>安全？ 攻击成本大于收益<br>加密-解密</p>
 <h2 id="三、进程环境"><a href="#三、进程环境" class="headerlink" title="三、进程环境"></a>三、进程环境</h2><p>1、main 函数<br>int main(int argc,char **argv)<br>2、进程的终止<br>正常终止：<br>从 main 函数返回<br>调用 exit()<br>调用_exit() 或 _Exit() 程序被 pwn 了 避免故障扩大<br>最后一个线程从其启动例程返回<br>最后一个线程调用 pthread_exit<br>异常终止：<br>调用 abort<br>接到一个信号，并终止<br>最后一个线程对其取消请求做出响应。</p>
-<pre><code class="hljs">atexit(); 注册exit()的hook钩子函数(函数正文执行之前执行)
+<figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">atexit(); 注册exit()的hook钩子函数(函数正文执行之前执行)
 一个一个拿，一个一个放
 应用(方便程序员的)： if(fd100 &lt; 0)&#123;
         close(fd1);
@@ -414,7 +432,7 @@
         perror();
         exit(1);
     &#125;
-</code></pre>
+</code></pre></div></figure>
 <p>3、命令行参数的分析<br>getopt();<br>getopt_long();</p>
 <p>4、环境变量<br>key&#x3D;value<br><code>export</code> env<br>environ<br>getenv();<br>putenv();</p>
 <p>5、C 程序的存储空间布局</p>
@@ -427,30 +445,62 @@
 <li>手工装载库</li>
 </ul>
 <p>动态库的相关库函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//Link with -ldl.</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;dlfcn.h&gt;</span></span><br>dlopen();<br>dlclose();<br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _GNU_SOURCE</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;dlfcn.h&gt;</span></span><br>dlmopen();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//Link with -ldl.</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;dlfcn.h></span></span>
+<span class="token function">dlopen</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">dlclose</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">_GNU_SOURCE</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;dlfcn.h></span></span>
+<span class="token function">dlmopen</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>7、函数跳转</p>
 <p>|c|<br>|b|<br>|a|<br>|main|</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">goto</span> label;<br>..<br>.<br>label: statement;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">goto</span> label<span class="token punctuation">;</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">.</span>
+label<span class="token operator">:</span> statement<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;setjmp.h&gt;</span></span><br>setjmp();<br><br>longjmp();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;setjmp.h></span></span>
+<span class="token function">setjmp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">longjmp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>8、资源的获取以及控制</p>
 <p>大部分 API 使用被封装在 ulimit 命令中</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/time.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/resource.h&gt;</span></span><br>getrlimit();<br>setrlimit();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/time.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/resource.h></span></span>
+<span class="token function">getrlimit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">setrlimit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h1 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h1><h2 id="进程基本知识"><a href="#进程基本知识" class="headerlink" title="进程基本知识"></a>进程基本知识</h2><p>1、进程标识符 pid</p>
 <p>​ 类型 pid_t</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">ps aux<br>ps afx 显示父子关系<br>ps amx 更多信息<br>ps ax -L  线程信息<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ps</span> aux
+<span class="token function">ps</span> afx 显示父子关系
+<span class="token function">ps</span> amx 更多信息
+<span class="token function">ps</span> ax <span class="token parameter variable">-L</span>  线程信息<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>S 可中断的睡眠态</p>
 <p>Z+ 僵尸进程，子进程结束，等待父进程收集，父进程还没有结束</p>
 <p>孤儿进程</p>
 <p>进程号是顺次向下使用</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;unistd.h&gt;</span></span><br>getpid();<br>getppid();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;sys/types.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;unistd.h></span></span>
+<span class="token function">getpid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">getppid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>2、进程的产生 fork() vfork()(废弃)</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-type">pid_t</span> <span class="hljs-title function_">fork</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>;  <span class="hljs-comment">//duplicating</span><br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">	父进程 ------子进程</span><br><span class="hljs-comment">	...          ...</span><br><span class="hljs-comment">	fork();      exec();</span><br><span class="hljs-comment">	...          ...</span><br><span class="hljs-comment">	wait();</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;unistd.h></span></span>
+<span class="token class-name">pid_t</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">//duplicating</span>
+
+<span class="token comment">/*
+	父进程 ------子进程
+	...          ...
+	fork();      exec();
+	...          ...
+	wait();
+
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>注意理解关键字：duplicating 拷贝，克隆，一摸一样</p>
 <p>父子进程的区别：fork()返回值不一样，pid 不同，ppid 也不同，未决信号和文件锁不继承，资源利用量清零。</p>
@@ -465,7 +515,12 @@
 </blockquote>
 <p>3、进程的消亡及释放资源</p>
 <p>wait 防止父进程已经结束，子进程还没结束，使得成为孤儿进程</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br>wait(<span class="hljs-literal">NULL</span>); <span class="hljs-comment">// 一定阻塞 ~waitpid(-1,&amp;status,0);</span><br>waitpid(); <span class="hljs-comment">// 可以不阻塞</span><br>wait3();<br>wait4();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/types.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/wait.h></span></span>
+<span class="token function">wait</span><span class="token punctuation">(</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 一定阻塞 ~waitpid(-1,&amp;status,0);</span>
+<span class="token function">waitpid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 可以不阻塞</span>
+<span class="token function">wait3</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">wait4</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>管理子进程，进程分配任务</p>
 <p>1、分块法</p>
@@ -474,10 +529,31 @@
 <p>上游将任务送入任务池，下游抢任务，谁完成了就继续，涉及竞争冲突</p>
 <p>4、exec 函数族</p>
 <p>few &#x3D;&gt; 三剑客</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-comment">// exec() family  =&gt; replace</span><br><br>execl();<br><span class="hljs-comment">// 给文件名，会识别环境变量</span><br>execlp();<br>execle();<br>execv();<br><span class="hljs-comment">// 变参 好用</span><br>execvp();<br><span class="hljs-comment">// exec之前 注意fflush(NULL)（也就是在fork前） ,刷新缓冲，写文件会是全缓冲。</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">后缀含义</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">l：以list形式传入参数</span><br><span class="hljs-comment">v：以vector形式传入参数</span><br><span class="hljs-comment">p：在$PATH中查找可执行程序</span><br><span class="hljs-comment">e：在envp[]中查找可执行程序</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+
+<span class="token comment">// exec() family  => replace</span>
+
+<span class="token function">execl</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 给文件名，会识别环境变量</span>
+<span class="token function">execlp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">execle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">execv</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 变参 好用</span>
+<span class="token function">execvp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// exec之前 注意fflush(NULL)（也就是在fork前） ,刷新缓冲，写文件会是全缓冲。</span>
+<span class="token comment">/*
+后缀含义
+
+l：以list形式传入参数
+v：以vector形式传入参数
+p：在$PATH中查找可执行程序
+e：在envp[]中查找可执行程序
+
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>内部命令和外部命令</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">type</span> <span class="hljs-comment"># 判断是外部命令还是内部命令</span><br><span class="hljs-built_in">which</span> <span class="hljs-comment"># 查看命令所在的文件路径</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">type</span> <span class="token comment"># 判断是外部命令还是内部命令</span>
+<span class="token function">which</span> <span class="token comment"># 查看命令所在的文件路径</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>70 行实现 mysh 执行外部命令</p>
 <p>（命令分隔符都不能使用）</p>
@@ -487,17 +563,37 @@
 <p>文件和目录权限除了普通权限 rwx 外，还有三个特殊权限：</p>
 <p>SUID：在属主的 x 位以 s 标识，全称 SetUID<br>SGID：在属组的 x 位以 s 标识，全称 SetGID<br>STIKCY：黏着位</p>
 <p>exec 来鉴定权限， 设置 RUID EUID SUID , 执行文件进程鉴定权限 EUID （SUID）后，再继续执行</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">u+s/g+s 任何人在调用这个文件的时候，就会切换到<br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">u+s/g+s 任何人在调用这个文件的时候，就会切换到
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>init 进程（0，0，0） –fork,exec–&gt; getty 进程（0，0，0） –exec–&gt; login 进程（0，0，0） –checkpass–T–fork,exec–&gt;shell 进程（1001，1001，1001）</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><br>getuid();<br>geteuid();<br>getgid();<br>getegid();<br><span class="hljs-comment">// effective</span><br>setuid();<br>setgid();<br>seteuid();<br>setegid();<br><span class="hljs-comment">// 交换</span><br>setreuid();<br>setregid();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-C" data-language="C"><code class="language-C">#include &lt;unistd.h&gt;
+#include &lt;sys&#x2F;types.h&gt;
+
+getuid();
+geteuid();
+getgid();
+getegid();
+&#x2F;&#x2F; effective
+setuid();
+setgid();
+seteuid();
+setegid();
+&#x2F;&#x2F; 交换
+setreuid();
+setregid();<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>编写具有 u+s 的程序需要：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">chown</span> root mysu<br><span class="hljs-comment"># 权限下发</span><br><span class="hljs-built_in">chmod</span> u+s mysu<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">chown</span> root mysu
+<span class="token comment"># 权限下发</span>
+<span class="token function">chmod</span> u+s mysu<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>6、解释器文件</p>
 <p>脚本文件</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">whoami</span><br><span class="hljs-built_in">cat</span> /etc/shadow<br><span class="hljs-built_in">ls</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token function">whoami</span>
+<span class="token function">cat</span> /etc/shadow
+<span class="token function">ls</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>shell 看到了#!，就会把解释器装载起来，再用你的解释器解释这个文件，此时会把第一句话当成注释。</p>
 <blockquote>
@@ -505,14 +601,22 @@
 </blockquote>
 <p>7、system();</p>
 <p>是 few 的简单封装。调用 shell 去执行命令。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">system(<span class="hljs-string">&quot;date +%s&quot;</span>);<br><span class="hljs-comment"># 等价于</span><br>fork();<br>execl(<span class="hljs-string">&quot;/bin/sh&quot;</span>,<span class="hljs-string">&quot;sh&quot;</span>,<span class="hljs-string">&quot;-c&quot;</span>,<span class="hljs-string">&quot;date +%s&quot;</span>,NULL);<span class="hljs-built_in">exit</span>(1);<br><span class="hljs-built_in">wait</span>(NULL);<br><br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">system<span class="token punctuation">(</span><span class="token string">"date +%s"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment"># 等价于</span>
+fork<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+execl<span class="token punctuation">(</span><span class="token string">"/bin/sh"</span>,<span class="token string">"sh"</span>,<span class="token string">"-c"</span>,<span class="token string">"date +%s"</span>,NULL<span class="token punctuation">)</span><span class="token punctuation">;</span>exit<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+wait<span class="token punctuation">(</span>NULL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>8、进程会计</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br>acct();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token function">acct</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>9、进程时间</p>
 <p>time 的实现</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;sys/times.h&gt;</span></span><br>times();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;sys/times.h></span></span>
+<span class="token function">times</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>10、守护进程 Daemon</p>
 <p>会话 session 会话是有一个或者多个进程组组成的集合</p>
@@ -520,19 +624,32 @@
 <p>终端 （标准：只能输入和输出）tty</p>
 <p>规范化 多线程并发</p>
 <p>守护进程标志：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">ps ajx<br><br>PPID   PID  PGID   SID   TTY<br>1	  same  same   same   ?<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ps</span> ajx
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br>setsid();<span class="hljs-comment">//只能子进程调用；父进程天生是进程组长</span><br>setpgid() <span class="hljs-comment">//设置某个进程号到某个进程组</span><br>getpgrp();<br><br><br></code></pre></td></tr></table></figure>
+<span class="token environment constant">PPID</span>   PID  PGID   SID   TTY
+<span class="token number">1</span>	  same  same   same   ?<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
+
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token function">setsid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//只能子进程调用；父进程天生是进程组长</span>
+<span class="token function">setpgid</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//设置某个进程号到某个进程组</span>
+<span class="token function">getpgrp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>单实例守护进程： 锁文件 &#x2F;var&#x2F;run&#x2F;name.pid</p>
 <p>守护进程开机启动脚本文件：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">/etc/rc*<br><br>/etc/rc.d/rc.local<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/etc/rc*
+
+/etc/rc.d/rc.local<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>11、系统日志</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> /var/log<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> /var/log<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>syslogd 服务</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;syslog.h&gt;</span></span><br>openlog();<br>syslog();<br>closelog();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;syslog.h></span></span>
+<span class="token function">openlog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">syslog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">closelog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h2 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h2><blockquote>
 <p>同步：按你所设想的步骤执行。</p>
@@ -545,9 +662,18 @@
 <p>中断是硬件层面的模仿</p>
 <p>2、signal();</p>
 <p>signal 会打断阻塞的系统调用</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br><br>signal();<br><br><span class="hljs-type">void</span>(*signal(<span class="hljs-type">int</span>  signum,<span class="hljs-type">void</span>(*func)(<span class="hljs-type">int</span>))(<span class="hljs-type">int</span>);<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;signal.h></span></span>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//Ctrl-C 等于 sigint 终端中断符</span><br>signal(SIGINT,SIG_IGN);<br>signal(SIGINT,int_handler);<br>signal(SIGQUIT,SIG_IGN);<br>signal(SIGTERM,SIG_IGN);<br><span class="hljs-comment">// 容易发生重入</span><br></code></pre></td></tr></table></figure>
+<span class="token function">signal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token function">signal</span><span class="token punctuation">(</span><span class="token keyword">int</span>  signum<span class="token punctuation">,</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span>func<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
+
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//Ctrl-C 等于 sigint 终端中断符</span>
+<span class="token function">signal</span><span class="token punctuation">(</span>SIGINT<span class="token punctuation">,</span>SIG_IGN<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">signal</span><span class="token punctuation">(</span>SIGINT<span class="token punctuation">,</span>int_handler<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">signal</span><span class="token punctuation">(</span>SIGQUIT<span class="token punctuation">,</span>SIG_IGN<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">signal</span><span class="token punctuation">(</span>SIGTERM<span class="token punctuation">,</span>SIG_IGN<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 容易发生重入</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>3、信号的不可靠</p>
 <p>信号的行为不可靠，有可能第一次执行还没结果，第二次就开始了。原因是信号的执行现场不是我们构建的。</p>
@@ -570,86 +696,181 @@
 <p>响应过程：</p>
 <p>程序被打断，拿着中断现场进入内核，写入信号相关 mask 等，当从 kernel 态回到 user 态时，会做这样的行为 mask &amp; pending ，从而发现信号，执行信号注册的行为，行为执行完后回到内核，写入信号相关 mask 等，回到被打断的现场。</p>
 </blockquote>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs tex">如何忽略掉一个信号？<br>标准信号为什么要丢失<br>标准信号的响应没有严格的顺序。<br>不能从信号处理函数中随意的往外跳（setjmp,longjmp）<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-latex" data-language="latex"><code class="language-latex">如何忽略掉一个信号？
+标准信号为什么要丢失
+标准信号的响应没有严格的顺序。
+不能从信号处理函数中随意的往外跳（setjmp,longjmp）<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>Linux 系统中的内核态本质是内核，是一种特殊的软件程序，用于控制计算机的硬件资源，例如协调 CPU 资源，分配内存资源，并且提供稳定的环境供应用程序运行。0-4G 范围的虚拟空间地址都可以操作，尤其是对 3-4G 范围的高位虚拟空间地址必须由内核态去操作。</p>
 <p>用户态提供应用程序运行的空间，为了使应用程序访问到内核管理的资源，例如 CPU，内存，I&#x2F;O 等。用户态只能受限的访问内存，且不允许访问外设(硬盘、网卡等);内核态 CPU 可以访问内存所有数据，包括外设，且可以将自己从一个程序切换到另一个程序。</p>
 <p>用户态切换到内核态的三种方式：</p>
 <p>发生系统调用时：（主动）这是处于用户态的进程主动请求切换到内核态的一种方式。用户态的进程通过系统调用申请使用操作系统提供的系统调用服务例程来处理任务。而系统调用的机制，其核心仍是使用了操作系统为用户特别开发的一个中断机制来实现的，即软中断。<br>产生异常时：（被动）当 CPU 执行运行在用户态下的程序时，发生了某些事先不可知的异常，这时会触发由当前运行的进程切换到处理此异常的内核相关的程序中，也就是转到了内核态，如缺页异常。<br>外设产生中断时：（被动）当外围设备完成用户请求的操作后，会向 CPU 发出相应的中断信号，这时 CPU 会暂停执行下一条即将要执行的指令转而去执行与中断信号对应的处理程序，如果先前执行的指令是用户态下的程序，那么这个转换的过程自然也就发生了由用户态到内核态的切换。比如硬盘读写操作的完成，系统会切换到硬盘读写的中断处理程序中执行后续操作等。</p>
 <p>6、信号常用函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br>kill();<br><span class="hljs-comment">// 相当于</span><br><span class="hljs-comment">// kill(getpid(),sig);</span><br><span class="hljs-comment">// kill(pthread_kill(pthread_self(),sig));</span><br>raise();<br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br>alarm();<br>pause();<br><br><span class="hljs-built_in">abort</span>();<br><br>system();<br><br>sleep();<span class="hljs-comment">//nanosleep();ulsleep();</span><br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/types.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;signal.h></span></span>
+<span class="token function">kill</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 相当于</span>
+<span class="token comment">// kill(getpid(),sig);</span>
+<span class="token comment">// kill(pthread_kill(pthread_self(),sig));</span>
+<span class="token function">raise</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token function">alarm</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pause</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">abort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">system</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">sleep</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//nanosleep();ulsleep();</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>7、信号集</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br><span class="hljs-comment">//信号集类型 sigset_t</span><br>sigemptyset();<br>sigfillset();<br>sigaddset();<br>sigdelset();<br>sigismember();<br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;signal.h></span></span>
+<span class="token comment">//信号集类型 sigset_t</span>
+<span class="token function">sigemptyset</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">sigfillset</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">sigaddset</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">sigdelset</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">sigismember</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>8、信号屏蔽字&#x2F;peding 集的处理</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br><br>sigprocmask();<br>sigpending();<span class="hljs-comment">//下内核</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;signal.h></span></span>
+
+<span class="token function">sigprocmask</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">sigpending</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//下内核</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>9、扩展</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br>sigsuspend(); <span class="hljs-comment">// 原子化 比pause()高级</span><br>sigaction(); <span class="hljs-comment">//原子化 优化signal 重入问题</span><br><br><span class="hljs-comment">// 推荐： 代替 alarm(1);</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/time.h&gt;</span></span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">itimerval</span> <span class="hljs-title">itv</span>;</span><br>itv.it_interval.tv_sec = <span class="hljs-number">1</span>;<br>itv.it_interval.tv_usec = <span class="hljs-number">0</span>;<br>itv.it_value.tv_sec = <span class="hljs-number">1</span>;<br>itv.it_value.tv_usec = <span class="hljs-number">0</span>;<br>setitimer(ITIMER_REAL,&amp;itv,<span class="hljs-literal">NULL</span>);<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;signal.h></span></span>
+<span class="token function">sigsuspend</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 原子化 比pause()高级</span>
+<span class="token function">sigaction</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//原子化 优化signal 重入问题</span>
+
+<span class="token comment">// 推荐： 代替 alarm(1);</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/time.h></span></span>
+<span class="token keyword">struct</span> <span class="token class-name">itimerval</span> itv<span class="token punctuation">;</span>
+itv<span class="token punctuation">.</span>it_interval<span class="token punctuation">.</span>tv_sec <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+itv<span class="token punctuation">.</span>it_interval<span class="token punctuation">.</span>tv_usec <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+itv<span class="token punctuation">.</span>it_value<span class="token punctuation">.</span>tv_sec <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+itv<span class="token punctuation">.</span>it_value<span class="token punctuation">.</span>tv_usec <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token function">setitimer</span><span class="token punctuation">(</span>ITIMER_REAL<span class="token punctuation">,</span><span class="token operator">&amp;</span>itv<span class="token punctuation">,</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>10、实时信号</p>
 <p>取决于你用哪个信号，而不是哪套函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// min-max</span><br><span class="hljs-comment">// 40 SIGRTMIN+6</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// min-max</span>
+<span class="token comment">// 40 SIGRTMIN+6</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <h3 id="二、多线程实现"><a href="#二、多线程实现" class="headerlink" title="二、多线程实现"></a>二、多线程实现</h3><p>1、线程的概念</p>
 <p>一个正在运行的函数</p>
 <p>posix 线程是一套标准，而不是实现</p>
 <p>openmp 线程</p>
 <p>线程标识：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-comment">//Compile and link with -pthread.</span><br><br><span class="hljs-type">pthread_t</span>;<br>pthread_equal();<br>pthread_self();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;pthread.h></span></span>
+<span class="token comment">//Compile and link with -pthread.</span>
+
+<span class="token class-name">pthread_t</span><span class="token punctuation">;</span>
+<span class="token function">pthread_equal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_self</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <blockquote>
 <p>ps ax -L 查看</p>
 </blockquote>
 <p>2、线程的创建、终止、栈清理、取消选项</p>
 <p>线程的调度取决于调度器策略。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-comment">//Compile and link with -pthread.</span><br><br><span class="hljs-type">pthread_t</span> tid;<br>pthread_create(&amp;tid,<span class="hljs-literal">NULL</span>,func,<span class="hljs-literal">NULL</span>);<br>pthread_join(tid,<span class="hljs-literal">NULL</span>); <span class="hljs-comment">// wait()</span><br><br><span class="hljs-comment">// hook 函数</span><br>pthread_cleanup_push();<br>pthread_cleanup_pop();<br><br><span class="hljs-comment">// 线程取消</span><br>pthread_cancel();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;pthread.h></span></span>
+<span class="token comment">//Compile and link with -pthread.</span>
+
+<span class="token class-name">pthread_t</span> tid<span class="token punctuation">;</span>
+<span class="token function">pthread_create</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>tid<span class="token punctuation">,</span><span class="token constant">NULL</span><span class="token punctuation">,</span>func<span class="token punctuation">,</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_join</span><span class="token punctuation">(</span>tid<span class="token punctuation">,</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// wait()</span>
+
+<span class="token comment">// hook 函数</span>
+<span class="token function">pthread_cleanup_push</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_cleanup_pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 线程取消</span>
+<span class="token function">pthread_cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>线程终止：1、线程从启动例程返回，返回值就是线程的退出码</p>
 <p>2、线程可以被同一进程中的其它线程取消</p>
 <p>3、线程调用 pthread_exit()函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// p 为返回值 =&gt; pthread_join(tid, &amp;p);</span><br>pthread_exit(p)<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// p 为返回值 => pthread_join(tid, &amp;p);</span>
+<span class="token function">pthread_exit</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>线程取消：有两种状态，允许和不允许</p>
 <p>允许取消又分为：异步 cancel，推迟 cancel-&gt;推迟至 cancel 点取消</p>
 <p>cancel 点：POSIX 定义的 cancel 点，都是可能引发阻塞的系统调用</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">pthread_setcancelstate()<span class="hljs-comment">// 设置是否允许取消</span><br><br>pthread_setcanceltype()<span class="hljs-comment">//设置取消方式</span><br><br>pthread_testcancel()<span class="hljs-comment">//取消点</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">pthread_setcancelstate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment">// 设置是否允许取消</span>
+
+<span class="token function">pthread_setcanceltype</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment">//设置取消方式</span>
+
+<span class="token function">pthread_testcancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment">//取消点</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>线程分离：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">pthread_detach()<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">pthread_detach</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>条件竞争：十字路口</p>
 <p>用地址传参会导致竞争。</p>
 <p>3、线程同步</p>
 <p>互斥量</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-type">pthread_mutex_t</span>;<br>pthread_mutex_init();<br>pthread_mutex_destroy();<br>pthread_mutex_lock();<br>pthread_mutex_trylock();<br>pthread_mutex_unlock();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;pthread.h></span></span>
+<span class="token class-name">pthread_mutex_t</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutex_init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutex_destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutex_lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutex_trylock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutex_unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>条件变量：</p>
 <p>先发通知再解锁</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">pthread_cond_t</span>;<br>pthread_cond_init();<br>pthread_cond_destroy();<br>pthread_cond_broadcast();<br>pthread_cond_signal();<br>pthread_cond_wait(&amp;me-&gt;cond,&amp;me-&gt;mut);<br>pthread_cond_timewait();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token class-name">pthread_cond_t</span><span class="token punctuation">;</span>
+<span class="token function">pthread_cond_init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_cond_destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_cond_broadcast</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_cond_signal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_cond_wait</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>me<span class="token operator">-></span>cond<span class="token punctuation">,</span><span class="token operator">&amp;</span>me<span class="token operator">-></span>mut<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_cond_timewait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>信号量：</p>
 <p>读写锁：互斥量和信号量的综合</p>
 <p>r 读共享锁，w 写互斥锁（如果正在读，会加上预写锁）</p>
 <p>4、线程属性，同步属性</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-type">pthread_t</span> tid;<br><span class="hljs-type">pthread_attr_t</span> attr;<br>pthread_create(&amp;tid,&amp;attr,func,<span class="hljs-literal">NULL</span>);<br><br>pthread_attr_init();<br>pthread_attr_setstactsize();<br>pthreaed_attr_destroy();<br><span class="hljs-comment">// 见man pthread_attr_init 的see also</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;pthread.h></span></span>
+<span class="token class-name">pthread_t</span> tid<span class="token punctuation">;</span>
+<span class="token class-name">pthread_attr_t</span> attr<span class="token punctuation">;</span>
+<span class="token function">pthread_create</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>tid<span class="token punctuation">,</span><span class="token operator">&amp;</span>attr<span class="token punctuation">,</span>func<span class="token punctuation">,</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">pthread_attr_init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_attr_setstactsize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthreaed_attr_destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 见man pthread_attr_init 的see also</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>线程同步的属性：互斥量属性</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c">pthread_mutexattr_init();<br>pthread_mutexattr_destroy();<br>pthread_mutexattr_getpshared();<br>pthread_mutexattr_setpshared();<br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _GNU_SOURCE</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sched.h&gt;</span></span><br>clone();<br><span class="hljs-comment">// 可以创建出既不是线程又不是进程的</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">pthread_mutexattr_init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutexattr_destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutexattr_getpshared</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_mutexattr_setpshared</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">_GNU_SOURCE</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sched.h></span></span>
+<span class="token function">clone</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 可以创建出既不是线程又不是进程的</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>条件变量属性：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c">pthread_condattr_init();<br>pthread_condattr_destroy();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">pthread_condattr_init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_condattr_destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>读写锁属性：</p>
 <p>5、重入</p>
 <p>多线程中的 IO</p>
 <p>线程与信号</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">pthread_sigmask();<br>sigwait();<br>pthread_kill();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">pthread_sigmask</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">sigwait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">pthread_kill</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>重新做一套语言 天然支持并发</p>
 <p>openmp 标准：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">pragma</span> omp parallel</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">pragma</span> <span class="token expression">omp parallel</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <h1 id="高级-IO"><a href="#高级-IO" class="headerlink" title="高级 IO"></a>高级 IO</h1><p>非阻塞 IO – 阻塞 IO</p>
 <p>有限状态机编程</p>
@@ -659,22 +880,162 @@
 <p>IO 密集型任务，大部分在空闲</p>
 <p>2、IO 多路转接</p>
 <p>监视任务</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/select.h&gt;</span></span><br><span class="hljs-comment">// 可移植性非常好</span><br><span class="hljs-comment">//select();</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fsm_st</span> <span class="hljs-title">fsm12</span>, <span class="hljs-title">fsm21</span>;</span><br>fsm12.state = STATE_R;<br>fsm12.sfd = fd1;<br>fsm12.dfd = fd2;<br><br>fsm21.state = STATE_R;<br>fsm21.sfd = fd2;<br>fsm21.dfd = fd1;<br><br>fd_set rset,wset;<br><span class="hljs-keyword">while</span>(fsm12.state != STATE_T || fsm21.state != STATE_T)&#123;<br>    <span class="hljs-comment">//1、布置监视任务</span><br>    FD_ZERO(&amp;rset);<br>    FD_ZERO(&amp;wset);<br>    <span class="hljs-keyword">if</span>(fsm12.state == STATE_R)<br>        FD_SET(fsm12.sfd,&amp;rset);<br>    <span class="hljs-keyword">if</span>(fsm12.state == STATE_W)<br>        FD_SET(fsm12.dfd,&amp;wset);<br>    <span class="hljs-keyword">if</span>(fsm21.state == STATE_R)<br>        FD_SET(fsm21.sfd,&amp;rset);<br>    <span class="hljs-keyword">if</span>(fsm21.state == STATE_W)<br>        FD_SET(fsm21.dfd,&amp;wset);<br>    <span class="hljs-comment">//2、监视</span><br>    <span class="hljs-keyword">if</span>(fsm12.state &lt; STATE_AUTO || fsm21.state &lt; STATE_AUTO)&#123;<br>        <span class="hljs-keyword">if</span> (select(max(fd1,fd2),&amp;rset,&amp;wset,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>) &lt; <span class="hljs-number">0</span>)&#123;<br>        <span class="hljs-keyword">if</span>(errno == EINTR)<br>            <span class="hljs-keyword">continue</span>;<br>        perror(<span class="hljs-string">&quot;select()&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>        &#125;<br>    <span class="hljs-comment">//3、查看监视结果</span><br>    <span class="hljs-keyword">if</span>(FD_ISSET(fd1,&amp;rset) || FD_ISSET(fd2,&amp;wset) || fsm12.state &gt; STATE_AUTO)<br>        fsm_driver(&amp;fsm12);<br>    &#125;<br>    <span class="hljs-keyword">if</span>(FD_ISSET(fd2,&amp;rset) || FD_ISSET(fd1,&amp;wset) || fsm21.state &gt; STATE_AUTO)<br>        fsm_driver(&amp;fsm21);<br>&#125;<br>&#125;<br><br><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;poll.h&gt;</span></span><br><span class="hljs-comment">// 以文件描述符为单位来等待事件</span><br><span class="hljs-comment">// poll();</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pollfd</span> <span class="hljs-title">pfd</span>[2];</span><br>pfd[<span class="hljs-number">0</span>].fd = fd1;<br>pfd[<span class="hljs-number">1</span>].fd = fd2;<br><span class="hljs-keyword">while</span>(fsm12.state != STATE_T || fsm21.state != STATE_T)&#123;<br>    <span class="hljs-comment">//布置监视任务</span><br>    pfd[<span class="hljs-number">0</span>].events = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">if</span>(fsm12.state == STATE_R)<br>        	pfd[<span class="hljs-number">0</span>].events |= POLLIN;<br>    <span class="hljs-keyword">if</span>(fsm21.state == STATE_W)<br>        	pfd[<span class="hljs-number">0</span>].events |= POLLOUT;<br>    pfd[<span class="hljs-number">1</span>].events = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">if</span>(fsm12.state == STATE_W)<br>        	pfd[<span class="hljs-number">1</span>].events |= POLLOUT;<br>    <span class="hljs-keyword">if</span>(fsm21.state == STATE_R)<br>        	pfd[<span class="hljs-number">1</span>].events |= POLLIN;<br>    <span class="hljs-comment">//监视</span><br>    <span class="hljs-keyword">if</span>(fsm12.state &lt; STATE_AUTO || fsm21.state &lt; STATE_AUTO)&#123;<br>        <span class="hljs-keyword">while</span> (poll(pfd,<span class="hljs-number">2</span>,<span class="hljs-number">-1</span>) &lt; <span class="hljs-number">0</span>)&#123;<br>        <span class="hljs-keyword">if</span>(errno == EINTR)<br>            <span class="hljs-keyword">continue</span>;<br>        perror(<span class="hljs-string">&quot;select()&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">//查看监视结果</span><br>    <span class="hljs-comment">// fd1 可读 或者 fd2 可写 =》 要么读1 要么写2</span><br>    <span class="hljs-keyword">if</span>(pfd[<span class="hljs-number">0</span>].revents &amp; POLLIN || pfd[<span class="hljs-number">1</span>].revents &amp; POLLOUT || fsm12.state &gt; STATE_AUTO)<br>        <span class="hljs-comment">// 数据中继引擎</span><br>        fsm_driver(&amp;fsm12);<br>    &#125;<br>	<span class="hljs-comment">// fd2 可读 或者 fd1 可写</span><br>    <span class="hljs-keyword">if</span>(pfd[<span class="hljs-number">1</span>].revents &amp; POLLIN || pfd[<span class="hljs-number">0</span>].revents &amp; POLLOUT || fsm21.state &gt; STATE_AUTO)<br>        fsm_driver(&amp;fsm21);<br><br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/select.h></span></span>
+<span class="token comment">// 可移植性非常好</span>
+<span class="token comment">//select();</span>
+<span class="token keyword">struct</span> <span class="token class-name">fsm_st</span> fsm12<span class="token punctuation">,</span> fsm21<span class="token punctuation">;</span>
+fsm12<span class="token punctuation">.</span>state <span class="token operator">=</span> STATE_R<span class="token punctuation">;</span>
+fsm12<span class="token punctuation">.</span>sfd <span class="token operator">=</span> fd1<span class="token punctuation">;</span>
+fsm12<span class="token punctuation">.</span>dfd <span class="token operator">=</span> fd2<span class="token punctuation">;</span>
+
+fsm21<span class="token punctuation">.</span>state <span class="token operator">=</span> STATE_R<span class="token punctuation">;</span>
+fsm21<span class="token punctuation">.</span>sfd <span class="token operator">=</span> fd2<span class="token punctuation">;</span>
+fsm21<span class="token punctuation">.</span>dfd <span class="token operator">=</span> fd1<span class="token punctuation">;</span>
+
+fd_set rset<span class="token punctuation">,</span>wset<span class="token punctuation">;</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">!=</span> STATE_T <span class="token operator">||</span> fsm21<span class="token punctuation">.</span>state <span class="token operator">!=</span> STATE_T<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//1、布置监视任务</span>
+    <span class="token function">FD_ZERO</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>rset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">FD_ZERO</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>wset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_R<span class="token punctuation">)</span>
+        <span class="token function">FD_SET</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>sfd<span class="token punctuation">,</span><span class="token operator">&amp;</span>rset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_W<span class="token punctuation">)</span>
+        <span class="token function">FD_SET</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>dfd<span class="token punctuation">,</span><span class="token operator">&amp;</span>wset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm21<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_R<span class="token punctuation">)</span>
+        <span class="token function">FD_SET</span><span class="token punctuation">(</span>fsm21<span class="token punctuation">.</span>sfd<span class="token punctuation">,</span><span class="token operator">&amp;</span>rset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm21<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_W<span class="token punctuation">)</span>
+        <span class="token function">FD_SET</span><span class="token punctuation">(</span>fsm21<span class="token punctuation">.</span>dfd<span class="token punctuation">,</span><span class="token operator">&amp;</span>wset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//2、监视</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">&lt;</span> STATE_AUTO <span class="token operator">||</span> fsm21<span class="token punctuation">.</span>state <span class="token operator">&lt;</span> STATE_AUTO<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">select</span><span class="token punctuation">(</span><span class="token function">max</span><span class="token punctuation">(</span>fd1<span class="token punctuation">,</span>fd2<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token operator">&amp;</span>rset<span class="token punctuation">,</span><span class="token operator">&amp;</span>wset<span class="token punctuation">,</span><span class="token constant">NULL</span><span class="token punctuation">,</span><span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>errno <span class="token operator">==</span> EINTR<span class="token punctuation">)</span>
+            <span class="token keyword">continue</span><span class="token punctuation">;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"select()"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token comment">//3、查看监视结果</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">FD_ISSET</span><span class="token punctuation">(</span>fd1<span class="token punctuation">,</span><span class="token operator">&amp;</span>rset<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">FD_ISSET</span><span class="token punctuation">(</span>fd2<span class="token punctuation">,</span><span class="token operator">&amp;</span>wset<span class="token punctuation">)</span> <span class="token operator">||</span> fsm12<span class="token punctuation">.</span>state <span class="token operator">></span> STATE_AUTO<span class="token punctuation">)</span>
+        <span class="token function">fsm_driver</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>fsm12<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">FD_ISSET</span><span class="token punctuation">(</span>fd2<span class="token punctuation">,</span><span class="token operator">&amp;</span>rset<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">FD_ISSET</span><span class="token punctuation">(</span>fd1<span class="token punctuation">,</span><span class="token operator">&amp;</span>wset<span class="token punctuation">)</span> <span class="token operator">||</span> fsm21<span class="token punctuation">.</span>state <span class="token operator">></span> STATE_AUTO<span class="token punctuation">)</span>
+        <span class="token function">fsm_driver</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>fsm21<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;poll.h></span></span>
+<span class="token comment">// 以文件描述符为单位来等待事件</span>
+<span class="token comment">// poll();</span>
+<span class="token keyword">struct</span> <span class="token class-name">pollfd</span> pfd<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+pfd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>fd <span class="token operator">=</span> fd1<span class="token punctuation">;</span>
+pfd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>fd <span class="token operator">=</span> fd2<span class="token punctuation">;</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">!=</span> STATE_T <span class="token operator">||</span> fsm21<span class="token punctuation">.</span>state <span class="token operator">!=</span> STATE_T<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//布置监视任务</span>
+    pfd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_R<span class="token punctuation">)</span>
+        	pfd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">|=</span> POLLIN<span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm21<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_W<span class="token punctuation">)</span>
+        	pfd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">|=</span> POLLOUT<span class="token punctuation">;</span>
+    pfd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_W<span class="token punctuation">)</span>
+        	pfd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">|=</span> POLLOUT<span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm21<span class="token punctuation">.</span>state <span class="token operator">==</span> STATE_R<span class="token punctuation">)</span>
+        	pfd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">|=</span> POLLIN<span class="token punctuation">;</span>
+    <span class="token comment">//监视</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>fsm12<span class="token punctuation">.</span>state <span class="token operator">&lt;</span> STATE_AUTO <span class="token operator">||</span> fsm21<span class="token punctuation">.</span>state <span class="token operator">&lt;</span> STATE_AUTO<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">poll</span><span class="token punctuation">(</span>pfd<span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>errno <span class="token operator">==</span> EINTR<span class="token punctuation">)</span>
+            <span class="token keyword">continue</span><span class="token punctuation">;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"select()"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//查看监视结果</span>
+    <span class="token comment">// fd1 可读 或者 fd2 可写 =》 要么读1 要么写2</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>pfd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>revents <span class="token operator">&amp;</span> POLLIN <span class="token operator">||</span> pfd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>revents <span class="token operator">&amp;</span> POLLOUT <span class="token operator">||</span> fsm12<span class="token punctuation">.</span>state <span class="token operator">></span> STATE_AUTO<span class="token punctuation">)</span>
+        <span class="token comment">// 数据中继引擎</span>
+        <span class="token function">fsm_driver</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>fsm12<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+	<span class="token comment">// fd2 可读 或者 fd1 可写</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>pfd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>revents <span class="token operator">&amp;</span> POLLIN <span class="token operator">||</span> pfd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>revents <span class="token operator">&amp;</span> POLLOUT <span class="token operator">||</span> fsm21<span class="token punctuation">.</span>state <span class="token operator">></span> STATE_AUTO<span class="token punctuation">)</span>
+        <span class="token function">fsm_driver</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>fsm21<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">&#125;</span>
+
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>poll 在 user 态建立了一个结构体数组，epoll 则是通过系统调用，kernel 来维护这个结构体数组</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/epoll.h&gt;</span></span><br><span class="hljs-comment">//epoll();</span><br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/epoll.h></span></span>
+<span class="token comment">//epoll();</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>3、其他读写函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">readv();<br><br>writev();<br><br>readn();<br><br>writen();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">readv</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">writev</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">readn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">writen</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>4、存储映射 IO</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-type">int</span> fd;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">stat</span> <span class="hljs-title">statres</span>;</span><br>str = mmap(<span class="hljs-literal">NULL</span>,statres.st_size,PROT_READ,MAP_SHARED,fd,<span class="hljs-number">0</span>);<br>munmap(str,statres.st_size);<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/mman.h></span></span>
+<span class="token keyword">int</span> fd<span class="token punctuation">;</span>
+<span class="token keyword">struct</span> <span class="token class-name">stat</span> statres<span class="token punctuation">;</span>
+str <span class="token operator">=</span> <span class="token function">mmap</span><span class="token punctuation">(</span><span class="token constant">NULL</span><span class="token punctuation">,</span>statres<span class="token punctuation">.</span>st_size<span class="token punctuation">,</span>PROT_READ<span class="token punctuation">,</span>MAP_SHARED<span class="token punctuation">,</span>fd<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">munmap</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span>statres<span class="token punctuation">.</span>st_size<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>可以用来父子进程来共享内存</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MEMSIZE 1024</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-type">char</span>* ptr = mmap(<span class="hljs-literal">NULL</span>, MEMSIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, <span class="hljs-number">-1</span>, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (ptr == MAP_FAILED) &#123;<br>        perror(<span class="hljs-string">&quot;mmap()&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-type">int</span> pid = fork();<br>    <span class="hljs-keyword">if</span> (pid &lt; <span class="hljs-number">0</span>) &#123;<br>        perror(<span class="hljs-string">&quot;fork&quot;</span>);<br>        munmap(ptr, MEMSIZE);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-keyword">if</span> (pid == <span class="hljs-number">0</span>) <span class="hljs-comment">// child</span><br>    &#123;<br>        <span class="hljs-built_in">strcpy</span>(ptr, <span class="hljs-string">&quot;hello!&quot;</span>);<br>        munmap(ptr, MEMSIZE);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123; <span class="hljs-comment">// parent</span><br>        wait(<span class="hljs-literal">NULL</span>);<br>        <span class="hljs-built_in">puts</span>(ptr);<br>        munmap(ptr, MEMSIZE);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/mman.h></span></span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MEMSIZE</span> <span class="token expression"><span class="token number">1024</span></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> ptr <span class="token operator">=</span> <span class="token function">mmap</span><span class="token punctuation">(</span><span class="token constant">NULL</span><span class="token punctuation">,</span> MEMSIZE<span class="token punctuation">,</span> PROT_READ <span class="token operator">|</span> PROT_WRITE<span class="token punctuation">,</span> MAP_SHARED <span class="token operator">|</span> MAP_ANONYMOUS<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ptr <span class="token operator">==</span> MAP_FAILED<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"mmap()"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">int</span> pid <span class="token operator">=</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>pid <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"fork"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">munmap</span><span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> MEMSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>pid <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment">// child</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">strcpy</span><span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> <span class="token string">"hello!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">munmap</span><span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> MEMSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span> <span class="token comment">// parent</span>
+        <span class="token function">wait</span><span class="token punctuation">(</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">puts</span><span class="token punctuation">(</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">munmap</span><span class="token punctuation">(</span>ptr<span class="token punctuation">,</span> MEMSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>5、文件锁</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br>fcntl();<br><br>FILE *fp = fopen()<br>fd = fileno(fp);<br>lockf(fd,F_LOCK,<span class="hljs-number">0</span>);<br><span class="hljs-comment">/* ... */</span><br>fflush(fp);<br>lockf(fd,F_ULOCK,<span class="hljs-number">0</span>);<br>fclose(fp);<br><br>flock();<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+
+<span class="token function">fcntl</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+FILE <span class="token operator">*</span>fp <span class="token operator">=</span> <span class="token function">fopen</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+fd <span class="token operator">=</span> <span class="token function">fileno</span><span class="token punctuation">(</span>fp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">lockf</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span>F_LOCK<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">/* ... */</span>
+<span class="token function">fflush</span><span class="token punctuation">(</span>fp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">lockf</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span>F_ULOCK<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">fclose</span><span class="token punctuation">(</span>fp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">flock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
                 
               </div>

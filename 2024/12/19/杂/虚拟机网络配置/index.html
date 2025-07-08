@@ -253,7 +253,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          415 字
+          410 字
         
       </span>
     
@@ -325,35 +325,69 @@
                 
                 <h1 id="1、ubuntu22虚拟机如何固定ip"><a href="#1、ubuntu22虚拟机如何固定ip" class="headerlink" title="1、ubuntu22虚拟机如何固定ip?"></a>1、ubuntu22虚拟机如何固定ip?</h1><p>目前来说，在Ubuntu 22.04上固定虚拟机的IP地址，会去修改Netplan配置文件来指定静态IP地址</p>
 <p>首先，可以查看下默认的网络配置：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">nmcli dev show<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">nmcli dev show<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 
 <p>在终端：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chmod</span> 600 /etc/netplan/01-network-manager-all.yaml<br><span class="hljs-built_in">sudo</span> vim /etc/netplan/01-network-manager-all.yaml<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">chmod</span> <span class="token number">600</span> /etc/netplan/01-network-manager-all.yaml
+<span class="token function">sudo</span> <span class="token function">vim</span> /etc/netplan/01-network-manager-all.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 <p>内容如下：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># Let NetworkManager manage all devices on this system</span><br><span class="hljs-attr">network:</span><br>  <span class="hljs-attr">version:</span> <span class="hljs-number">2</span><br>  <span class="hljs-attr">renderer:</span> <span class="hljs-string">NetworkManager</span> <span class="hljs-comment"># NetworkManager/ networkd</span><br>  <span class="hljs-attr">ethernets:</span><br>    <span class="hljs-attr">ens33:</span><br>      <span class="hljs-attr">dhcp4:</span> <span class="hljs-literal">no</span><br>      <span class="hljs-attr">addresses:</span> [<span class="hljs-number">192.168</span><span class="hljs-number">.136</span><span class="hljs-number">.136</span><span class="hljs-string">/24</span>]<br>      <span class="hljs-attr">gateway4:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.136</span><span class="hljs-number">.2</span><br>      <span class="hljs-attr">nameservers:</span><br>        <span class="hljs-attr">addresses:</span> [<span class="hljs-number">8.8</span><span class="hljs-number">.8</span><span class="hljs-number">.8</span>, <span class="hljs-number">8.8</span><span class="hljs-number">.4</span><span class="hljs-number">.4</span>]  <span class="hljs-comment"># DNS服务器地址</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># Let NetworkManager manage all devices on this system</span>
+<span class="token key atrule">network</span><span class="token punctuation">:</span>
+  <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">renderer</span><span class="token punctuation">:</span> NetworkManager <span class="token comment"># NetworkManager/ networkd</span>
+  <span class="token key atrule">ethernets</span><span class="token punctuation">:</span>
+    <span class="token key atrule">ens33</span><span class="token punctuation">:</span>
+      <span class="token key atrule">dhcp4</span><span class="token punctuation">:</span> no
+      <span class="token key atrule">addresses</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>192.168.136.136/24<span class="token punctuation">]</span>
+      <span class="token key atrule">gateway4</span><span class="token punctuation">:</span> 192.168.136.2
+      <span class="token key atrule">nameservers</span><span class="token punctuation">:</span>
+        <span class="token key atrule">addresses</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>8.8.8.8<span class="token punctuation">,</span> 8.8.4.4<span class="token punctuation">]</span>  <span class="token comment"># DNS服务器地址</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> netplan apply<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo netplan apply<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <h1 id="2、vscode-远程连接虚拟机"><a href="#2、vscode-远程连接虚拟机" class="headerlink" title="2、vscode 远程连接虚拟机?"></a>2、vscode 远程连接虚拟机?</h1><p>在插件市场里搜索<code>Remote Development</code> 安装好 </p>
 <p>确保linux虚拟机里面有open-ssh</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 先卸载</span><br><span class="hljs-built_in">sudo</span> apt-get remove openssh-server<br><span class="hljs-comment"># 安装</span><br><span class="hljs-built_in">sudo</span> apt-get install openssh-server<br><br><span class="hljs-comment"># 重启ssh 服务</span><br><span class="hljs-built_in">sudo</span> service ssh --full-restart<br><span class="hljs-comment"># 自动启动</span><br><span class="hljs-built_in">sudo</span> systemctl <span class="hljs-built_in">enable</span> ssh<br><span class="hljs-comment"># 查看状态</span><br><span class="hljs-built_in">sudo</span> systemctl status ssh<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 先卸载</span>
+<span class="token function">sudo</span> <span class="token function">apt-get</span> remove openssh-server
+<span class="token comment"># 安装</span>
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> openssh-server
+
+<span class="token comment"># 重启ssh 服务</span>
+<span class="token function">sudo</span> <span class="token function">service</span> <span class="token function">ssh</span> --full-restart
+<span class="token comment"># 自动启动</span>
+<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> <span class="token function">ssh</span>
+<span class="token comment"># 查看状态</span>
+<span class="token function">sudo</span> systemctl status <span class="token function">ssh</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 
 <p>编辑配置:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"> <span class="hljs-comment"># 备份</span><br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">cp</span> /etc/ssh/sshd_config /etc/ssh/sshd_config.backup<br><span class="hljs-comment"># 编辑</span><br><span class="hljs-built_in">sudo</span> vim /etc/ssh/sshd_config <br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"> <span class="token comment"># 备份</span>
+<span class="token function">sudo</span> <span class="token function">cp</span> /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+<span class="token comment"># 编辑</span>
+<span class="token function">sudo</span> <span class="token function">vim</span> /etc/ssh/sshd_config <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 
 <p>按照习惯进行配置，在这里留下一个复杂点的公钥登录：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">Port</span> <span class="hljs-number">22</span><br><span class="hljs-string">PermitRootLogin</span> <span class="hljs-literal">yes</span><br><span class="hljs-comment"># ----------------- 以下提前留出公钥配置（可选）-----------------------</span><br><span class="hljs-string">RSAAuthentication</span> <span class="hljs-literal">yes</span><br><span class="hljs-string">PubKeyAUthentication</span> <span class="hljs-literal">yes</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">Port 22
+PermitRootLogin yes
+<span class="token comment"># ----------------- 以下提前留出公钥配置（可选）-----------------------</span>
+RSAAuthentication yes
+PubKeyAUthentication yes<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>可以直接在虚拟机内生成公私钥对（虚拟机作为客户端）,供给vscode使用<br>规范的做法就在本地主机上生成</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># </span><br><span class="hljs-built_in">sudo</span> apt install openssh-client<br><span class="hljs-comment"># 生成密钥对，指定加密算法为rsa</span><br>ssh-keygen -t rsa<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># </span>
+<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> openssh-client
+<span class="token comment"># 生成密钥对，指定加密算法为rsa</span>
+ssh-keygen <span class="token parameter variable">-t</span> rsa<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 <p>生成密钥对后，需要将公钥上传到~&#x2F;.ssh&#x2F;authorized_keys 。可以手动编辑该文件，也可以使用ssh-copy-id命令自动将公钥添加到服务器。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 将公钥添加到服务器的authorized_keys文件</span><br>ssh-copy-id -i ~/.ssh/id_rsa.pub 用户名@服务器地址<br><span class="hljs-comment"># 手动</span><br><span class="hljs-built_in">cat</span> id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 将公钥添加到服务器的authorized_keys文件</span>
+ssh-copy-id <span class="token parameter variable">-i</span> ~/.ssh/id_rsa.pub 用户名@服务器地址
+<span class="token comment"># 手动</span>
+<span class="token function">cat</span> id_rsa.pub <span class="token operator">>></span> ~/.ssh/authorized_keys<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>私钥登录命令：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">ssh -i .\id_rsa  root@192.168.136.136<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> <span class="token parameter variable">-i</span> .<span class="token punctuation">\</span>id_rsa  root@192.168.136.136<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 <p>实测这里配置文件存在一些问题，通过手动修改配置文件中的路径值解决</p>
 
                 

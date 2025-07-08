@@ -252,7 +252,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          793 字
+          765 字
         
       </span>
     
@@ -315,36 +315,89 @@
               <div class="markdown-body">
                 
                 <h1 id="一般解决方案"><a href="#一般解决方案" class="headerlink" title="一般解决方案"></a>一般解决方案</h1><p>查看 git 配置：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">git config --list<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--list</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></figure>
 
 <p>先取消掉可能的全局配置：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">git config --global --<span class="hljs-built_in">unset</span> http.proxy<br>git config --global --<span class="hljs-built_in">unset</span> https.proxy<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> <span class="token parameter variable">--unset</span> http.proxy
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> <span class="token parameter variable">--unset</span> https.proxy<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>配置：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">git config --global http.proxy http://127.0.0.1:7890<br>git config --global https.proxy https://127.0.0.1:7890<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> config <span class="token parameter variable">--global</span> http.proxy http://127.0.0.1:7890
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> https.proxy https://127.0.0.1:7890<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>配置后再去查看，结果如下(<del>如何科学上网大伙应该心照不宣</del>)：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">http.proxy=http://127.0.0.1:7890<br>https.proxy=https://127.0.0.1:7890<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">http.proxy</span><span class="token operator">=</span>http://127.0.0.1:7890
+<span class="token assign-left variable">https.proxy</span><span class="token operator">=</span>https://127.0.0.1:7890<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>也可以直接在windows 系统上打开配置文件：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># linux</span><br>/etc/gitconfig<br><span class="hljs-comment"># windows</span><br>C:\Users\&lt;用户名&gt;\.gitconfig<br><span class="hljs-comment"># 只适用于特定仓库。</span><br>位于仓库目录下的 .git\config 文件<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># linux</span>
+/etc/gitconfig
+<span class="token comment"># windows</span>
+C:<span class="token punctuation">\</span>Users<span class="token punctuation">\</span><span class="token operator">&lt;</span>用户名<span class="token operator">></span><span class="token punctuation">\</span>.gitconfig
+<span class="token comment"># 只适用于特定仓库。</span>
+位于仓库目录下的 .git<span class="token punctuation">\</span>config 文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>文件内容例如：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs sh">[user]<br>	name = k3ppf0r<br>	email = 2094xx@qq.com<br>[credential <span class="hljs-string">&quot;https://git.weixin.qq.com&quot;</span>]<br>	provider = generic<br>[gui]<br>	recentrepo = C:/Users/20942/Desktop/CVE-2024-27956<br><br>[difftool <span class="hljs-string">&quot;sourcetree&quot;</span>]<br>	cmd = <span class="hljs-string">&quot;&#x27;&#x27; &quot;</span><br>[mergetool <span class="hljs-string">&quot;sourcetree&quot;</span>]<br>	cmd = <span class="hljs-string">&quot;&#x27;&#x27; &quot;</span><br>	trustExitCode = <span class="hljs-literal">true</span><br><br>[http]<br>	postBuffer = 524288000<br>	proxy = http://127.0.0.1:7890<br>[https]<br>	proxy = https://127.0.0.1:7890<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>user<span class="token punctuation">]</span>
+	name <span class="token operator">=</span> k3ppf0r
+	email <span class="token operator">=</span> 2094xx@qq.com
+<span class="token punctuation">[</span>credential <span class="token string">"https://git.weixin.qq.com"</span><span class="token punctuation">]</span>
+	provider <span class="token operator">=</span> generic
+<span class="token punctuation">[</span>gui<span class="token punctuation">]</span>
+	recentrepo <span class="token operator">=</span> C:/Users/20942/Desktop/CVE-2024-27956
+
+<span class="token punctuation">[</span>difftool <span class="token string">"sourcetree"</span><span class="token punctuation">]</span>
+	cmd <span class="token operator">=</span> <span class="token string">"'' "</span>
+<span class="token punctuation">[</span>mergetool <span class="token string">"sourcetree"</span><span class="token punctuation">]</span>
+	cmd <span class="token operator">=</span> <span class="token string">"'' "</span>
+	trustExitCode <span class="token operator">=</span> <span class="token boolean">true</span>
+
+<span class="token punctuation">[</span>http<span class="token punctuation">]</span>
+	postBuffer <span class="token operator">=</span> <span class="token number">524288000</span>
+	proxy <span class="token operator">=</span> http://127.0.0.1:7890
+<span class="token punctuation">[</span>https<span class="token punctuation">]</span>
+	proxy <span class="token operator">=</span> https://127.0.0.1:7890<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>配置完后即可轻松完成<code>hexo deploy</code>等部署。</p>
 <p>我的理解：<br>貌似只用配http? 相当于git请求都会走本地的7890端口，从而用代理去访问，虽然本地明文，但我觉得这个方案已经可以满足需求了。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 测试是否设置成功</span><br>ssh -T git@github.com<br><span class="hljs-comment"># Hi k3ppf0r! You&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 测试是否设置成功</span>
+<span class="token function">ssh</span> <span class="token parameter variable">-T</span> git@github.com
+<span class="token comment"># Hi k3ppf0r! You've successfully authenticated, but GitHub does not provide shell access.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h1 id="设置ssh-代理"><a href="#设置ssh-代理" class="headerlink" title="设置ssh 代理"></a>设置ssh 代理</h1><h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>https代理存在一个局限，那就是没有办法做身份验证，每次拉取私库或者推送代码时，都需要输入github的账号和密码，非常痛苦。<br>设置ssh代理前，请确保你已经设置ssh key。可以参考在 github 上添加 SSH key 完成设置<br>更进一步是设置ssh代理。只需要配置一个config就可以了。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># Linux、MacOS</span><br>vi ~/.ssh/config<br><span class="hljs-comment"># Windows </span><br>到C:\Users\your_user_name\.ssh目录下，新建一个config文件（无后缀名）<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Linux、MacOS</span>
+<span class="token function">vi</span> ~/.ssh/config
+<span class="token comment"># Windows </span>
+到C:<span class="token punctuation">\</span>Users<span class="token punctuation">\</span>your_user_name<span class="token punctuation">\</span>.ssh目录下，新建一个config文件（无后缀名）<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>将下面内容加到config文件中即可</p>
 <p>对于windows用户，代理会用到connect.exe，你如果安装了Git都会自带connect.exe，如我的路径为C:\APP\Git\mingw64\bin\connect</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#Windows用户，注意替换你的端口号和connect.exe的路径</span><br>ProxyCommand <span class="hljs-string">&quot;C:\APP\Git\mingw64\bin\connect&quot;</span> -S 127.0.0.1:51837 -a none %h %p<br><br><span class="hljs-comment">#MacOS用户用下方这条命令，注意替换你的端口号</span><br><span class="hljs-comment">#ProxyCommand nc -v -x 127.0.0.1:51837 %h %p</span><br><br>Host github.com<br>  User git<br>  Port 22<br>  Hostname github.com<br>  <span class="hljs-comment"># 注意修改路径为你的路径</span><br>  IdentityFile <span class="hljs-string">&quot;C:\Users\Your_User_Name\.ssh\id_rsa&quot;</span><br>  TCPKeepAlive <span class="hljs-built_in">yes</span><br><br>Host ssh.github.com<br>  User git<br>  Port 443<br>  Hostname ssh.github.com<br>  <span class="hljs-comment"># 注意修改路径为你的路径</span><br>  IdentityFile <span class="hljs-string">&quot;C:\Users\Your_User_Name\.ssh\id_rsa&quot;</span><br>  TCPKeepAlive <span class="hljs-built_in">yes</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#Windows用户，注意替换你的端口号和connect.exe的路径</span>
+ProxyCommand <span class="token string">"C:\APP\Git\mingw64<span class="token entity" title="\b">\b</span>in<span class="token entity" title="\c">\c</span>onnect"</span> <span class="token parameter variable">-S</span> <span class="token number">127.0</span>.0.1:51837 <span class="token parameter variable">-a</span> none %h %p
+
+<span class="token comment">#MacOS用户用下方这条命令，注意替换你的端口号</span>
+<span class="token comment">#ProxyCommand nc -v -x 127.0.0.1:51837 %h %p</span>
+
+Host github.com
+  User <span class="token function">git</span>
+  Port <span class="token number">22</span>
+  Hostname github.com
+  <span class="token comment"># 注意修改路径为你的路径</span>
+  IdentityFile <span class="token string">"C:\Users\Your_User_Name\.ssh\id_rsa"</span>
+  TCPKeepAlive <span class="token function">yes</span>
+
+Host ssh.github.com
+  User <span class="token function">git</span>
+  Port <span class="token number">443</span>
+  Hostname ssh.github.com
+  <span class="token comment"># 注意修改路径为你的路径</span>
+  IdentityFile <span class="token string">"C:\Users\Your_User_Name\.ssh\id_rsa"</span>
+  TCPKeepAlive <span class="token function">yes</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>保存后文件后测试方法如下，返回successful之类的就成功了。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 测试是否设置成功</span><br>ssh -T git@github.com<br><span class="hljs-comment"># Hi k3ppf0r! You&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span><br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 测试是否设置成功</span>
+<span class="token function">ssh</span> <span class="token parameter variable">-T</span> git@github.com
+<span class="token comment"># Hi k3ppf0r! You've successfully authenticated, but GitHub does not provide shell access.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>之后都推荐走ssh拉取代码，再github 上选择clone地址时，选择ssh地址，入下图。这样git push 与 git clone 都可以直接走代理了，并且不需要输入密码。</p>
 <h2 id="原理部分"><a href="#原理部分" class="headerlink" title="原理部分"></a>原理部分</h2><p>代理服务器就是你的电脑和互联网的中介。当您访问外网时（如<a target="_blank" rel="noopener" href="http://google.com)/">http://google.com）</a> , 你的请求首先转发到代理服务器，然后代理服务器替你访问外网，并将结果原封不动的给你的电脑，这样你的电脑就可以看到外网的内容啦。<br>路径如下：</p>

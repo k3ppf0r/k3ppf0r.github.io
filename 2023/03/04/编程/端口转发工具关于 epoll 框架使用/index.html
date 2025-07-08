@@ -265,7 +265,7 @@
         
         
         
-          13 分钟
+          14 分钟
         
       </span>
     
@@ -331,14 +331,64 @@
 <p>操作流程：</p>
 <p>1、使用epoll_create()</p>
 <p>2、调用epoll_ctl()注册fd的interest ，这会将项目添加 interest list</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/epoll.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">epoll_ctl</span><span class="hljs-params">(<span class="hljs-type">int</span> epfd , <span class="hljs-type">int</span> op , <span class="hljs-type">int</span> fd , <span class="hljs-keyword">struct</span> epoll_event *_Nullable event )</span>;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;sys/epoll.h></span></span>
+<span class="token keyword">int</span> <span class="token function">epoll_ctl</span><span class="token punctuation">(</span><span class="token keyword">int</span> epfd <span class="token punctuation">,</span> <span class="token keyword">int</span> op <span class="token punctuation">,</span> <span class="token keyword">int</span> fd <span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">epoll_event</span> <span class="token operator">*</span>_Nullable event <span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
 <p>3、调用epoll_wait()，等待I&#x2F;O 事件，如果当前没有可用的事件，则阻塞调用线程。（这个系统调用可以被认为是从epoll实例的就绪列表中获取项目。）水平触发和边缘触发</p>
 <p>4、处理事件</p>
 <p>示例：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">在此示例中，侦听器是已调用listen(2)的非阻塞套接字。函数do_use_fd()使用新的就绪文件描述符，直到<br>read(2)或write(2)返回EAGAIN为止。一个事件-<br>驱动状态机应用程序应该在收到EAGAIN，记录其当前状态，以便在下次调用do_use_fd()时它将继续从其位置读取（2）或写入（2）之前就停了。<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">在此示例中，侦听器是已调用listen(2)的非阻塞套接字。函数do_use_fd()使用新的就绪文件描述符，直到
+read(2)或write(2)返回EAGAIN为止。一个事件-
+驱动状态机应用程序应该在收到EAGAIN，记录其当前状态，以便在下次调用do_use_fd()时它将继续从其位置读取（2）或写入（2）之前就停了。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></figure>
 
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> MAX_EVENTS 10</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">epoll_event</span> <span class="hljs-title">ev</span>, <span class="hljs-title">events</span>[<span class="hljs-title">MAX_EVENTS</span>];</span><br><span class="hljs-type">int</span> listen_sock, conn_sock, nfds, epollfd;<br><br><span class="hljs-comment">/* Code to set up listening socket, &#x27;listen_sock&#x27;,</span><br><span class="hljs-comment">   (socket(), bind(), listen()) omitted. */</span><br><br>epollfd = epoll_create1(<span class="hljs-number">0</span>);<br><span class="hljs-keyword">if</span> (epollfd == <span class="hljs-number">-1</span>) &#123;<br>    perror(<span class="hljs-string">&quot;epoll_create1&quot;</span>);<br>    <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>&#125;<br><br>ev.events = EPOLLIN;<br>ev.data.fd = listen_sock;<br><span class="hljs-keyword">if</span> (epoll_ctl(epollfd, EPOLL_CTL_ADD, listen_sock, &amp;ev) == <span class="hljs-number">-1</span>) &#123;<br>    perror(<span class="hljs-string">&quot;epoll_ctl: listen_sock&quot;</span>);<br>    <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>&#125;<br><br><span class="hljs-keyword">for</span> (;;) &#123;<br>    nfds = epoll_wait(epollfd, events, MAX_EVENTS, <span class="hljs-number">-1</span>);<br>    <span class="hljs-keyword">if</span> (nfds == <span class="hljs-number">-1</span>) &#123;<br>        perror(<span class="hljs-string">&quot;epoll_wait&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>    &#125;<br><br>    <span class="hljs-keyword">for</span> (n = <span class="hljs-number">0</span>; n &lt; nfds; ++n) &#123;<br>        <span class="hljs-keyword">if</span> (events[n].data.fd == listen_sock) &#123;<br>            conn_sock = accept(listen_sock,<br>                               (<span class="hljs-keyword">struct</span> sockaddr *) &amp;addr, &amp;addrlen);<br>            <span class="hljs-keyword">if</span> (conn_sock == <span class="hljs-number">-1</span>) &#123;<br>                perror(<span class="hljs-string">&quot;accept&quot;</span>);<br>                <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>            &#125;<br>            setnonblocking(conn_sock);<br>            ev.events = EPOLLIN | EPOLLET;<br>            ev.data.fd = conn_sock;<br>            <span class="hljs-keyword">if</span> (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock,<br>                        &amp;ev) == <span class="hljs-number">-1</span>) &#123;<br>                perror(<span class="hljs-string">&quot;epoll_ctl: conn_sock&quot;</span>);<br>                <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            do_use_fd(events[n].data.fd);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MAX_EVENTS</span> <span class="token expression"><span class="token number">10</span></span></span>
+<span class="token keyword">struct</span> <span class="token class-name">epoll_event</span> ev<span class="token punctuation">,</span> events<span class="token punctuation">[</span>MAX_EVENTS<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> listen_sock<span class="token punctuation">,</span> conn_sock<span class="token punctuation">,</span> nfds<span class="token punctuation">,</span> epollfd<span class="token punctuation">;</span>
+
+<span class="token comment">/* Code to set up listening socket, 'listen_sock',
+   (socket(), bind(), listen()) omitted. */</span>
+
+epollfd <span class="token operator">=</span> <span class="token function">epoll_create1</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>epollfd <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"epoll_create1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+ev<span class="token punctuation">.</span>events <span class="token operator">=</span> EPOLLIN<span class="token punctuation">;</span>
+ev<span class="token punctuation">.</span>data<span class="token punctuation">.</span>fd <span class="token operator">=</span> listen_sock<span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">epoll_ctl</span><span class="token punctuation">(</span>epollfd<span class="token punctuation">,</span> EPOLL_CTL_ADD<span class="token punctuation">,</span> listen_sock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>ev<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"epoll_ctl: listen_sock"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    nfds <span class="token operator">=</span> <span class="token function">epoll_wait</span><span class="token punctuation">(</span>epollfd<span class="token punctuation">,</span> events<span class="token punctuation">,</span> MAX_EVENTS<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>nfds <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"epoll_wait"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>n <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> n <span class="token operator">&lt;</span> nfds<span class="token punctuation">;</span> <span class="token operator">++</span>n<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>events<span class="token punctuation">[</span>n<span class="token punctuation">]</span><span class="token punctuation">.</span>data<span class="token punctuation">.</span>fd <span class="token operator">==</span> listen_sock<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            conn_sock <span class="token operator">=</span> <span class="token function">accept</span><span class="token punctuation">(</span>listen_sock<span class="token punctuation">,</span>
+                               <span class="token punctuation">(</span><span class="token keyword">struct</span> <span class="token class-name">sockaddr</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>addr<span class="token punctuation">,</span> <span class="token operator">&amp;</span>addrlen<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>conn_sock <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"accept"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token function">setnonblocking</span><span class="token punctuation">(</span>conn_sock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ev<span class="token punctuation">.</span>events <span class="token operator">=</span> EPOLLIN <span class="token operator">|</span> EPOLLET<span class="token punctuation">;</span>
+            ev<span class="token punctuation">.</span>data<span class="token punctuation">.</span>fd <span class="token operator">=</span> conn_sock<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">epoll_ctl</span><span class="token punctuation">(</span>epollfd<span class="token punctuation">,</span> EPOLL_CTL_ADD<span class="token punctuation">,</span> conn_sock<span class="token punctuation">,</span>
+                        <span class="token operator">&amp;</span>ev<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"epoll_ctl: conn_sock"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">do_use_fd</span><span class="token punctuation">(</span>events<span class="token punctuation">[</span>n<span class="token punctuation">]</span><span class="token punctuation">.</span>data<span class="token punctuation">.</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <p>拉了N级运营商的宽带 （多级路由），没有外网ip，人在外面的时候（攻击者）无法访问家里的电脑（内网）</p>
 <p>在外网机器运行：</p>
@@ -353,7 +403,280 @@
 </blockquote>
 <p>任意机器连接外网的3333端口，发送的数据都将转发给内网机器22端口上（如secureCRT连接 外网ip:3333）</p>
 <p>往往这个服务端机器也作为客户端使用了。</p>
-<h1 id="示例源代码"><a href="#示例源代码" class="headerlink" title="示例源代码"></a>示例源代码</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/epoll.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/socket.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;time.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;arpa/inet.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;netinet/in.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;netinet/tcp.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MAX_EVENTS  100</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> MAX_BUFFER_SIZE  65535</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_tcp_info</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">uint8_t</span>  tcpi_state;<br>    <span class="hljs-type">uint8_t</span>  tcpi_ca_state;<br>    <span class="hljs-type">uint8_t</span>  tcpi_retransmits;<br>    <span class="hljs-type">uint8_t</span>  tcpi_probes;<br>    <span class="hljs-type">uint8_t</span>  tcpi_backoff;<br>    <span class="hljs-type">uint8_t</span>  tcpi_options;<br>    <span class="hljs-type">uint8_t</span>  tcpi_snd_wscale : <span class="hljs-number">4</span>, tcpi_rcv_wscale : <span class="hljs-number">4</span>;<br><br>    <span class="hljs-type">uint32_t</span>  tcpi_rto;<br>    <span class="hljs-type">uint32_t</span>  tcpi_ato;<br>    <span class="hljs-type">uint32_t</span>  tcpi_snd_mss;<br>    <span class="hljs-type">uint32_t</span>  tcpi_rcv_mss;<br><br>    <span class="hljs-type">uint32_t</span>  tcpi_unacked;<br>    <span class="hljs-type">uint32_t</span>  tcpi_sacked;<br>    <span class="hljs-type">uint32_t</span>  tcpi_lost;<br>    <span class="hljs-type">uint32_t</span>  tcpi_retrans;<br>    <span class="hljs-type">uint32_t</span>  tcpi_fackets;<br><br>    <span class="hljs-comment">/* Times. */</span><br>    <span class="hljs-type">uint32_t</span>  tcpi_last_data_sent;<br>    <span class="hljs-type">uint32_t</span>  tcpi_last_ack_sent;  <span class="hljs-comment">/* Not remembered, sorry.  */</span><br>    <span class="hljs-type">uint32_t</span>  tcpi_last_data_recv;<br>    <span class="hljs-type">uint32_t</span>  tcpi_last_ack_recv;<br><br>    <span class="hljs-comment">/* Metrics. */</span><br>    <span class="hljs-type">uint32_t</span>  tcpi_pmtu;<br>    <span class="hljs-type">uint32_t</span>  tcpi_rcv_ssthresh;<br>    <span class="hljs-type">uint32_t</span>  tcpi_rtt;<br>    <span class="hljs-type">uint32_t</span>  tcpi_rttvar;<br>    <span class="hljs-type">uint32_t</span>  tcpi_snd_ssthresh;<br>    <span class="hljs-type">uint32_t</span>  tcpi_snd_cwnd;<br>    <span class="hljs-type">uint32_t</span>  tcpi_advmss;<br>    <span class="hljs-type">uint32_t</span>  tcpi_reordering;<br><br>    <span class="hljs-type">uint32_t</span>  tcpi_rcv_rtt;<br>    <span class="hljs-type">uint32_t</span>  tcpi_rcv_space;<br><br>    <span class="hljs-type">uint32_t</span>  tcpi_total_retrans;<br>&#125;;<br><br><br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">epoll_event</span> *<span class="hljs-title">events</span> =</span> <span class="hljs-literal">NULL</span>;<br><span class="hljs-type">int</span> epoll_fd = <span class="hljs-number">-1</span>,listen_fd,trigger_count;<br><span class="hljs-type">char</span> *real_server_name;<br><span class="hljs-type">unsigned</span> <span class="hljs-type">short</span>  real_server_port;<br><span class="hljs-type">void</span> <span class="hljs-title function_">TimePrinter</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-type">time_t</span> t = time(<span class="hljs-literal">NULL</span>);<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">tm</span>* <span class="hljs-title">lt</span> =</span> localtime(&amp;t);<br>    fflush(<span class="hljs-built_in">stdout</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[ %d-%d-%d %d:%d:%d ] &quot;</span>, lt-&gt;tm_year + <span class="hljs-number">1900</span>, lt-&gt;tm_mon + <span class="hljs-number">1</span>, lt-&gt;tm_mday, lt-&gt;tm_hour, lt-&gt;tm_min,<br>           lt-&gt;tm_sec);<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">setup_socket_server</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> port)</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span>  <span class="hljs-title">addr</span>;</span><br>    <span class="hljs-type">socklen_t</span> addr_length;<br>    <span class="hljs-type">int</span>  fd, opt, opt_length;<br>    <span class="hljs-keyword">if</span>((fd = socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK, <span class="hljs-number">0</span>)) &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    opt = <span class="hljs-number">1</span>;<br>    opt_length = <span class="hljs-keyword">sizeof</span>(opt);<br>    <span class="hljs-keyword">if</span>(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &amp;opt, opt_length) == <span class="hljs-number">-1</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    addr.sin_addr.s_addr = htonl(INADDR_ANY);<br>    addr.sin_port = htons(port);<br>    addr.sin_family = AF_INET;<br>    addr_length = <span class="hljs-keyword">sizeof</span>(addr);<br>    <span class="hljs-keyword">if</span>(bind(fd, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;addr, addr_length) &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    <span class="hljs-keyword">if</span>(listen(fd, <span class="hljs-number">3</span>) &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    <span class="hljs-keyword">return</span> fd;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">setup_epoll</span><span class="hljs-params">(<span class="hljs-type">int</span> size, <span class="hljs-keyword">struct</span> epoll_event **events)</span><br>&#123;<br>    <span class="hljs-type">int</span> fd;<br>    <span class="hljs-keyword">if</span>((*events = (<span class="hljs-keyword">struct</span> epoll_event*)<span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">struct</span> epoll_event) * size)) == <span class="hljs-literal">NULL</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    <span class="hljs-keyword">if</span>((fd = epoll_create(size)) == <span class="hljs-number">-1</span>)<br>        <span class="hljs-built_in">free</span>(*events);<br>    <span class="hljs-keyword">return</span> fd;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">add_event</span><span class="hljs-params">(<span class="hljs-type">int</span> epoll_fd, <span class="hljs-type">int</span> flags, <span class="hljs-type">int</span> socket_fd)</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">epoll_event</span> <span class="hljs-title">event</span>;</span><br>    event.data.fd = socket_fd;<br>    event.events = flags;<br>    <span class="hljs-keyword">return</span> epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &amp;event);<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">delete_event</span><span class="hljs-params">(<span class="hljs-type">int</span> epoll_fd, <span class="hljs-type">int</span> socket_fd)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> epoll_ctl(epoll_fd, EPOLL_CTL_DEL, socket_fd, <span class="hljs-literal">NULL</span>);<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">create_socket</span><span class="hljs-params">(<span class="hljs-type">char</span> *host, <span class="hljs-type">int</span> port)</span><br>&#123;<br>    <span class="hljs-type">int</span>  fd;<br>    <span class="hljs-type">int</span> flag = <span class="hljs-number">1</span>;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span>  <span class="hljs-title">server_info</span>;</span><br>    <span class="hljs-keyword">if</span>((fd = socket(AF_INET, SOCK_STREAM, <span class="hljs-number">0</span>)) == <span class="hljs-number">-1</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    server_info.sin_family = AF_INET;<br>    server_info.sin_port = htons(port);<br>    server_info.sin_addr.s_addr = inet_addr(host);<br>    <span class="hljs-keyword">if</span>(connect(fd, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;server_info, <span class="hljs-keyword">sizeof</span>(server_info)) == <span class="hljs-number">-1</span>)<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    <span class="hljs-keyword">return</span> fd;<br>&#125;<br><span class="hljs-type">int</span> <span class="hljs-title function_">is_server_alive</span><span class="hljs-params">(<span class="hljs-type">int</span> confd)</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_tcp_info</span> <span class="hljs-title">info</span>;</span><br>    <span class="hljs-type">int</span> len=<span class="hljs-keyword">sizeof</span>(info);<br>    getsockopt(confd, IPPROTO_TCP, TCP_INFO, &amp;info, (<span class="hljs-type">socklen_t</span> *)&amp;len);<br>    <span class="hljs-keyword">if</span>((info.tcpi_state == TCP_ESTABLISHED))<br>    &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    <span class="hljs-keyword">else</span>&#123;<span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;&#125;<br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">epoll_lt</span><span class="hljs-params">(<span class="hljs-type">int</span> sockfd,<span class="hljs-type">int</span> sendfd)</span><br>&#123;<br>    <span class="hljs-type">char</span> buffer[MAX_BUFFER_SIZE] ;<br>    <span class="hljs-type">int</span> ret;<br>    <span class="hljs-built_in">memset</span>(buffer, <span class="hljs-number">0</span>, MAX_BUFFER_SIZE);<br>    ret = recv(sockfd, buffer, MAX_BUFFER_SIZE, <span class="hljs-number">0</span>);<br>    <span class="hljs-type">char</span> s[ret];<br>    <span class="hljs-built_in">memset</span>(s,<span class="hljs-number">0</span>,ret);<br>    <span class="hljs-keyword">if</span> (ret &gt; <span class="hljs-number">0</span>)&#123;<br>        TimePrinter();<br>        <span class="hljs-built_in">memcpy</span>(s,buffer,ret<span class="hljs-number">-1</span>);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Receve msg\&quot;%s\&quot;from client.\t  Massage size:%d bytes\n&quot;</span>,s, ret<span class="hljs-number">-1</span>);<br>        <span class="hljs-keyword">if</span>(is_server_alive(sendfd) == <span class="hljs-number">0</span>)<br>        &#123;<br>            send(sendfd,buffer,MAX_BUFFER_SIZE,<span class="hljs-number">0</span>);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-keyword">if</span> (ret == <span class="hljs-number">0</span>)<br>            TimePrinter();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;client close！！！\n&quot;</span>);<br>        close(sockfd);<br>        delete_event(epoll_fd,sockfd);<br>    &#125;<br><br>&#125;<br><span class="hljs-type">void</span> <span class="hljs-title function_">epoll_lt1</span><span class="hljs-params">(<span class="hljs-type">int</span> sockfd)</span><br>&#123;<br>    <span class="hljs-type">int</span> ret;<br>    <span class="hljs-type">char</span> buffer[MAX_BUFFER_SIZE] ;<br>    <span class="hljs-built_in">memset</span>(buffer,<span class="hljs-number">0</span>,MAX_BUFFER_SIZE);<br>    ret = recv(sockfd,buffer,MAX_BUFFER_SIZE,<span class="hljs-number">0</span>);<br>    <span class="hljs-type">char</span> s[ret];<br>    <span class="hljs-built_in">memset</span>(s,<span class="hljs-number">0</span>,ret);<br>    <span class="hljs-keyword">if</span> (ret &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-built_in">memcpy</span>(s,buffer,ret<span class="hljs-number">-1</span>);<br>        TimePrinter();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Receve msg\&quot;%s\&quot;from server.\t  Massage size:%d bytes\n&quot;</span>, s, ret - <span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>;j&lt;trigger_count;j++) &#123;<br>            <span class="hljs-keyword">if</span> ((events[j].events &amp; EPOLLOUT) &amp;&amp; (events[j].data.fd != sockfd)&amp;&amp; (events[j].data.fd != listen_fd)) &#123;<br>                send(events[j].data.fd, buffer, MAX_BUFFER_SIZE, <span class="hljs-number">0</span>);<br>            &#125;<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">if</span> (ret == <span class="hljs-number">0</span>)<br>            TimePrinter();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;server close！！！\n&quot;</span>);<br>        close(sockfd);<br>    &#125;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span>  <span class="hljs-title">addr</span>;</span><br>    <span class="hljs-type">socklen_t</span> addr_length;<br>    <span class="hljs-type">int</span>  i, client_fd,user_fd;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">short</span>  port;<br>    <span class="hljs-keyword">if</span>(argc != <span class="hljs-number">6</span>)<br>    &#123;<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stdout</span>, <span class="hljs-string">&quot;usage: pfwd -l [listen port] -c [forward host] [forward port]\n&quot;</span>);<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stdout</span>, <span class="hljs-string">&quot;\tlisten port:  The port pfwd sould listen on.\n&quot;</span>);<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stdout</span>, <span class="hljs-string">&quot;\tforward host: The forwarding server ip.\n&quot;</span>);<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stdout</span>, <span class="hljs-string">&quot;\tforward port: The forwarding server port.\n\n&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);<br>    &#125;<br>    <span class="hljs-keyword">for</span>( i = <span class="hljs-number">1</span>;i&lt;argc;) &#123;<br>        <span class="hljs-keyword">if</span>(!<span class="hljs-built_in">strcmp</span>(argv[i],<span class="hljs-string">&quot;-c&quot;</span>))<br>        &#123;<br>            real_server_name = argv[i+<span class="hljs-number">1</span>];<br>            real_server_port = (<span class="hljs-type">unsigned</span> <span class="hljs-type">short</span>)atoi(argv[i+<span class="hljs-number">2</span>]);<br>            i = i+<span class="hljs-number">3</span>;<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(!<span class="hljs-built_in">strcmp</span>(argv[i],<span class="hljs-string">&quot;-l&quot;</span>))<br>        &#123;<br>            port = (<span class="hljs-type">unsigned</span> <span class="hljs-type">short</span>)atoi(argv[i + <span class="hljs-number">1</span>]);<br>            i =i+<span class="hljs-number">2</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span>((listen_fd = setup_socket_server(port)) == <span class="hljs-number">-1</span>)<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>,<span class="hljs-string">&quot;Unable to setup socket.&quot;</span>);<br>    <span class="hljs-keyword">if</span>((epoll_fd = setup_epoll(MAX_EVENTS, &amp;events)) == <span class="hljs-number">-1</span>)<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>,<span class="hljs-string">&quot;Unable to setup Epoll events.&quot;</span>);<br>    <span class="hljs-keyword">if</span>(add_event(epoll_fd, EPOLLIN, listen_fd) == <span class="hljs-number">-1</span>)<br>        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>,<span class="hljs-string">&quot;Unable to add listening socket to Epoll event queue.&quot;</span>);<br>    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stdout</span>, <span class="hljs-string">&quot;Resquests in port %d will be forwarded to %s:%d...\n&quot;</span>, port, real_server_name, real_server_port);<br>    addr_length = <span class="hljs-keyword">sizeof</span>(addr);<br>    user_fd =<span class="hljs-number">-1</span>;<br>    <span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>)<br>    &#123;<br>        <span class="hljs-keyword">if</span>(is_server_alive(user_fd) == <span class="hljs-number">-1</span>)<br>        &#123;<br>            close(user_fd);<br>            user_fd = create_socket(real_server_name, real_server_port);<br>            add_event(epoll_fd,EPOLLIN,user_fd);<br>        &#125;<br>        <span class="hljs-keyword">if</span>((trigger_count = epoll_wait(epoll_fd, events, MAX_EVENTS, <span class="hljs-number">-1</span>)) &lt; <span class="hljs-number">0</span>)<br>            <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>,<span class="hljs-string">&quot;Unable to Epoll wait.&quot;</span>);<br>        <span class="hljs-keyword">for</span>(i = <span class="hljs-number">0</span>; i &lt; trigger_count; i++)<br>        &#123;<br>            client_fd = events[i].data.fd;<br>            <span class="hljs-keyword">if</span>(events[i].events &amp; (EPOLLHUP | EPOLLERR))<br>            &#123;<br>                <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;Client disconnected (socket %d).\n&quot;</span>, client_fd);<br>                delete_event(epoll_fd, client_fd);<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(client_fd == listen_fd)<br>            &#123;<br>                <span class="hljs-keyword">if</span>((client_fd= accept(listen_fd, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;addr, &amp;addr_length)) == <span class="hljs-number">-1</span>)<br>                &#123;<br>                    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;Unable to accept new client connection.\n&quot;</span>);<br>                    <span class="hljs-keyword">continue</span>;<br>                &#125;<br>                <span class="hljs-keyword">if</span>(add_event(epoll_fd, EPOLLIN|EPOLLOUT, client_fd) == <span class="hljs-number">-1</span>)<br>                &#123;<br>                    <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;Unable to add soecket to Epoll event queue, closing (socket %d).\n&quot;</span>, client_fd);<br>                    close(client_fd);<br>                    <span class="hljs-keyword">continue</span>;<br>                &#125;<br>                TimePrinter();<br>                <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stdout</span>, <span class="hljs-string">&quot;New client connection from %s (socket %d).\n&quot;</span>, inet_ntoa(addr.sin_addr), client_fd);<br>            &#125;<br>            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((events[i].events &amp; EPOLLIN))<br>            &#123;<br>                <span class="hljs-keyword">if</span>(is_server_alive(user_fd) == <span class="hljs-number">0</span>)&#123;<br>                    <span class="hljs-keyword">if</span> (client_fd == user_fd)<br>                    &#123;<br>                        epoll_lt1(client_fd);<br>                    &#125;<br>                    <span class="hljs-keyword">else</span>&#123;<br>                        epoll_lt(client_fd,user_fd);<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="示例源代码"><a href="#示例源代码" class="headerlink" title="示例源代码"></a>示例源代码</h1><figure><div class="code-wrapper"><pre class="line-numbers language-C" data-language="C"><code class="language-C">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys&#x2F;epoll.h&gt;
+#include &lt;sys&#x2F;socket.h&gt;
+#include &lt;time.h&gt;
+#include &lt;arpa&#x2F;inet.h&gt;
+#include &lt;netinet&#x2F;in.h&gt;
+#include &lt;netinet&#x2F;tcp.h&gt;
+#define MAX_EVENTS  100
+#define MAX_BUFFER_SIZE  65535
+struct my_tcp_info
+&#123;
+    uint8_t  tcpi_state;
+    uint8_t  tcpi_ca_state;
+    uint8_t  tcpi_retransmits;
+    uint8_t  tcpi_probes;
+    uint8_t  tcpi_backoff;
+    uint8_t  tcpi_options;
+    uint8_t  tcpi_snd_wscale : 4, tcpi_rcv_wscale : 4;
+
+    uint32_t  tcpi_rto;
+    uint32_t  tcpi_ato;
+    uint32_t  tcpi_snd_mss;
+    uint32_t  tcpi_rcv_mss;
+
+    uint32_t  tcpi_unacked;
+    uint32_t  tcpi_sacked;
+    uint32_t  tcpi_lost;
+    uint32_t  tcpi_retrans;
+    uint32_t  tcpi_fackets;
+
+    &#x2F;* Times. *&#x2F;
+    uint32_t  tcpi_last_data_sent;
+    uint32_t  tcpi_last_ack_sent;  &#x2F;* Not remembered, sorry.  *&#x2F;
+    uint32_t  tcpi_last_data_recv;
+    uint32_t  tcpi_last_ack_recv;
+
+    &#x2F;* Metrics. *&#x2F;
+    uint32_t  tcpi_pmtu;
+    uint32_t  tcpi_rcv_ssthresh;
+    uint32_t  tcpi_rtt;
+    uint32_t  tcpi_rttvar;
+    uint32_t  tcpi_snd_ssthresh;
+    uint32_t  tcpi_snd_cwnd;
+    uint32_t  tcpi_advmss;
+    uint32_t  tcpi_reordering;
+
+    uint32_t  tcpi_rcv_rtt;
+    uint32_t  tcpi_rcv_space;
+
+    uint32_t  tcpi_total_retrans;
+&#125;;
+
+
+
+struct epoll_event *events &#x3D; NULL;
+int epoll_fd &#x3D; -1,listen_fd,trigger_count;
+char *real_server_name;
+unsigned short  real_server_port;
+void TimePrinter()
+&#123;
+    time_t t &#x3D; time(NULL);
+    struct tm* lt &#x3D; localtime(&amp;t);
+    fflush(stdout);
+    printf(&quot;[ %d-%d-%d %d:%d:%d ] &quot;, lt-&gt;tm_year + 1900, lt-&gt;tm_mon + 1, lt-&gt;tm_mday, lt-&gt;tm_hour, lt-&gt;tm_min,
+           lt-&gt;tm_sec);
+&#125;
+int setup_socket_server(unsigned short port)
+&#123;
+    struct sockaddr_in  addr;
+    socklen_t addr_length;
+    int  fd, opt, opt_length;
+    if((fd &#x3D; socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK, 0)) &lt; 0)
+        return -1;
+    opt &#x3D; 1;
+    opt_length &#x3D; sizeof(opt);
+    if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &amp;opt, opt_length) &#x3D;&#x3D; -1)
+        return -1;
+    addr.sin_addr.s_addr &#x3D; htonl(INADDR_ANY);
+    addr.sin_port &#x3D; htons(port);
+    addr.sin_family &#x3D; AF_INET;
+    addr_length &#x3D; sizeof(addr);
+    if(bind(fd, (struct sockaddr *)&amp;addr, addr_length) &lt; 0)
+        return -1;
+    if(listen(fd, 3) &lt; 0)
+        return -1;
+    return fd;
+&#125;
+int setup_epoll(int size, struct epoll_event **events)
+&#123;
+    int fd;
+    if((*events &#x3D; (struct epoll_event*)malloc(sizeof(struct epoll_event) * size)) &#x3D;&#x3D; NULL)
+        return -1;
+    if((fd &#x3D; epoll_create(size)) &#x3D;&#x3D; -1)
+        free(*events);
+    return fd;
+&#125;
+int add_event(int epoll_fd, int flags, int socket_fd)
+&#123;
+    struct epoll_event event;
+    event.data.fd &#x3D; socket_fd;
+    event.events &#x3D; flags;
+    return epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socket_fd, &amp;event);
+&#125;
+int delete_event(int epoll_fd, int socket_fd)
+&#123;
+    return epoll_ctl(epoll_fd, EPOLL_CTL_DEL, socket_fd, NULL);
+&#125;
+int create_socket(char *host, int port)
+&#123;
+    int  fd;
+    int flag &#x3D; 1;
+    struct sockaddr_in  server_info;
+    if((fd &#x3D; socket(AF_INET, SOCK_STREAM, 0)) &#x3D;&#x3D; -1)
+        return -1;
+    server_info.sin_family &#x3D; AF_INET;
+    server_info.sin_port &#x3D; htons(port);
+    server_info.sin_addr.s_addr &#x3D; inet_addr(host);
+    if(connect(fd, (struct sockaddr *)&amp;server_info, sizeof(server_info)) &#x3D;&#x3D; -1)
+        return -1;
+    return fd;
+&#125;
+int is_server_alive(int confd)
+&#123;
+    struct my_tcp_info info;
+    int len&#x3D;sizeof(info);
+    getsockopt(confd, IPPROTO_TCP, TCP_INFO, &amp;info, (socklen_t *)&amp;len);
+    if((info.tcpi_state &#x3D;&#x3D; TCP_ESTABLISHED))
+    &#123;
+        return 0;
+    &#125;
+    else&#123;return -1;&#125;
+&#125;
+void epoll_lt(int sockfd,int sendfd)
+&#123;
+    char buffer[MAX_BUFFER_SIZE] ;
+    int ret;
+    memset(buffer, 0, MAX_BUFFER_SIZE);
+    ret &#x3D; recv(sockfd, buffer, MAX_BUFFER_SIZE, 0);
+    char s[ret];
+    memset(s,0,ret);
+    if (ret &gt; 0)&#123;
+        TimePrinter();
+        memcpy(s,buffer,ret-1);
+        printf(&quot;Receve msg\&quot;%s\&quot;from client.\t  Massage size:%d bytes\n&quot;,s, ret-1);
+        if(is_server_alive(sendfd) &#x3D;&#x3D; 0)
+        &#123;
+            send(sendfd,buffer,MAX_BUFFER_SIZE,0);
+        &#125;
+    &#125;
+    else
+    &#123;
+        if (ret &#x3D;&#x3D; 0)
+            TimePrinter();
+        printf(&quot;client close！！！\n&quot;);
+        close(sockfd);
+        delete_event(epoll_fd,sockfd);
+    &#125;
+
+&#125;
+void epoll_lt1(int sockfd)
+&#123;
+    int ret;
+    char buffer[MAX_BUFFER_SIZE] ;
+    memset(buffer,0,MAX_BUFFER_SIZE);
+    ret &#x3D; recv(sockfd,buffer,MAX_BUFFER_SIZE,0);
+    char s[ret];
+    memset(s,0,ret);
+    if (ret &gt; 0) &#123;
+        memcpy(s,buffer,ret-1);
+        TimePrinter();
+        printf(&quot;Receve msg\&quot;%s\&quot;from server.\t  Massage size:%d bytes\n&quot;, s, ret - 1);
+        for(int j &#x3D; 0;j&lt;trigger_count;j++) &#123;
+            if ((events[j].events &amp; EPOLLOUT) &amp;&amp; (events[j].data.fd !&#x3D; sockfd)&amp;&amp; (events[j].data.fd !&#x3D; listen_fd)) &#123;
+                send(events[j].data.fd, buffer, MAX_BUFFER_SIZE, 0);
+            &#125;
+        &#125;
+    &#125; else &#123;
+        if (ret &#x3D;&#x3D; 0)
+            TimePrinter();
+        printf(&quot;server close！！！\n&quot;);
+        close(sockfd);
+    &#125;
+&#125;
+
+int main(int argc, char *argv[])
+&#123;
+    struct sockaddr_in  addr;
+    socklen_t addr_length;
+    int  i, client_fd,user_fd;
+    unsigned short  port;
+    if(argc !&#x3D; 6)
+    &#123;
+        fprintf(stdout, &quot;usage: pfwd -l [listen port] -c [forward host] [forward port]\n&quot;);
+        fprintf(stdout, &quot;\tlisten port:  The port pfwd sould listen on.\n&quot;);
+        fprintf(stdout, &quot;\tforward host: The forwarding server ip.\n&quot;);
+        fprintf(stdout, &quot;\tforward port: The forwarding server port.\n\n&quot;);
+        exit(1);
+    &#125;
+    for( i &#x3D; 1;i&lt;argc;) &#123;
+        if(!strcmp(argv[i],&quot;-c&quot;))
+        &#123;
+            real_server_name &#x3D; argv[i+1];
+            real_server_port &#x3D; (unsigned short)atoi(argv[i+2]);
+            i &#x3D; i+3;
+        &#125;
+        else if(!strcmp(argv[i],&quot;-l&quot;))
+        &#123;
+            port &#x3D; (unsigned short)atoi(argv[i + 1]);
+            i &#x3D;i+2;
+        &#125;
+    &#125;
+    if((listen_fd &#x3D; setup_socket_server(port)) &#x3D;&#x3D; -1)
+        fprintf(stderr,&quot;Unable to setup socket.&quot;);
+    if((epoll_fd &#x3D; setup_epoll(MAX_EVENTS, &amp;events)) &#x3D;&#x3D; -1)
+        fprintf(stderr,&quot;Unable to setup Epoll events.&quot;);
+    if(add_event(epoll_fd, EPOLLIN, listen_fd) &#x3D;&#x3D; -1)
+        fprintf(stderr,&quot;Unable to add listening socket to Epoll event queue.&quot;);
+    fprintf(stdout, &quot;Resquests in port %d will be forwarded to %s:%d...\n&quot;, port, real_server_name, real_server_port);
+    addr_length &#x3D; sizeof(addr);
+    user_fd &#x3D;-1;
+    while(1)
+    &#123;
+        if(is_server_alive(user_fd) &#x3D;&#x3D; -1)
+        &#123;
+            close(user_fd);
+            user_fd &#x3D; create_socket(real_server_name, real_server_port);
+            add_event(epoll_fd,EPOLLIN,user_fd);
+        &#125;
+        if((trigger_count &#x3D; epoll_wait(epoll_fd, events, MAX_EVENTS, -1)) &lt; 0)
+            fprintf(stderr,&quot;Unable to Epoll wait.&quot;);
+        for(i &#x3D; 0; i &lt; trigger_count; i++)
+        &#123;
+            client_fd &#x3D; events[i].data.fd;
+            if(events[i].events &amp; (EPOLLHUP | EPOLLERR))
+            &#123;
+                fprintf(stderr, &quot;Client disconnected (socket %d).\n&quot;, client_fd);
+                delete_event(epoll_fd, client_fd);
+                break;
+            &#125;
+            else if(client_fd &#x3D;&#x3D; listen_fd)
+            &#123;
+                if((client_fd&#x3D; accept(listen_fd, (struct sockaddr *)&amp;addr, &amp;addr_length)) &#x3D;&#x3D; -1)
+                &#123;
+                    fprintf(stderr, &quot;Unable to accept new client connection.\n&quot;);
+                    continue;
+                &#125;
+                if(add_event(epoll_fd, EPOLLIN|EPOLLOUT, client_fd) &#x3D;&#x3D; -1)
+                &#123;
+                    fprintf(stderr, &quot;Unable to add soecket to Epoll event queue, closing (socket %d).\n&quot;, client_fd);
+                    close(client_fd);
+                    continue;
+                &#125;
+                TimePrinter();
+                fprintf(stdout, &quot;New client connection from %s (socket %d).\n&quot;, inet_ntoa(addr.sin_addr), client_fd);
+            &#125;
+            else if ((events[i].events &amp; EPOLLIN))
+            &#123;
+                if(is_server_alive(user_fd) &#x3D;&#x3D; 0)&#123;
+                    if (client_fd &#x3D;&#x3D; user_fd)
+                    &#123;
+                        epoll_lt1(client_fd);
+                    &#125;
+                    else&#123;
+                        epoll_lt(client_fd,user_fd);
+                    &#125;
+                &#125;
+            &#125;
+        &#125;
+    &#125;
+    exit(0);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
 
 <h1 id="端口转发攻击场景使用："><a href="#端口转发攻击场景使用：" class="headerlink" title="端口转发攻击场景使用："></a>端口转发攻击场景使用：</h1><p>建立反向连接：</p>
 <p>有一台内网机器（被攻陷，具有双网卡，跳板机，类似路由器等）</p>
