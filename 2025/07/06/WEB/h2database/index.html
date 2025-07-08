@@ -254,7 +254,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.5k 字
+          1.4k 字
         
       </span>
     
@@ -265,7 +265,7 @@
         
         
         
-          13 分钟
+          12 分钟
         
       </span>
     
@@ -325,7 +325,7 @@
               <div class="markdown-body">
                 
                 <p>由于工作中遇到了h2 数据库，故想着系统点梳理复现下h2 数据库 的一些漏洞，并初步探讨各种场景与限制下的漏洞利用。</p>
-<h1 id="Web-Console-RCE（CVE-2018-10054）"><a href="#Web-Console-RCE（CVE-2018-10054）" class="headerlink" title="Web Console RCE（CVE-2018-10054）"></a>Web Console RCE（CVE-2018-10054）</h1><p>当Spring Boot集成H2 Database时，如果设置如下选项，将会启用一个Web管理页面：</p>
+<h1 id="Web-Console-RCE"><a href="#Web-Console-RCE" class="headerlink" title="Web Console RCE"></a>Web Console RCE</h1><p>当Spring Boot集成H2 Database时，如果设置如下选项，将会启用一个Web管理页面：</p>
 <figure><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">spring.h2.console.enabled&#x3D;true
 spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></figure>
 
@@ -334,8 +334,7 @@ spring.h2.console.settings.web-allow-others&#x3D;true<span aria-hidden="true" cl
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-web<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.7.18<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></figure>
-
-<p>在<code>1.4.198</code>之前的H2 Database版本中，任何用户都可以通过创建新的数据库文件或连接到内存数据库来访问Web管理页面。认证通过后，攻击者可以通过以下命令之一执行任意代码：</p>
+<p>先看这个CVE-2018-10054: 在<code>1.4.198</code>之前的H2 Database版本中，任何用户都可以通过创建新的数据库文件或连接到内存数据库来访问Web管理页面。认证通过后，攻击者可以通过以下命令之一执行任意代码：</p>
 <ul>
 <li><code>CREATE ALIAS func AS code...; CALL func ...</code> （需要有<code>javac</code> ）</li>
 <li><code>CREATE TRIGGER ... AS code...</code></li>
@@ -418,8 +417,6 @@ $$;AUTHZPWD&#x3D;&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span>
 
 <p>也就是说，我们可以修改默认的 <code>Driver Class</code> 为<code>javax.naming.Context</code>，从而实现JNDI注入。</p>
 <p>后续Web控制台页面上的JNDI注入的问题在<code>2.0.206</code>中被修复，仅仅允许java:开头</p>
-<h1 id="H2-RCE-在-JRE-17-环境下的利用"><a href="#H2-RCE-在-JRE-17-环境下的利用" class="headerlink" title="H2 RCE 在 JRE 17 环境下的利用"></a>H2 RCE 在 JRE 17 环境下的利用</h1><p>前置相关知识取自这个师傅的<a target="_blank" rel="noopener" href="https://exp10it.io/2025/03/h2-rce-in-jre-17/">连接</a>：</p>
-<p>这里直接列出相关方法：</p>
 <h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://mthbernardes.github.io/rce/2018/03/14/abusing-h2-database-alias.html">https://mthbernardes.github.io/rce/2018/03/14/abusing-h2-database-alias.html</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/45506">https://www.exploit-db.com/exploits/45506</a></li>
